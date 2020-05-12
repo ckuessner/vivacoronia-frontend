@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>VivaCoronia QR-Codes</title>
+    <link rel="stylesheet" href="index.css">
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript" src="qrcode.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <form onsubmit="makeCode()" action="javascript:void(0);">
+            <div class="row">
+                <div class="col">
+                    <label for="status">Status</label>
+                </div>
+                <div class="col">
+                    <select id="status">
+                        <!--<option value="none">None</option>-->
+                        <option value="infected">Infected</option>
+                        <option value="recovered">Recovered</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col" style="margin: 0 0;">
+                    <label for="occured-date-estimation">Date and time of infection or recovery</label>
+                </div>
+                <div class="col">
+                    <input id="occured-date-estimation" type="datetime-local" value="2020-05-11T11:30" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label for="date-of-test">Date and time of approving test</label>
+                </div>
+                <div class="col">
+                    <input id="date-of-test" type="datetime-local" value="2020-05-12T11:30" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label for="extras">Additional information</label>
+                </div>
+                <div class="col">
+                    <textarea id="extras"
+                        placeholder="{&quot;issuer&quot;:&quot;Dr. Max Mustermann&quot;, ...}"></textarea>
+                </div>
+            </div>
+            <input type="submit" value="Go" />
+        </form>
+    </div>
+    <div id="qrcode"></div>
+    <script type="text/javascript">
+        var qrcode = new QRCode(document.getElementById("qrcode"));
+
+        function makeCode() {
+            var status = document.getElementById("status");
+            var occuredDateEstimation = document.getElementById("occured-date-estimation");
+            var dateOfTest = document.getElementById("date-of-test");
+            var extras = document.getElementById("extras");
+
+
+            if (status.value == "none") {
+                alert("Select a status");
+                status.focus();
+                return;
+            }
+
+            if (!dateOfTest.value) {
+                alert("Select a date of occurance");
+                dateOfTest.focus();
+                return;
+            }
+
+            data = {
+                "newStatus": status.value,
+                "dateOfTest": new Date(dateOfTest.value)
+            };
+
+            if (occuredDateEstimation.value) {
+                data["occuredDateEstimation"] = new Date(occuredDateEstimation.value);
+
+                if (data["dateOfTest"].getTime() < data["occuredDateEstimation"].getTime()) {
+                    alert("Date of test cannot be before estimated date of infection/recovery");
+                    occuredDateEstimation.focus();
+                    return;
+                }
+            }
+
+            if (extras.value) {
+                try {
+                    Object.assign(data, JSON.parse(extras.value))
+                } catch (error) {
+                    alert("Unable to parse additional information. Please check that you provided a correkt JSON object. See console for further error information");
+                    console.log(error);
+                }
+            }
+
+            qrcode.makeCode(JSON.stringify(data));
+        }
+
+        $("#date-of-test").
+            on("keydown", function (e) {
+                console.log("keydown");
+                if (e.keyCode == 13) {
+                    makeCode();
+                }
+            });
+    </script>
+</body>
+
+</html>
