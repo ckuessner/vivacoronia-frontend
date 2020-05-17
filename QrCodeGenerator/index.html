@@ -14,7 +14,7 @@
         <form onsubmit="makeCode()" action="javascript:void(0);">
             <div class="row">
                 <div class="col">
-                    <label for="status">Status</label>
+                    <label for="status">Status <span class="required">*</span></label>
                 </div>
                 <div class="col">
                     <select id="status">
@@ -34,7 +34,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <label for="date-of-test">Date and time of approving test</label>
+                    <label for="date-of-test">Date and time of approving test<span class="required">*</span></label>
                 </div>
                 <div class="col">
                     <input id="date-of-test" type="datetime-local" value="2020-05-12T11:30" />
@@ -73,6 +73,10 @@
                 </div>
             </div>
             <input type="submit" value="Go" />
+
+            <div class="row" style="text-align: right; margin-top: 10px;">
+                <span class="required">*</span> Required
+            </div>
         </form>
     </div>
     <div id="qrcode"></div>

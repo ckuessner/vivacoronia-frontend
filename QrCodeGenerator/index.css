@@ -10,6 +10,11 @@
     margin-right: auto;
 }
 
+span.required {
+    color:#ff0000;
+    font-weight: 900;
+}
+
 label {
     padding: 14px 20px;
     display: inline-block;
