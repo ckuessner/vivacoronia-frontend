@@ -107,7 +107,9 @@ class MainActivity : AppCompatActivity() {
             // handle location permission requests
             LOCATION_ACCESS_PERMISSION_REQUEST_CODE -> {
                 // request permissions again if location permission not granted
-                if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_DENIED || grantResults[1] == PackageManager.PERMISSION_DENIED)) {
+                if (grantResults.isNotEmpty() &&
+                    (grantResults[0] == PackageManager.PERMISSION_DENIED ||
+                            grantResults[1] == PackageManager.PERMISSION_DENIED)) {
                     Log.v(TAG, "requeste Standortzugriff erneut")
                     PermissionHandler.requestLocationPermissions(this)
                 }

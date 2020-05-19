@@ -17,7 +17,7 @@ class PermissionHandler {
          */
         fun requestLocationPermissions(activity: Activity) {
             ActivityCompat.requestPermissions(activity,
-                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
+                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.FOREGROUND_SERVICE),
                 LOCATION_ACCESS_PERMISSION_REQUEST_CODE
             )
         }
@@ -28,7 +28,9 @@ class PermissionHandler {
             val coarseLocationPermitted = ActivityCompat
                 .checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) ==
                     PackageManager.PERMISSION_GRANTED
-            val fineLocationPermitted = ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            val fineLocationPermitted = ActivityCompat.
+            checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED
             // check permission
             return coarseLocationPermitted && fineLocationPermitted
         }
