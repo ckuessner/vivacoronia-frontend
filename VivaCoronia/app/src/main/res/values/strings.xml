@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Viva Coronia</string>
+
+    <string name="location_service_description">Ermöglicht das Tracken der Bewegungen um mögliche Infizierungen zu erkennen und Sie davor zu warnen.</string>
 </resources>
