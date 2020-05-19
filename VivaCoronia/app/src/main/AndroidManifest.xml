@@ -17,6 +17,7 @@
             android:name=".locationTracking.LocationTrackingService"
             android:enabled="true"
             android:exported="false"
+            android:foregroundServiceType="location"
             android:description="@string/location_service_description">
         </service>
 

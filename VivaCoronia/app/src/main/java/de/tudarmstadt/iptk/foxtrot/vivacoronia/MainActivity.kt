@@ -8,10 +8,10 @@ import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.core.app.ActivityCompat
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationNotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationTrackingService
 
 class MainActivity : AppCompatActivity() {
@@ -25,25 +25,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // notification channel should be created as soon as possible when the application starts
+        // TODO also invoke in onResume
+        LocationNotificationHelper.createLocationNotificationChannel(this)
+
         checkPermissionsAndStartTracking()
     }
 
+
+
     fun checkPermissionsAndStartTracking() {
         // TODO add in onResume method the start of the service, if the service isnt running
-        // check wheter location permission was granted
-        // get permissions
-        val coarseLocationPermitted = ActivityCompat
-            .checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED
-        val fineLocationPermitted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        // check permission
-        if (coarseLocationPermitted && fineLocationPermitted) {
-            // start location service
+        if (PermissionHandler.checkLocationPermissions(this)) {
             requestLocationService(createBackgroundLocationRequest())
         }
         else {
-            // request location permissions
-            requestLocationPermissions()
+            Log.v(TAG, "requeste Standortzugriff")
+            PermissionHandler.requestLocationPermissions(this)
         }
     }
 
@@ -67,6 +65,7 @@ class MainActivity : AppCompatActivity() {
         // gps, wifi etc is enabled so location tracking can be started
         task.addOnSuccessListener { locationSettingsResponse ->
             var intent: Intent = Intent(this, LocationTrackingService::class.java)
+            Log.v(TAG, "startet foreground service")
             startForegroundService(intent)
         }
 
@@ -75,6 +74,7 @@ class MainActivity : AppCompatActivity() {
         task.addOnFailureListener { exception ->
             if (exception is ResolvableApiException){
                 try {
+                    Log.v(TAG, "requeste GPS")
                     exception.startResolutionForResult(this@MainActivity,
                         LOCATION_ACCESS_SETTINGS_REQUEST_CODE)
                 } catch (sendEx: IntentSender.SendIntentException) {
@@ -108,22 +108,14 @@ class MainActivity : AppCompatActivity() {
             LOCATION_ACCESS_PERMISSION_REQUEST_CODE -> {
                 // request permissions again if location permission not granted
                 if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_DENIED || grantResults[1] == PackageManager.PERMISSION_DENIED)) {
-                    requestLocationPermissions()
+                    Log.v(TAG, "requeste Standortzugriff erneut")
+                    PermissionHandler.requestLocationPermissions(this)
                 }
                 else {
+                    Log.v(TAG, "request Location Background Service")
                     requestLocationService(createBackgroundLocationRequest())
                 }
             }
         }
-    }
-
-    /**
-     * requests permissions for location services
-     */
-    fun requestLocationPermissions() {
-        ActivityCompat.requestPermissions(this,
-            arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
-            LOCATION_ACCESS_PERMISSION_REQUEST_CODE
-        )
     }
 }
