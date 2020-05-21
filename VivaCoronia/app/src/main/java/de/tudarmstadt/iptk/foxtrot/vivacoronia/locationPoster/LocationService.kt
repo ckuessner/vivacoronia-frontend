@@ -1,4 +1,4 @@
 package de.tudarmstadt.iptk.foxtrot.locationPoster
 
-class locationService {
+class LocationService {
 }
