@@ -12,10 +12,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // TODO: Get userID
+        var userID:Int = 12345
+
         val sendLocBtn = findViewById<Button>(R.id.sendLocationBtn)
         sendLocBtn.setOnClickListener {
-            Toast.makeText(this, "Sending your position...", Toast.LENGTH_LONG).show()
-            LocationServerCommunicator.sendCurrentPositionToServer()
+            val com = LocationServerCommunicator(this, userID)
+
+            com.sendCurrentPositionToServer()
         }
     }
 }
