@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val currentContext : Context = this
-        //val service = LocationService(currentContext)
+        val service = LocationService(currentContext)
 
         // TODO: Get userID
         var userID:Int = 12345

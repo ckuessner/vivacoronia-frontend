@@ -31,12 +31,12 @@ class LocationServerCommunicator {
             return
         }
 
+        Log.i("bla", "In location server method")
+
         val queue = Volley.newRequestQueue(context)
         val url = "http://localhost:3000/locations/$userID/"
 
         // get information from LocationService
-
-        //
         val locationJSONArray = JSONArray()
         val locationJSONObject = JSONObject()
         val coordinatesJSONArray = JSONArray()
@@ -51,20 +51,22 @@ class LocationServerCommunicator {
         val jsonArrayRequest = JsonArrayRequest(Request.Method.POST, url, locationJSONArray,
             Response.Listener {response ->
                 try {
-                    Log.println(1, "Volley Log", "Response: $response")
+                    Log.i("bla", "Response: $response")
                 }catch (e:Exception){
-                    Log.println(1, "Volley Log", "Exception: $e")
+                    Log.i("bla", "Exception: $e")
                 }
             },
             Response.ErrorListener {
-                Log.println(1, "Volley Error", "Volley error: $it")
+                Log.i("bla", "Volley error: $it")
             }
         )
 
 
         queue.add(jsonArrayRequest)
 
-        Toast.makeText(context, "Information was send to server successfully!", Toast.LENGTH_SHORT).show()
+        var message = "Information was send to server successfully!"
+
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     fun checkPermissions():Boolean {
