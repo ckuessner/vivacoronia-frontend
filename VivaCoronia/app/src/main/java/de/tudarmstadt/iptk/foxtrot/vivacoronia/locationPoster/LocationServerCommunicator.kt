@@ -48,6 +48,10 @@ class LocationServerCommunicator {
 
         locationJSONObject.put("coordinates", coordinatesJSONArray)
 
+        locationJSONArray.put(locationJSONObject)
+
+        Log.i("bla", locationJSONArray.toString())
+
         val jsonArrayRequest = JsonArrayRequest(Request.Method.POST, url, locationJSONArray,
             Response.Listener {response ->
                 try {
