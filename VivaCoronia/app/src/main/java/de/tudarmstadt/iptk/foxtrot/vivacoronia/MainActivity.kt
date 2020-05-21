@@ -2,10 +2,9 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.Toast
-import de.tudarmstadt.iptk.foxtrot.locationPoster.locationServerCommunicator
+import de.tudarmstadt.iptk.foxtrot.locationPoster.LocationServerCommunicator
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         val sendLocBtn = findViewById<Button>(R.id.sendLocationBtn)
         sendLocBtn.setOnClickListener {
             Toast.makeText(this, "Sending your position...", Toast.LENGTH_LONG).show()
-            locationServerCommunicator.sendCurrentPositionToServer()
+            LocationServerCommunicator.sendCurrentPositionToServer()
         }
     }
 }

@@ -1,6 +1,6 @@
 package de.tudarmstadt.iptk.foxtrot.locationPoster
 
-class locationServerCommunicator {
+class LocationServerCommunicator {
 
     companion object {
 
