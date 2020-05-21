@@ -3,11 +3,14 @@ package de.tudarmstadt.iptk.foxtrot.locationPoster
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.android.volley.Request
-import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
+import org.json.JSONArray
 
 class LocationServerCommunicator {
 
@@ -30,11 +33,26 @@ class LocationServerCommunicator {
         val queue = Volley.newRequestQueue(context)
         val url = "http://localhost:3000/locations/$userID/"
 
+        // get information from LocationService
+        val locationJSONArray = null
 
-        // TODO:
+        val jsonArrayRequest = JsonArrayRequest(Request.Method.POST, url, locationJSONArray,
+            Response.Listener {response ->
+                try {
+                    Log.println(1, "Volley Log", "Response: $response")
+                }catch (e:Exception){
+                    Log.println(1, "Volley Log", "Exception: $e")
+                }
+            },
+            Response.ErrorListener {
+                Log.println(1, "Volley Error", "Volley error: $it")
+            }
+        )
 
 
-        //queue.add(jsonObjectRequest)
+        queue.add(jsonArrayRequest)
+
+        Toast.makeText(context, "Information was send to server successfully!", Toast.LENGTH_SHORT).show()
     }
 
     fun checkPermissions():Boolean {
