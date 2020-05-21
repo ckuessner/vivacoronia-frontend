@@ -1,10 +1,8 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking
 
-import android.Manifest
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -12,11 +10,13 @@ import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.*
+import kotlin.collections.ArrayList
 
 class LocationTrackingService : Service() {
+    // use this link as a hint
+    // https://bitbucket.org/tiitha/backgroundserviceexample/src/master/app/src/main/java/com/geoape/backgroundlocationexample/BackgroundService.java
+    private val TAG = "LocationTrackingService"
 
     lateinit var context: Context
     lateinit var locManager: LocationManager
@@ -32,56 +32,49 @@ class LocationTrackingService : Service() {
         locManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locListener = MyLocationListener()
 
-        locationBuffer = ArrayList<Location>()
+        locationBuffer = ArrayList()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         var builder = LocationNotificationHelper.getLocationNotificationBuilder(this)
         val notification = builder.build()
+        // has to be called at least 5 sec after services starts
         startForeground(LOCATION_NOTIFICATION_ID, notification)
 
         // inform user that tracking is now done
         Toast.makeText(context, "Location Tracking active ...", Toast.LENGTH_SHORT)
 
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        try {
+            // location get requested with an delay of min 30sec and if the locatoins differ 15m
+            locManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                LOCATION_TRACKING_MIN_UPDATE_TIME,
+                LOCATION_TRACKING_MIN_UPDATE_DISTANCE,
+                locListener
+            )
         }
-        // location get requested with an delay of min 30sec and if the locatoins differ 15m
-        locManager.requestLocationUpdates(
-            LocationManager.GPS_PROVIDER,
-            LOCATION_TRACKING_MIN_UPDATE_TIME,
-            LOCATION_TRACKING_MIN_UPDATE_DISTANCE,
-            locListener)
+        catch (se: SecurityException){
+            Log.e(TAG, "SecurityException")
+        }
 
-
-
-        // start the service againg if it was killen
-        return Service.START_STICKY
-    }
-
-    override fun stopService(name: Intent?): Boolean {
-        // TODO save the received locations by making api request
-        // start service which sends locations to the server over the rest api
-        return super.stopService(name)
+        // start the service againg if it was killed
+        return START_STICKY
     }
 
     override fun onBind(intent: Intent): IBinder {
         TODO("Return the communication channel to the service.")
         return iBinder!!
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // TODO write the location buffer into the server
+    }
+
+    private fun uploadLocations() {
+        // TODO upload locations
+    }
+
 
     inner class MyLocationListener: LocationListener {
 

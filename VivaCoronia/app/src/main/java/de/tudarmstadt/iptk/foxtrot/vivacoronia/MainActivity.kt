@@ -29,32 +29,41 @@ class MainActivity : AppCompatActivity() {
         // TODO also invoke in onResume
         LocationNotificationHelper.createLocationNotificationChannel(this)
 
+        // start the tracking service with the start of the app
         checkPermissionsAndStartTracking()
     }
 
 
 
-    fun checkPermissionsAndStartTracking() {
+    private fun checkPermissionsAndStartTracking() {
         // TODO add in onResume method the start of the service, if the service isnt running
+        // all permission granted so start the service
         if (PermissionHandler.checkLocationPermissions(this)) {
             requestLocationService(createBackgroundLocationRequest())
         }
+        // permissions not granted so ask the user for it
         else {
             Log.v(TAG, "requeste Standortzugriff")
             PermissionHandler.requestLocationPermissions(this)
         }
     }
 
-    fun createBackgroundLocationRequest() : LocationRequest? {
+    /**
+     * creates a request to determine which services (gps, wifi, cellular) have to be enabled
+     */
+    private fun createBackgroundLocationRequest() : LocationRequest? {
         // code (with a few changes) from https://developer.android.com/training/location/change-location-settings
         val locationRequest = LocationRequest.create()?.apply {
-            interval = 300000   // request all 5 minutes
+            interval = LOCATION_TRACKING_REQUEST_INTERVAL   // request all 5 minutes
             priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY // can be changed to low power settings depending on what we need
         }
         return locationRequest
     }
 
-    fun requestLocationService(locationRequest: LocationRequest?){
+    /**
+     * requests the services specified by the locationrequest
+     */
+    private fun requestLocationService(locationRequest: LocationRequest?){
         // code (with a few changes) from https://developer.android.com/training/location/change-location-settings
         val builder = LocationSettingsRequest.Builder()
             .addLocationRequest(locationRequest!!)
@@ -64,17 +73,18 @@ class MainActivity : AppCompatActivity() {
 
         // gps, wifi etc is enabled so location tracking can be started
         task.addOnSuccessListener { locationSettingsResponse ->
-            var intent: Intent = Intent(this, LocationTrackingService::class.java)
+            var intent = Intent(this, LocationTrackingService::class.java)
             Log.v(TAG, "startet foreground service")
             startForegroundService(intent)
         }
 
-        // gps, wifi etc is not enabled, so location tracking cannot be startet
+        // gps, wifi etc is not enabled, so location tracking cannot be started
         // instead gps, wifi has to be enabled
         task.addOnFailureListener { exception ->
             if (exception is ResolvableApiException){
                 try {
                     Log.v(TAG, "requeste GPS")
+                    // opens a dialog which offers the user to enable gps
                     exception.startResolutionForResult(this@MainActivity,
                         LOCATION_ACCESS_SETTINGS_REQUEST_CODE)
                 } catch (sendEx: IntentSender.SendIntentException) {
@@ -86,23 +96,12 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun requestSingleLocation() {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        fusedLocationClient.lastLocation.addOnSuccessListener {
-                location: Location? ->  run{
-            val longtitude = location!!.longitude
-            val latitude = location!!.latitude
-            val time = location!!.time
-            Log.v(TAG, time.toString() + " - " + longtitude.toString() + " - " + latitude.toString())
-        }
-        }
-
-    }
-
     /**
      * handles permission requests
      */
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        Log.i(TAG, permissions.toString())
+        Log.i(TAG, grantResults.toString())
         when (requestCode) {
             // handle location permission requests
             LOCATION_ACCESS_PERMISSION_REQUEST_CODE -> {
