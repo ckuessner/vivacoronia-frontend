@@ -11,6 +11,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONArray
+import org.json.JSONObject
 
 class LocationServerCommunicator {
 
@@ -34,7 +35,18 @@ class LocationServerCommunicator {
         val url = "http://localhost:3000/locations/$userID/"
 
         // get information from LocationService
-        val locationJSONArray = null
+
+        //
+        val locationJSONArray = JSONArray()
+        val locationJSONObject = JSONObject()
+        val coordinatesJSONArray = JSONArray()
+
+        locationJSONObject.put("type", "Point")
+
+        coordinatesJSONArray.put(-80.1347334)
+        coordinatesJSONArray.put(25.7663562)
+
+        locationJSONObject.put("coordinates", coordinatesJSONArray)
 
         val jsonArrayRequest = JsonArrayRequest(Request.Method.POST, url, locationJSONArray,
             Response.Listener {response ->

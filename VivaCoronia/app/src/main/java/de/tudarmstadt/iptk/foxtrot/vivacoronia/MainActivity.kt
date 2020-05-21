@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import de.tudarmstadt.iptk.foxtrot.locationPoster.LocationServerCommunicator
-import de.tudarmstadt.iptk.foxtrot.locationPoster.LocationService
+//import de.tudarmstadt.iptk.foxtrot.locationPoster.LocationService
 
 
 class MainActivity : AppCompatActivity() {
@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val currentContext : Context = this
-        val service = LocationService(currentContext)
+        //val service = LocationService(currentContext)
 
         // TODO: Get userID
         var userID:Int = 12345

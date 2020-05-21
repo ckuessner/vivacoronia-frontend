@@ -37,4 +37,4 @@ class LocationService {
             }
             return returnVal
         }
-    }
+
