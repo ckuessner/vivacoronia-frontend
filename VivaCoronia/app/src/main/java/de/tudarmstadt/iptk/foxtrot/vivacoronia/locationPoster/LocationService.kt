@@ -14,6 +14,7 @@ import com.google.android.gms.location.*
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 
 class LocationService {
+
         var context: Context
         constructor(conContext: Context) {
             context = conContext
