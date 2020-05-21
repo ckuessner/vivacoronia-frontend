@@ -1,6 +1,6 @@
 package de.tudarmstadt.iptk.foxtrot.locationPoster
 
-/*import android.app.Service
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.location.Location
@@ -36,4 +36,4 @@ class LocationService {
             }
             return returnVal
         }
-    }*/
+    }
