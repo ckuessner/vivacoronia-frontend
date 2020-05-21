@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
+import androidx.core.app.NotificationManagerCompat
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.*
 import kotlin.collections.ArrayList
 
@@ -22,12 +23,14 @@ class LocationTrackingService : Service() {
     lateinit var locManager: LocationManager
     lateinit var locListener: LocationListener
 
-    var iBinder: IBinder? = null
-
     lateinit var locationBuffer: ArrayList<Location>     // TODO type should be changed according to the Rest api
 
     override fun onCreate() {
         super.onCreate()
+        val notification = LocationNotificationHelper.getLocationNotification(this)
+        // has to be called at least 5 sec after services starts
+        startForeground(LOCATION_NOTIFICATION_ID, notification)
+
         context = this
         locManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locListener = MyLocationListener()
@@ -40,12 +43,7 @@ class LocationTrackingService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val builder = LocationNotificationHelper.getLocationNotificationBuilder(this)
-        val notification = builder.build()
-        // has to be called at least 5 sec after services starts
-        startForeground(LOCATION_NOTIFICATION_ID, notification)
-
-        // inform user that tracking is now done
+        // inform user that tracking is now active
         Toast.makeText(context, "Location Tracking active ...", Toast.LENGTH_SHORT).show()
 
         try {
@@ -67,11 +65,11 @@ class LocationTrackingService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // TODO write the location buffer into the server
+        uploadLocations()
     }
 
     private fun uploadLocations() {
-        // TODO upload locations
+        // TODO upload locations and clear buffer
     }
 
 

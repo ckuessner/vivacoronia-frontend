@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // notification channel should be created as soon as possible when the application starts
-        // TODO also invoke in onResume
         LocationNotificationHelper.createLocationNotificationChannel(this)
 
         // start the tracking service with the start of the app

@@ -1,11 +1,19 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.graphics.Color
+import androidx.annotation.ColorInt
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.LOCATION_NOTIFICATION_CHANNEL_ID
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.LOCATION_NOTIFICATION_ID
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.MainActivity
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 
 
 class LocationNotificationHelper{
@@ -18,7 +26,7 @@ class LocationNotificationHelper{
             val name = "LocationTrackingChannel"
             val descriptionText = "Shows the user that tracking is active"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(LOCATION_NOTIFICATION_CHANNEL_ID.toString(), name, importance).apply {
+            val channel = NotificationChannel(LOCATION_NOTIFICATION_CHANNEL_ID, name, importance).apply {
                 description = descriptionText
             }
             // Register the channel with the system
@@ -27,9 +35,13 @@ class LocationNotificationHelper{
             notificationManager.createNotificationChannel(channel)
         }
 
-        fun getLocationNotificationBuilder(context: Context) : NotificationCompat.Builder {
-            return NotificationCompat.Builder(context, LOCATION_NOTIFICATION_CHANNEL_ID.toString()).setContentTitle("Corona Tracking aktiv").setPriority(
-                NotificationCompat.PRIORITY_DEFAULT)
+        fun getLocationNotification(context: Context) : Notification {
+            return NotificationCompat.Builder(context, LOCATION_NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_corona)     // without icon a default notification would be displayed
+                .setContentTitle("Corona Tracking aktiv")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT).setColor(Color.RED)
+                .setContentIntent(Intent(context, MainActivity::class.java).let {notificationIntent -> PendingIntent.getActivity(context, 0, notificationIntent, 0)})
+                .build()
         }
     }
 }
