@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         }
         // permissions not granted so ask the user for it
         else {
-            Log.v(TAG, "requeste Standortzugriff")
+            Log.v(TAG, "requeste location permission")
             PermissionHandler.requestLocationPermissions(this)
         }
     }
@@ -73,8 +73,8 @@ class MainActivity : AppCompatActivity() {
 
         // gps, wifi etc is enabled so location tracking can be started
         task.addOnSuccessListener { locationSettingsResponse ->
-            var intent = Intent(this, LocationTrackingService::class.java)
-            Log.v(TAG, "startet foreground service")
+            val intent = Intent(this, LocationTrackingService::class.java)
+            Log.v(TAG, "start service")
             startForegroundService(intent)
         }
 
@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         task.addOnFailureListener { exception ->
             if (exception is ResolvableApiException){
                 try {
-                    Log.v(TAG, "requeste GPS")
+                    Log.v(TAG, "request gps")
                     // opens a dialog which offers the user to enable gps
                     exception.startResolutionForResult(this@MainActivity,
                         LOCATION_ACCESS_SETTINGS_REQUEST_CODE)
@@ -100,8 +100,6 @@ class MainActivity : AppCompatActivity() {
      * handles permission requests
      */
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        Log.i(TAG, permissions.toString())
-        Log.i(TAG, grantResults.toString())
         when (requestCode) {
             // handle location permission requests
             LOCATION_ACCESS_PERMISSION_REQUEST_CODE -> {
@@ -109,11 +107,11 @@ class MainActivity : AppCompatActivity() {
                 if (grantResults.isNotEmpty() &&
                     (grantResults[0] == PackageManager.PERMISSION_DENIED ||
                             grantResults[1] == PackageManager.PERMISSION_DENIED)) {
-                    Log.v(TAG, "requeste Standortzugriff erneut")
+                    Log.v(TAG, "request gps")
                     PermissionHandler.requestLocationPermissions(this)
                 }
                 else {
-                    Log.v(TAG, "request Location Background Service")
+                    Log.v(TAG, "request location service")
                     requestLocationService(createBackgroundLocationRequest())
                 }
             }

@@ -35,14 +35,18 @@ class LocationTrackingService : Service() {
         locationBuffer = ArrayList()
     }
 
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        var builder = LocationNotificationHelper.getLocationNotificationBuilder(this)
+        val builder = LocationNotificationHelper.getLocationNotificationBuilder(this)
         val notification = builder.build()
         // has to be called at least 5 sec after services starts
         startForeground(LOCATION_NOTIFICATION_ID, notification)
 
         // inform user that tracking is now done
-        Toast.makeText(context, "Location Tracking active ...", Toast.LENGTH_SHORT)
+        Toast.makeText(context, "Location Tracking active ...", Toast.LENGTH_SHORT).show()
 
         try {
             // location get requested with an delay of min 30sec and if the locatoins differ 15m
@@ -59,11 +63,6 @@ class LocationTrackingService : Service() {
 
         // start the service againg if it was killed
         return START_STICKY
-    }
-
-    override fun onBind(intent: Intent): IBinder {
-        TODO("Return the communication channel to the service.")
-        return iBinder!!
     }
 
     override fun onDestroy() {
@@ -88,7 +87,7 @@ class LocationTrackingService : Service() {
         }
 
         override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
-            Log.e(TAG, "onStatusChanged: " + p0 + ", " + p1)
+            Log.i(TAG, "onStatusChanged: " + p0 + ", " + p1)
         }
 
         override fun onProviderEnabled(p0: String?) {
@@ -96,7 +95,8 @@ class LocationTrackingService : Service() {
         }
 
         override fun onProviderDisabled(p0: String?) {
-            Log.e(TAG, "onProviderDisabled: " + p0)
+            Log.i(TAG, "onProviderDisabled: " + p0)
+            // TODO open popup to inform user
         }
 
     }
