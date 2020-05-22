@@ -11,6 +11,7 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
+import com.google.android.gms.tasks.OnSuccessListener
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 
 class LocationService {
@@ -23,28 +24,35 @@ class LocationService {
         private var TAG = "Location poster"
         private lateinit var fusedLocationClient : FusedLocationProviderClient
 
-        fun getSingleLocation() : Constants.dataPoint? {
 
+        inner class MySuccesListener : OnSuccessListener<Location>{
+
+            lateinit var data : Constants.dataPoint
+            override fun onSuccess(p0: Location?) {
+                Log.v(TAG, "hallooooooooooooooooo")
+                val longitude = p0!!.longitude
+                val latitude = p0!!.latitude
+                val time = p0!!.time
+                data = Constants.dataPoint(longitude, latitude, time)
+            }
+
+            public fun getLocation() : Constants.dataPoint?{
+                return data
+            }
+
+        }
+
+
+        fun getSingleLocation() : Constants.dataPoint? {
+            var list = MySuccesListener()
             // while permission for location access is not granted, get it
             if(!checkLocationPermissions(context)){
                 requestLocationPermissions(context as Activity)
             }
-
-            var returnVal: Constants.dataPoint? = null
+            var returnVal : Constants.dataPoint?
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                run {
-                    val longitude = location!!.longitude
-                    val latitude = location!!.latitude
-                    val time = location!!.time
-                    returnVal = Constants.dataPoint(longitude, latitude, time)
-                    Log.v(
-                        TAG,
-                        time.toString() + " - " + longitude.toString() + " - " + latitude.toString()
-                    )
-                }
-            }
-
+            fusedLocationClient.lastLocation.addOnSuccessListener(list)
+            returnVal = list.getLocation()
             fusedLocationClient.lastLocation.addOnFailureListener { exp: Exception? ->
                 Log.v(TAG,"Permission for location wasn't granted")
             }

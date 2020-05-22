@@ -21,9 +21,13 @@ class MainActivity : AppCompatActivity() {
 
         val sendLocBtn = findViewById<Button>(R.id.sendLocationBtn)
         sendLocBtn.setOnClickListener {
-
+            
             Toast.makeText(this, "Sending your position...", Toast.LENGTH_LONG).show()
             service.getSingleLocation()
+
+            service.getSingleLocation()
+            //val com = LocationServerCommunicator(currentContext, userID)
+            //com.sendCurrentPositionToServer()
         }
     }
 }
