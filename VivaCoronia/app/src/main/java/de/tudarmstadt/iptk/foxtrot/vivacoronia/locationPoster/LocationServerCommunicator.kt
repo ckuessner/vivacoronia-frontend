@@ -39,16 +39,22 @@ class LocationServerCommunicator {
         // get information from LocationService
         val locationJSONArray = JSONArray()
         val locationJSONObject = JSONObject()
-        val coordinatesJSONArray = JSONArray()
 
-        locationJSONObject.put("type", "Point")
+        locationJSONObject.put("time", "2020-05-21T21:39:08+02:00")
 
-        coordinatesJSONArray.put(-80.1347334)
-        coordinatesJSONArray.put(25.7663562)
-
-        locationJSONObject.put("coordinates", coordinatesJSONArray)
+        locationJSONObject.put("location",
+            JSONObject()
+                .put("type", "Point")
+                .put("coordinates",
+                    JSONArray()
+                        .put(-80.1347334)
+                        .put(25.7663562)
+                )
+        )
 
         locationJSONArray.put(locationJSONObject)
+
+
 
         Log.i("bla", locationJSONArray.toString())
 
