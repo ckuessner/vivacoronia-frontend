@@ -21,9 +21,9 @@ class MainActivity : AppCompatActivity() {
 
         val sendLocBtn = findViewById<Button>(R.id.sendLocationBtn)
         sendLocBtn.setOnClickListener {
-            val com = LocationServerCommunicator(this, userID)
-
-            com.sendCurrentPositionToServer()
+            service.getSingleLocation()
+            //val com = LocationServerCommunicator(currentContext, userID)
+            //com.sendCurrentPositionToServer()
         }
     }
 }
