@@ -8,10 +8,11 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.android.volley.Request
 import com.android.volley.Response
-import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.UnsupportedEncodingException
 
 class LocationServerCommunicator {
 
@@ -58,21 +59,23 @@ class LocationServerCommunicator {
 
         Log.i("bla", locationJSONArray.toString())
 
-        val jsonArrayRequest = JsonArrayRequest(Request.Method.POST, url, locationJSONArray,
-            Response.Listener {response ->
-                try {
-                    Log.i("bla", "Response: $response")
-                }catch (e:Exception){
-                    Log.i("bla", "Exception: $e")
-                }
-            },
-            Response.ErrorListener {
-                Log.i("bla", "Volley error: $it")
+        val mRequestBody:String = locationJSONArray.toString()
+
+        val jsonStringRequest = object : StringRequest(Request.Method.POST, url,
+            Response.Listener { response ->  Log.i("bla", response)},
+            Response.ErrorListener { error ->  Log.i("bla", error.toString())}
+        ) {
+            override fun getBodyContentType(): String {
+                return "application/json; charset=utf-8"
             }
-        )
+
+            override fun getBody(): ByteArray {
+                return mRequestBody.toByteArray(Charsets.UTF_8)
+            }
+        };
 
 
-        queue.add(jsonArrayRequest)
+        queue.add(jsonStringRequest)
 
         var message = "Information was send to server successfully!"
 
