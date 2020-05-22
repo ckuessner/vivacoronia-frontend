@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import android.widget.Toast
 import de.tudarmstadt.iptk.foxtrot.locationPoster.LocationServerCommunicator
 import de.tudarmstadt.iptk.foxtrot.locationPoster.LocationService
 
