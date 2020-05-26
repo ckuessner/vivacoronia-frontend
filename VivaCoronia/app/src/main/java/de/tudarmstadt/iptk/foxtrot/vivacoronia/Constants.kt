@@ -2,7 +2,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
 val LOCATION_TRACKING_REQUEST_INTERVAL = 30000.toLong()     // every 30sec
 
-val LOCATION_TRACKING_MIN_UPDATE_TIME = 30000.toLong()      // 30secs
+val LOCATION_TRACKING_MIN_UPDATE_TIME = 0.toLong()      // 0secs (needed for testing with kml files)
 val LOCATION_TRACKING_MIN_UPDATE_DISTANCE = 15.toFloat()    // 15m
 
 val LOCATION_NOTIFICATION_ID = 42   // must not be 0

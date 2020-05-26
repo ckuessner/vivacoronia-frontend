@@ -23,7 +23,8 @@ class LocationTrackingService : Service() {
     lateinit var locManager: LocationManager
     lateinit var locListener: LocationListener
 
-    lateinit var locationBuffer: ArrayList<Location>     // TODO type should be changed according to the Rest api
+    // TODO type should be changed according to the Rest api
+    lateinit var locationBuffer: ArrayList<Location>
 
     override fun onCreate() {
         super.onCreate()

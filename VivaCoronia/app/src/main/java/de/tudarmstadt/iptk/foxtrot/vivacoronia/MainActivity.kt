@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.location.Location
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -74,7 +75,13 @@ class MainActivity : AppCompatActivity() {
         task.addOnSuccessListener { locationSettingsResponse ->
             val intent = Intent(this, LocationTrackingService::class.java)
             Log.v(TAG, "start service")
-            startForegroundService(intent)
+            // version check
+            if (Build.VERSION.SDK_INT >= 26){
+                startForegroundService(intent)
+            }
+            else {
+                startService(intent)
+            }
         }
 
         // gps, wifi etc is not enabled, so location tracking cannot be started
