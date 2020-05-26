@@ -48,12 +48,14 @@ class LocationService {
 
         }
 
-
+        //TODO: Maybe check whether GPS is enabled at all???
         fun sendSingleLocation() : Constants.dataPoint? {
             var list = MySuccesListener(context)
-            // while permission for location access is not granted, get it
+
+            // if permission for location access is not granted, try to get permission from user
             if(!checkLocationPermissions(context)){
                 requestLocationPermissions(context as Activity)
+                //TODO: What to do if permission still isn't granted? just terminate maybe?
             }
             lateinit var returnVal : Constants.dataPoint
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
