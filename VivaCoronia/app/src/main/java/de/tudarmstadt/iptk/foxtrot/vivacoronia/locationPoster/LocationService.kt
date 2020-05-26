@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnSuccessListener
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
+import javax.security.auth.callback.Callback
 
 class LocationService {
 
@@ -25,14 +26,19 @@ class LocationService {
 
 
         inner class MySuccesListener : OnSuccessListener<Location>{
+            var cxt : Context
+
+            constructor(con : Context){
+                cxt = con
+            }
 
             lateinit var data : Constants.dataPoint
             override fun onSuccess(p0: Location?) {
-                Log.v(TAG, "hallooooooooooooooooo")
                 val longitude = p0!!.longitude
                 val latitude = p0!!.latitude
                 val time = p0!!.time
                 data = Constants.dataPoint(longitude, latitude, time)
+                LocationServerCommunicator.sendCurrentPositionToServer(cxt, 1234, data)
             }
 
             public fun getLocation() : Constants.dataPoint?{
@@ -42,20 +48,20 @@ class LocationService {
         }
 
 
-        fun getSingleLocation() : Constants.dataPoint? {
-            var list = MySuccesListener()
+        fun sendSingleLocation() : Constants.dataPoint? {
+            var list = MySuccesListener(context)
             // while permission for location access is not granted, get it
             if(!checkLocationPermissions(context)){
                 requestLocationPermissions(context as Activity)
             }
-            var returnVal : Constants.dataPoint?
+            lateinit var returnVal : Constants.dataPoint
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
             fusedLocationClient.lastLocation.addOnSuccessListener(list)
-            returnVal = list.getLocation()
             fusedLocationClient.lastLocation.addOnFailureListener { exp: Exception? ->
                 Log.v(TAG,"Permission for location wasn't granted")
             }
 
+            returnVal = Constants.dataPoint(5.0, 5.0, 5)
             return returnVal
         }
 
