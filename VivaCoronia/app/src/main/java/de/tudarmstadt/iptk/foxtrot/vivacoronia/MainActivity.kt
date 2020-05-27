@@ -4,8 +4,7 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import de.tudarmstadt.iptk.foxtrot.locationPoster.LocationServerCommunicator
-import de.tudarmstadt.iptk.foxtrot.locationPoster.LocationService
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationPoster.LocationService
 
 
 class MainActivity : AppCompatActivity() {
@@ -13,18 +12,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Init LocationService
         val currentContext : Context = this
         val service = LocationService(currentContext)
 
-        // TODO: Get userID
-        var userID:Int = 12345
-
+        // register listener for button to send current location
         val sendLocBtn = findViewById<Button>(R.id.sendLocationBtn)
         sendLocBtn.setOnClickListener {
-
+            // Call location service which will send the location to the communicator
             service.sendSingleLocation()
-            //val com = LocationServerCommunicator(currentContext, userID)
-            //com.sendCurrentPositionToServer()
         }
     }
 }

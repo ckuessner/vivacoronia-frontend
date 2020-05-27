@@ -1,4 +1,4 @@
-package de.tudarmstadt.iptk.foxtrot.locationPoster
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.locationPoster
 
 import android.Manifest
 import android.content.Context
@@ -18,7 +18,9 @@ class LocationServerCommunicator {
 
     companion object {
 
-        fun sendCurrentPositionToServer(context: Context, userID: Int, data: Constants.dataPoint) {
+        private var TAG = "LocationSending"
+
+        fun sendCurrentPositionToServer(context: Context, userID: Int, data: Constants.DataPoint) {
 
             if (!checkPermissions(context)) {
                 // Permission is not granted
@@ -30,17 +32,18 @@ class LocationServerCommunicator {
                 return
             }
 
-            Log.i("bla", "In location server method")
+            Log.i(TAG, "In location server method")
 
             val queue = Volley.newRequestQueue(context)
-            val url = "http://192.168.2.105:3000/locations/$userID/"
+            val baseUrl = Constants().SWAGGER_URL
+            val url = "$baseUrl/locations/$userID/"
 
             // get information from LocationService
             val locationJSONArray = JSONArray()
             val locationJSONObject = JSONObject()
 
 
-            locationJSONObject.put("time", data?.time.toString())
+            locationJSONObject.put("time", data.time.toString())
 
             locationJSONObject.put(
                 "location",
@@ -49,8 +52,8 @@ class LocationServerCommunicator {
                     .put(
                         "coordinates",
                         JSONArray()
-                            .put(data?.x)
-                            .put(data?.y)
+                            .put(data.x)
+                            .put(data.y)
                     )
             )
 
@@ -58,13 +61,19 @@ class LocationServerCommunicator {
 
 
 
-            Log.i("bla", locationJSONArray.toString())
+            Log.i(TAG, locationJSONArray.toString())
 
             val mRequestBody: String = locationJSONArray.toString()
 
             val jsonStringRequest = object : StringRequest(Request.Method.POST, url,
-                Response.Listener { response -> Log.i("bla", response) },
-                Response.ErrorListener { error -> Log.i("bla", error.toString()) }
+                Response.Listener { response ->
+                    Log.i(TAG, response)
+                    Toast.makeText(context, response, Toast.LENGTH_SHORT).show()
+                },
+                Response.ErrorListener { error ->
+                    Log.i(TAG, error.toString())
+                    Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
+                }
             ) {
                 override fun getBodyContentType(): String {
                     return "application/json; charset=utf-8"
@@ -77,10 +86,6 @@ class LocationServerCommunicator {
 
 
             queue.add(jsonStringRequest)
-
-            var message = "Information was send to server successfully!"
-
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
 
         private fun checkPermissions(context: Context): Boolean {
