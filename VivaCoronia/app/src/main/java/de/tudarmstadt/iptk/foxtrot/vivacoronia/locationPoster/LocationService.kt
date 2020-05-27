@@ -1,19 +1,17 @@
-package de.tudarmstadt.iptk.foxtrot.locationPoster
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.locationPoster
 
 import android.Manifest
 import android.app.Activity
-import android.app.Service
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.os.IBinder
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnSuccessListener
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
-import javax.security.auth.callback.Callback
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationPoster.LocationServerCommunicator
 
 class LocationService {
 
@@ -25,46 +23,56 @@ class LocationService {
         private lateinit var fusedLocationClient : FusedLocationProviderClient
 
 
-        inner class MySuccesListener : OnSuccessListener<Location>{
+        inner class MySuccessListener : OnSuccessListener<Location> {
             var cxt : Context
 
-            constructor(con : Context){
+            constructor(con : Context) {
                 cxt = con
             }
 
-            lateinit var data : Constants.dataPoint
+            lateinit var data : Constants.DataPoint
+
             override fun onSuccess(p0: Location?) {
-                val longitude = p0!!.longitude
-                val latitude = p0!!.latitude
-                val time = p0!!.time
-                data = Constants.dataPoint(longitude, latitude, time)
-                LocationServerCommunicator.sendCurrentPositionToServer(cxt, 1234, data)
+                if (p0 != null) {
+                    val longitude = p0.latitude
+                    val latitude = p0.longitude
+                    val time = p0.time
+                    data = Constants.DataPoint(longitude, latitude, time)
+                    // TODO: Get unique User ID
+                    LocationServerCommunicator.sendCurrentPositionToServer(cxt, Constants().USER_ID, data)
+                }
+                else {
+                    Log.v(TAG, "Location is Null")
+                    Toast.makeText(
+                        context,
+                        "Could not get location data, check if your GPS is on.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
 
-            public fun getLocation() : Constants.dataPoint?{
+            public fun getLocation() : Constants.DataPoint? {
                 return data
             }
 
         }
 
         //TODO: Maybe check whether GPS is enabled at all???
-        fun sendSingleLocation() : Constants.dataPoint? {
-            var list = MySuccesListener(context)
+        fun sendSingleLocation() {
+            var list = MySuccessListener(context)
 
             // if permission for location access is not granted, try to get permission from user
             if(!checkLocationPermissions(context)){
                 requestLocationPermissions(context as Activity)
                 //TODO: What to do if permission still isn't granted? just terminate maybe?
             }
-            lateinit var returnVal : Constants.dataPoint
+
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
             fusedLocationClient.lastLocation.addOnSuccessListener(list)
             fusedLocationClient.lastLocation.addOnFailureListener { exp: Exception? ->
                 Log.v(TAG,"Permission for location wasn't granted")
             }
 
-            returnVal = Constants.dataPoint(5.0, 5.0, 5)
-            return returnVal
         }
 
     private fun requestLocationPermissions(activity: Activity) {
@@ -80,11 +88,11 @@ class LocationService {
     private fun checkLocationPermissions(context: Context) : Boolean {
         // check wheter location permission was granted
         // since fine location is more accurate than coarse, coarse is included in fine
-        val fineLocationPermitted = ActivityCompat.
-        checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED
+
         // check permission
-        return fineLocationPermitted
+        return ActivityCompat.
+            checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED
     }
 
 
