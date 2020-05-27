@@ -1,10 +1,8 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
-import android.Manifest
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -14,12 +12,12 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationNotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationTrackingService
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
 
 class MainActivity : AppCompatActivity() {
     private var TAG = "MainActivity"
     // TODO check wheter google play services has the right version
     // TODO add licencing for location api
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,8 +27,12 @@ class MainActivity : AppCompatActivity() {
         // notification channel should be created as soon as possible when the application starts
         LocationNotificationHelper.createLocationNotificationChannel(this)
 
+        // setup upload alarm
+        setupUploadAlarm(applicationContext)
+
         // start the tracking service with the start of the app
         checkPermissionsAndStartTracking()
+
     }
 
 

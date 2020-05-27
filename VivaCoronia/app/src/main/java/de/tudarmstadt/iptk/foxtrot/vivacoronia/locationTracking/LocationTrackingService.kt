@@ -1,5 +1,6 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking
 
+import android.app.Notification
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -10,9 +11,10 @@ import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
-import androidx.core.app.NotificationManagerCompat
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.*
-import kotlin.collections.ArrayList
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage.AppDatabase
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage.Entities.DBLocation
+import kotlinx.coroutines.*
 
 class LocationTrackingService : Service() {
     // use this link as a hint
@@ -22,21 +24,24 @@ class LocationTrackingService : Service() {
     lateinit var context: Context
     lateinit var locManager: LocationManager
     lateinit var locListener: LocationListener
+    lateinit var notification: Notification
 
     // TODO type should be changed according to the Rest api
-    lateinit var locationBuffer: ArrayList<Location>
+    lateinit var db: AppDatabase
 
     override fun onCreate() {
         super.onCreate()
-        val notification = LocationNotificationHelper.getLocationNotification(this)
+        notification = LocationNotificationHelper.getLocationNotification(this)
         // has to be called at least 5 sec after services starts
         startForeground(LOCATION_NOTIFICATION_ID, notification)
 
+        //
         context = this
         locManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locListener = MyLocationListener()
 
-        locationBuffer = ArrayList()
+        //
+        db = AppDatabase.getDatabase(context)
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -65,14 +70,15 @@ class LocationTrackingService : Service() {
     }
 
     override fun onDestroy() {
+        Log.e(TAG, "Locatoin Tracking Service destroyed :(")
         super.onDestroy()
-        uploadLocations()
     }
 
-    private fun uploadLocations() {
-        // TODO upload locations and clear buffer
+    suspend fun addLocationToDatabase(location: Location){
+        coroutineScope {
+            db.coronaDao().addLocation(DBLocation(location.time, location.longitude, location.latitude))
+        }
     }
-
 
     inner class MyLocationListener: LocationListener {
 
@@ -80,7 +86,10 @@ class LocationTrackingService : Service() {
 
         override fun onLocationChanged(p0: Location?) {
             if (p0 != null) {
-                locationBuffer.add(p0)
+                // database write has to be asyncronous because this service runs in main thread
+                GlobalScope.launch {
+                    addLocationToDatabase(p0)
+                    Log.i(TAG, "write in database")}
                 Log.i(TAG, "new Location added at <" + p0.time.toString() + ">: " + p0.longitude.toString() + ", " + p0.latitude.toString())
             }
         }
@@ -95,7 +104,7 @@ class LocationTrackingService : Service() {
 
         override fun onProviderDisabled(p0: String?) {
             Log.i(TAG, "onProviderDisabled: " + p0)
-            // TODO open popup to inform user
+            // TODO evt user informieren
         }
 
     }
