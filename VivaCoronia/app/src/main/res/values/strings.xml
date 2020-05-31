@@ -19,4 +19,14 @@
 
     <!-- manifest -->
     <string name="location_service_description_manifest">Allows to track your location and to warn you of possible infections.</string>
+
+    <!-- update infection status -->
+    <string name="update_infection_button">Update Infection Status</string>
+    <string name="update_infection_label">Update Infection Status</string>
+    <string name="infection_status">Infection Status:</string>
+    <string name="unknown">Unknown</string>
+    <string name="infection_date_approx">Approximate date and time of infection or recovery: </string>
+    <string name="test_date">Date and time of approving test: </string>
+    <string name="additional_information">Additional information: </string>
+    <string name="update_infection_status_button">Update Status</string>
 </resources>

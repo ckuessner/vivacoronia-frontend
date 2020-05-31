@@ -16,6 +16,15 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationNotifica
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationTrackingService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
 
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+
+private const val ZXING_CAMERA_PERMISSION = 1
 
 class MainActivity : AppCompatActivity() {
     private var TAG = "MainActivity"
@@ -35,6 +44,16 @@ class MainActivity : AppCompatActivity() {
 
         // tracking in onResume startet
         checkPermissionsAndStartTracking()
+
+        val updateInfectionFab : View = findViewById(R.id.update_infection_fab)
+        updateInfectionFab.setOnClickListener { view ->
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+                ActivityCompat.requestPermissions(this, Array(1) {Manifest.permission.CAMERA}, ZXING_CAMERA_PERMISSION)
+            else {
+                val intent = Intent(this, UpdateInfectionActivity::class.java).apply {}
+                startActivity(intent)
+            }
+        }
     }
 
 
@@ -103,8 +122,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
-
     }
 
     /**
@@ -132,6 +149,13 @@ class MainActivity : AppCompatActivity() {
                     requestLocationService(createBackgroundLocationRequest())
                 }
             }
+            ZXING_CAMERA_PERMISSION ->
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    val intent = Intent(this, UpdateInfectionActivity::class.java).apply {}
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(this,"Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show()
+                }
         }
     }
 }
