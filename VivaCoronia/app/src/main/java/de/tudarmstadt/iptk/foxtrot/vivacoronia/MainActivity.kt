@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationPoster.LocationServerCommunicator
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationPoster.LocationService
 
 
@@ -16,6 +17,7 @@ class MainActivity : AppCompatActivity() {
         // Init LocationService
         val currentContext : Context = this
         val service = LocationService(currentContext)
+
 
         // register listener for button to send current location
         val sendLocBtn = findViewById<Button>(R.id.sendLocationBtn)

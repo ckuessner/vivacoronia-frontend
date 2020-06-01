@@ -20,6 +20,72 @@ class LocationServerCommunicator {
 
         private var TAG = "LocationSending"
 
+
+        fun sendPositionsToServer(context: Context, userID: Int, data: Array<Constants.DataPoint>){
+            if (!checkPermissions(context)) {
+                // Permission is not granted
+                Toast.makeText(
+                    context,
+                    "No permission on accessing the internet",
+                    Toast.LENGTH_LONG
+                ).show()
+                return
+            }
+
+            Log.i(TAG, "in send several positions method")
+
+            val queue = Volley.newRequestQueue(context)
+            val baseUrl = Constants().SWAGGER_URL
+            val url = "$baseUrl/locations/$userID"
+
+            // data that will get posted on server
+            val locationJSONArray = JSONArray()
+
+            for(dataEntry in data){
+                val locationJSONObject = JSONObject()
+                locationJSONObject.put("time", dataEntry.time.toString())
+                locationJSONObject.put(
+                    "location",
+                    JSONObject()
+                        .put("type", "Point")
+                        .put(
+                            "coordinates",
+                            JSONArray()
+                                .put(dataEntry.x)
+                                .put(dataEntry.y)
+                        )
+                )
+                locationJSONArray.put(locationJSONObject)
+            }
+
+            Log.i(TAG, locationJSONArray.toString())
+
+            val mRequestBody: String = locationJSONArray.toString()
+
+            val jsonStringRequest = object : StringRequest(Request.Method.POST, url,
+                Response.Listener { response ->
+                    Log.i(TAG, response)
+                    Toast.makeText(context, response, Toast.LENGTH_SHORT).show()
+                },
+                Response.ErrorListener { error ->
+                    Log.i(TAG, error.toString())
+                    Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
+                }
+            ) {
+                override fun getBodyContentType(): String {
+                    return "application/json; charset=utf-8"
+                }
+
+                override fun getBody(): ByteArray {
+                    return mRequestBody.toByteArray(Charsets.UTF_8)
+                }
+            };
+
+
+            queue.add(jsonStringRequest)
+
+        }
+
         fun sendCurrentPositionToServer(context: Context, userID: Int, data: Constants.DataPoint) {
 
             if (!checkPermissions(context)) {
