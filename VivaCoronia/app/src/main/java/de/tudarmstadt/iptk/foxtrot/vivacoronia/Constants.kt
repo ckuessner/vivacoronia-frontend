@@ -12,5 +12,5 @@ class Constants {
     val LOCATION_ACCESS_SETTINGS_REQUEST_CODE = 57      // requests access to gps, wifi, cellular network to access location data from the user
 
     val USER_ID = 1234
-    val SWAGGER_URL = "http://localhost:3000"
+    val SWAGGER_URL = "http://192.168.2.105:3000"
 }
