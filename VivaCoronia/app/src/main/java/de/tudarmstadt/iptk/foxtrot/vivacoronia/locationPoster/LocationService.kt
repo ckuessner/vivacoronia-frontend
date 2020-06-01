@@ -14,7 +14,10 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationPoster.LocationServerCommunicator
 
 class LocationService {
+<<<<<<< HEAD
     
+=======
+>>>>>>> 5228ebd63b8f356a18613bc92d703356fea57478
 
         var context: Context
         constructor(conContext: Context) {
@@ -75,7 +78,7 @@ class LocationService {
             }
 
         }
-    
+
     private fun requestLocationPermissions(activity: Activity) {
         ActivityCompat.requestPermissions(activity,
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -98,5 +101,9 @@ class LocationService {
 
 
 
+<<<<<<< HEAD
 }
 
+=======
+}
+>>>>>>> 5228ebd63b8f356a18613bc92d703356fea57478
