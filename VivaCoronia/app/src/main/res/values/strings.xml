@@ -27,6 +27,7 @@
     <string name="unknown">Unknown</string>
     <string name="infection_date_approx">Approximate date and time of infection or recovery: </string>
     <string name="test_date">Date and time of approving test: </string>
-    <string name="additional_information">Additional information: </string>
-    <string name="update_infection_status_button">Update Status</string>
+    <string name="upload_infection_status_button">Update Status</string>
+    <string name="update_successful">Update successful</string>
+    <string name="update_failed">Update failed</string>
 </resources>

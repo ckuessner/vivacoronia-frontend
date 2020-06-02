@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -11,7 +12,7 @@
         <TableLayout
             android:id="@+id/update_infection_table"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="10dip"
             android:stretchColumns="1">
 
@@ -86,16 +87,50 @@
         </TableLayout>
     </ScrollView>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="bottom">
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ProgressBar
+                android:id="@+id/upload_infection_status_progress_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:contentDescription="@string/update_successful"
+                android:id="@+id/update_infection_status_success"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/upload_infection_status_progress_bar"
+                android:layout_alignBottom="@id/upload_infection_status_progress_bar"
+                android:visibility="invisible"
+                app:srcCompat="@drawable/ic_check_circle_green_24dp" />
+
+            <ImageView
+                android:contentDescription="@string/update_failed"
+                android:id="@+id/update_infection_status_failed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/upload_infection_status_progress_bar"
+                android:layout_alignBottom="@id/upload_infection_status_progress_bar"
+                android:visibility="invisible"
+                app:srcCompat="@drawable/ic_failed_red_24dp" />
+        </RelativeLayout>
 
         <Button
+            android:id="@+id/upload_infection_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/update_infection_status_button" />
-    </RelativeLayout>
+            android:text="@string/upload_infection_status_button" />
+
+    </LinearLayout>
 </LinearLayout><!--<GridLayout xmlns:android="http://scahemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

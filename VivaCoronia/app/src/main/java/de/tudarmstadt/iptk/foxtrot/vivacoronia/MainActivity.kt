@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
                 ActivityCompat.requestPermissions(this, Array(1) {Manifest.permission.CAMERA}, ZXING_CAMERA_PERMISSION)
             else {
-                val intent = Intent(this, UpdateInfectionActivity::class.java).apply {}
+                val intent = Intent(this, ScanQrCodeActivity::class.java).apply {}
                 startActivity(intent)
             }
         }
@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity() {
             }
             ZXING_CAMERA_PERMISSION ->
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    val intent = Intent(this, UpdateInfectionActivity::class.java).apply {}
+                    val intent = Intent(this, ScanQrCodeActivity::class.java).apply {}
                     startActivity(intent)
                 } else {
                     Toast.makeText(this,"Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show()

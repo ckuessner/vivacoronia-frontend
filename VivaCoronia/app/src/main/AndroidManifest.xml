@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.tudarmstadt.iptk.foxtrot.vivacoronia">
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -15,7 +16,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
 
         <service
             android:name=".locationTracking.LocationTrackingService"
@@ -39,6 +41,10 @@
 
 
         <activity android:name=".UpdateInfectionActivity" android:label="@string/update_infection_label"></activity>
+        <activity android:name=".ScanQrCodeActivity" />
+        <activity
+            android:name=".UpdateInfectionActivity"
+            android:label="@string/update_infection_label" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
