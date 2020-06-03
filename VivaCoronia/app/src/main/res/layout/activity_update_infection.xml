@@ -101,7 +101,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:visibility="invisible" />
+                android:visibility="visible" />
 
             <ImageView
                 android:contentDescription="@string/update_successful"
@@ -131,65 +131,4 @@
             android:text="@string/upload_infection_status_button" />
 
     </LinearLayout>
-</LinearLayout><!--<GridLayout xmlns:android="http://scahemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:columnCount="2">
-
-    <TextView
-        android:id="@+id/show_qrcode_content_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="" />
-    <TextView />
-
-    <TextView
-        android:id="@+id/infection_status_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/infection_status"/>
-
-    <TextView
-        android:id="@+id/infection_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/unknown"/>
-
-    <TextView
-        android:id="@+id/infection_date_approx_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/infection_date_approx"/>
-
-    <TextView
-        android:id="@+id/infection_date_approx"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/unknown"/>
-
-    <TextView
-        android:id="@+id/test_date_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/test_date"/>
-
-    <TextView
-        android:id="@+id/test_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/unknown"/>
-
-    <TextView
-        android:id="@+id/additional_information_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/additional_information"/>
-
-    <TextView
-        android:id="@+id/additional_information"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/unknown"/>
-
-
-</GridLayout>-->
+</LinearLayout>

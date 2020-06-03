@@ -3,15 +3,13 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.util.*
 import kotlin.collections.HashMap
 import kotlin.concurrent.thread
 
@@ -63,30 +61,15 @@ class UpdateInfectionActivity : AppCompatActivity() {
         val url = "$apiBaseUrl/infection/$userId"
         val requestBody = JSONObject(data).toString()
         val request = object : StringRequest(Method.POST, url,
-            Response.Listener { response ->
+            Response.Listener { _ ->
                 setUploadStatus(UPLOAD_SUCCESSFUL)
-                thread {
-                    Thread.sleep(3000)
-                    synchronized(currentUploadStatus) {
-                        if (currentUploadStatus != UPLOAD_IN_PROGRESS)
-                            setUploadStatus(UPLOAD_DONE)
-                    }
-                }
+                resetUploadStatus(3000)
                 // TODO Say thank you
-                println(response)
             },
-            Response.ErrorListener { error ->
+            Response.ErrorListener { _ ->
                 // TODO Say try again / server not reachable
                 setUploadStatus(UPLOAD_FAILED)
-                thread {
-                    Thread.sleep(3000)
-                    synchronized(currentUploadStatus) {
-                        if (currentUploadStatus != UPLOAD_IN_PROGRESS)
-                            setUploadStatus(UPLOAD_DONE)
-                    }
-                }
-
-                println(error.message)
+                resetUploadStatus(3000)
             }
         ) {
             override fun getBodyContentType(): String {
@@ -101,41 +84,51 @@ class UpdateInfectionActivity : AppCompatActivity() {
         queue.add(request)
     }
 
-    private fun setUploadStatus(status: Int) {
-        currentUploadStatus = status
+    private fun resetUploadStatus(delayInMillis: Long){
+        thread {
+            Thread.sleep(delayInMillis)
+            synchronized(currentUploadStatus) {
+                if (currentUploadStatus != UPLOAD_IN_PROGRESS)
+                    setUploadStatus(UPLOAD_DONE)
+            }
+        }
+    }
 
+    private fun setUploadStatus(newStatus: Int) {
         val progressBar: View = findViewById(R.id.upload_infection_status_progress_bar)
         val successIcon: View = findViewById(R.id.update_infection_status_success)
         val failedIcon: View = findViewById(R.id.update_infection_status_failed)
         val uploadButton: Button = findViewById(R.id.upload_infection_status)
 
-        when (status) {
-            UPLOAD_FAILED -> {
-                progressBar.visibility = View.INVISIBLE
-                successIcon.visibility = View.INVISIBLE
-                failedIcon.visibility = View.VISIBLE
-                uploadButton.isEnabled = true
-            }
-            UPLOAD_SUCCESSFUL -> {
-                progressBar.visibility = View.INVISIBLE
-                successIcon.visibility = View.VISIBLE
-                failedIcon.visibility = View.INVISIBLE
-                uploadButton.isEnabled = true
-            }
+        var viewToHide: View = progressBar
+        when (currentUploadStatus) {
+            UPLOAD_FAILED -> viewToHide = failedIcon
+            UPLOAD_SUCCESSFUL -> viewToHide = successIcon
+            UPLOAD_IN_PROGRESS -> viewToHide = progressBar
+        }
+        val fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out)
+        viewToHide.startAnimation(fadeOut)
+        viewToHide.visibility = View.INVISIBLE
+        uploadButton.isEnabled = true
+
+        val viewToShow: View?
+        when (newStatus) {
+            UPLOAD_FAILED -> viewToShow = failedIcon
+            UPLOAD_SUCCESSFUL -> viewToShow = successIcon
             UPLOAD_IN_PROGRESS -> {
-                progressBar.visibility = View.VISIBLE
-                successIcon.visibility = View.INVISIBLE
-                failedIcon.visibility = View.INVISIBLE
+                viewToShow = progressBar
                 uploadButton.isEnabled = false
             }
-            else -> {
-                progressBar.visibility = View.INVISIBLE
-                successIcon.visibility = View.INVISIBLE
-                failedIcon.visibility = View.INVISIBLE
-                uploadButton.isEnabled = true
-            }
+            else -> viewToShow = null
         }
 
+        if (viewToShow != null) {
+            val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+            viewToShow.startAnimation(fadeIn)
+            viewToShow.visibility = View.VISIBLE
+        }
+
+        currentUploadStatus = newStatus
     }
 
     private fun addAdditionalFields(additionalAttributes: Map<String, String>) {
