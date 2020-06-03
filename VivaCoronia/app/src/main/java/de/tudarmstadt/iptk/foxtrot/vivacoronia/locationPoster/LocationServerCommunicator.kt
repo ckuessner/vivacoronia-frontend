@@ -35,7 +35,7 @@ class LocationServerCommunicator {
             Log.i(TAG, "in send several positions method")
 
             val queue = Volley.newRequestQueue(context)
-            val baseUrl = Constants().SWAGGER_URL
+            val baseUrl = Constants().SERVER_BASE_URL
             val url = "$baseUrl/locations/$userID"
 
             // data that will get posted on server
@@ -101,7 +101,7 @@ class LocationServerCommunicator {
             Log.i(TAG, "In location server method")
 
             val queue = Volley.newRequestQueue(context)
-            val baseUrl = Constants().SWAGGER_URL
+            val baseUrl = Constants().SERVER_BASE_URL
             val url = "$baseUrl/locations/$userID/"
 
             // get information from LocationService
