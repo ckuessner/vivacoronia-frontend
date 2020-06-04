@@ -18,6 +18,6 @@ interface CoronaDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addLocation(DBLocation: DBLocation)
 
-    @Query("DELETE FROM dblocation")
-    fun deleteLocations()
+    @Delete
+    fun deleteLocations(locations: List<DBLocation>)
 }

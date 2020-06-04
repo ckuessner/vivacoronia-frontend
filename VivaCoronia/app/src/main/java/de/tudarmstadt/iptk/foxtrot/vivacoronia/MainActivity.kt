@@ -1,8 +1,6 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
 import android.Manifest
-import android.app.ActivityManager
-import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
@@ -17,6 +15,7 @@ import com.google.android.gms.tasks.Task
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationNotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationTrackingService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
+
 
 class MainActivity : AppCompatActivity() {
     private var TAG = "MainActivity"
@@ -60,7 +59,7 @@ class MainActivity : AppCompatActivity() {
     private fun createBackgroundLocationRequest() : LocationRequest? {
         // code (with a few changes) from https://developer.android.com/training/location/change-location-settings see apache 2.0 licence
         val locationRequest = LocationRequest.create()?.apply {
-            interval = LOCATION_TRACKING_REQUEST_INTERVAL
+            interval = Constants().LOCATION_TRACKING_REQUEST_INTERVAL
             priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY // can be changed to low power settings depending on what we need
         }
         return locationRequest
@@ -98,7 +97,7 @@ class MainActivity : AppCompatActivity() {
                     Log.v(TAG, "couldnt create foreground task")
                     // opens a dialog which offers the user to enable gps
                     exception.startResolutionForResult(this@MainActivity,
-                        LOCATION_ACCESS_SETTINGS_REQUEST_CODE)
+                        Constants().LOCATION_ACCESS_SETTINGS_REQUEST_CODE)
                 } catch (sendEx: IntentSender.SendIntentException) {
                     // Ignore the error.
                 }
@@ -115,17 +114,17 @@ class MainActivity : AppCompatActivity() {
         Log.i(TAG, "onRequestPermissionResult")
         when (requestCode) {
             // handle location permission requests
-            LOCATION_ACCESS_PERMISSION_REQUEST_CODE -> {
+            Constants().LOCATION_ACCESS_PERMISSION_REQUEST_CODE -> {
                 // request permissions again if location permission not granted
                 if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_DENIED)) {
                     Log.v(TAG, "Location Access Denied")
 
                     // not called after "Deny and dont ask again"
                     if (Build.VERSION.SDK_INT >= 23 && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                        Toast.makeText(this, "Wenn Standortzugriff verweigert ist, können Infektionen nicht erkannt werden!", Toast.LENGTH_LONG)
+                        Toast.makeText(this, "Wenn Standortzugriff verweigert ist, können Infektionen nicht erkannt werden!", Toast.LENGTH_LONG).show()
                         PermissionHandler.requestLocationPermissions(this)
                     }
-                    Toast.makeText(this, "Kein Zugriff auf Standortdaten!. Um Infektionserkennung einzuschalten, muss Standortzugriff in den Einstellungen für diese App aktiviert werden!", Toast.LENGTH_LONG)
+                    Toast.makeText(this, "Kein Zugriff auf Standortdaten!. Um Infektionserkennung einzuschalten, muss Standortzugriff in den Einstellungen für diese App aktiviert werden!", Toast.LENGTH_LONG).show()
                 }
                 // permission was granted so start foreground service
                 else {

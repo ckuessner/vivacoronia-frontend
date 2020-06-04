@@ -6,8 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import android.util.Log
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.LOCATION_UPLOAD_INTERVAL
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.LOCATION_UPLOAD_REQUEST_CODE
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 
 fun setupUploadAlarm(context: Context){
     Log.i("setupUploadAlarm", "entered method setupUploadAlarm")
@@ -17,12 +16,12 @@ fun setupUploadAlarm(context: Context){
 
     // setup the upload intent
     val uploadIntent = Intent(context, UploadService::class.java)
-    val upload = PendingIntent.getService(context, LOCATION_UPLOAD_REQUEST_CODE, uploadIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+    val upload = PendingIntent.getService(context, Constants().LOCATION_UPLOAD_REQUEST_CODE, uploadIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
     // set the upload interval
     if (upload != null){
 
-        alarmManager?.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), LOCATION_UPLOAD_INTERVAL, upload)
+        alarmManager?.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), Constants().LOCATION_UPLOAD_INTERVAL, upload)
         Log.i("setupUploadAlarm", "upload service registerd")
     }
     else {

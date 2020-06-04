@@ -18,7 +18,7 @@ class PermissionHandler {
         fun requestLocationPermissions(activity: Activity) {
             ActivityCompat.requestPermissions(activity,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_ACCESS_PERMISSION_REQUEST_CODE
+                Constants().LOCATION_ACCESS_PERMISSION_REQUEST_CODE
             )
         }
 

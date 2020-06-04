@@ -36,7 +36,7 @@ class LocationTrackingService : Service() {
         Log.i(TAG, "startet location tracking service")
         notification = LocationNotificationHelper.getLocationNotification(this)
         // has to be called at least 5 sec after services starts
-        startForeground(LOCATION_NOTIFICATION_ID, notification)
+        startForeground(Constants().LOCATION_NOTIFICATION_ID, notification)
 
         //
         context = this
@@ -59,8 +59,8 @@ class LocationTrackingService : Service() {
             // location get requested with an delay of min 30sec and if the locatoins differ 15m
             locManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                LOCATION_TRACKING_MIN_UPDATE_TIME,
-                LOCATION_TRACKING_MIN_UPDATE_DISTANCE,
+                Constants().LOCATION_TRACKING_MIN_UPDATE_TIME,
+                Constants().LOCATION_TRACKING_MIN_UPDATE_DISTANCE,
                 locListener
             )
         }
@@ -78,7 +78,7 @@ class LocationTrackingService : Service() {
 
     suspend fun addLocationToDatabase(location: Location){
         coroutineScope {
-            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+            val sdf = SimpleDateFormat(Constants().DATETIME_FORMAT) // "yyyy-MM-dd'T'HH:mm:ss.SSS"
             val date = sdf.format(Date())
             Log.i(TAG, date)
             db.coronaDao().addLocation(DBLocation(date, location.longitude, location.latitude))
