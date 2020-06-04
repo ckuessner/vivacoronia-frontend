@@ -78,10 +78,11 @@ class LocationTrackingService : Service() {
 
     suspend fun addLocationToDatabase(location: Location){
         coroutineScope {
-            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
             val date = sdf.format(Date())
             Log.i(TAG, date)
             db.coronaDao().addLocation(DBLocation(date, location.longitude, location.latitude))
+            Log.i(TAG, "new Location added at <" + date + ">: " + location.longitude.toString() + ", " + location.latitude.toString())
         }
     }
 
@@ -94,10 +95,7 @@ class LocationTrackingService : Service() {
                 // database write has to be asyncronous because this service runs in main thread
                 GlobalScope.launch {
                     // the time of the location object does not necessarily have to equal to the system time, so we have to get the System time seperatly and change the location time to the system time
-                    val date = Calendar.getInstance().time
-                    p0.time = date.time
                     addLocationToDatabase(p0)
-                    Log.i(TAG, "new Location added at <" + Date(p0.time) + ">: " + p0.longitude.toString() + ", " + p0.latitude.toString())
                 }
             }
         }
