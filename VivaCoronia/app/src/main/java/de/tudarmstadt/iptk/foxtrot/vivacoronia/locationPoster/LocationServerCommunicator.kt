@@ -41,9 +41,10 @@ class LocationServerCommunicator {
             // data that will get posted on server
             val locationJSONArray = JSONArray()
 
+            // build a json array with the data that will be send to db
             for(dataEntry in data){
                 val locationJSONObject = JSONObject()
-                locationJSONObject.put("time", dataEntry.time.toString())
+                locationJSONObject.put("time", dataEntry.time)
                 locationJSONObject.put(
                     "location",
                     JSONObject()
@@ -60,8 +61,10 @@ class LocationServerCommunicator {
 
             Log.i(TAG, locationJSONArray.toString())
 
+            // convert into string
             val mRequestBody: String = locationJSONArray.toString()
 
+            // build a single request
             val jsonStringRequest = object : StringRequest(Request.Method.POST, url,
                 Response.Listener { response ->
                     Log.i(TAG, response)
@@ -82,6 +85,7 @@ class LocationServerCommunicator {
             };
 
 
+            // add request to queue
             queue.add(jsonStringRequest)
 
         }
@@ -100,58 +104,11 @@ class LocationServerCommunicator {
 
             Log.i(TAG, "In location server method")
 
-            val queue = Volley.newRequestQueue(context)
-            val baseUrl = Constants().SERVER_BASE_URL
-            val url = "$baseUrl/locations/$userID/"
+            // convert single point into an array of one element
+            val array = arrayOf(data)
 
-            // get information from LocationService
-            val locationJSONArray = JSONArray()
-            val locationJSONObject = JSONObject()
-
-
-            locationJSONObject.put("time", data.time.toString())
-
-            locationJSONObject.put(
-                "location",
-                JSONObject()
-                    .put("type", "Point")
-                    .put(
-                        "coordinates",
-                        JSONArray()
-                            .put(data.x)
-                            .put(data.y)
-                    )
-            )
-
-            locationJSONArray.put(locationJSONObject)
-
-
-
-            Log.i(TAG, locationJSONArray.toString())
-
-            val mRequestBody: String = locationJSONArray.toString()
-
-            val jsonStringRequest = object : StringRequest(Request.Method.POST, url,
-                Response.Listener { response ->
-                    Log.i(TAG, response)
-                    Toast.makeText(context, response, Toast.LENGTH_SHORT).show()
-                },
-                Response.ErrorListener { error ->
-                    Log.i(TAG, error.toString())
-                    Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
-                }
-            ) {
-                override fun getBodyContentType(): String {
-                    return "application/json; charset=utf-8"
-                }
-
-                override fun getBody(): ByteArray {
-                    return mRequestBody.toByteArray(Charsets.UTF_8)
-                }
-            };
-
-
-            queue.add(jsonStringRequest)
+            // call the array to server method
+            sendPositionsToServer(context, userID, array)
         }
 
         private fun checkPermissions(context: Context): Boolean {
