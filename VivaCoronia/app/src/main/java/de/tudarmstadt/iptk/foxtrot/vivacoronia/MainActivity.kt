@@ -1,5 +1,8 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
+import android.Manifest
+import android.app.ActivityManager
+import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
@@ -7,6 +10,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
@@ -30,14 +34,14 @@ class MainActivity : AppCompatActivity() {
         // setup upload alarm
         setupUploadAlarm(applicationContext)
 
-        // start the tracking service with the start of the app
+        // tracking in onResume startet
         checkPermissionsAndStartTracking()
-
     }
 
 
 
     private fun checkPermissionsAndStartTracking() {
+        // application flow: check permission -> if false -> request permission
         // TODO add in onResume method the start of the service, if the service isnt running
         // all permission granted so start the service
         if (PermissionHandler.checkLocationPermissions(this)) {
@@ -54,9 +58,9 @@ class MainActivity : AppCompatActivity() {
      * creates a request to determine which services (gps, wifi, cellular) have to be enabled
      */
     private fun createBackgroundLocationRequest() : LocationRequest? {
-        // code (with a few changes) from https://developer.android.com/training/location/change-location-settings
+        // code (with a few changes) from https://developer.android.com/training/location/change-location-settings see apache 2.0 licence
         val locationRequest = LocationRequest.create()?.apply {
-            interval = LOCATION_TRACKING_REQUEST_INTERVAL   // request all 5 minutes
+            interval = LOCATION_TRACKING_REQUEST_INTERVAL
             priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY // can be changed to low power settings depending on what we need
         }
         return locationRequest
@@ -66,7 +70,7 @@ class MainActivity : AppCompatActivity() {
      * requests the services specified by the locationrequest
      */
     private fun requestLocationService(locationRequest: LocationRequest?){
-        // code (with a few changes) from https://developer.android.com/training/location/change-location-settings
+        // code (with a few changes) from https://developer.android.com/training/location/change-location-settings see apache 2.0 licence
         val builder = LocationSettingsRequest.Builder()
             .addLocationRequest(locationRequest!!)
 
@@ -91,7 +95,7 @@ class MainActivity : AppCompatActivity() {
         task.addOnFailureListener { exception ->
             if (exception is ResolvableApiException){
                 try {
-                    Log.v(TAG, "request gps")
+                    Log.v(TAG, "couldnt create foreground task")
                     // opens a dialog which offers the user to enable gps
                     exception.startResolutionForResult(this@MainActivity,
                         LOCATION_ACCESS_SETTINGS_REQUEST_CODE)
@@ -108,18 +112,24 @@ class MainActivity : AppCompatActivity() {
      * handles permission requests
      */
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        Log.i(TAG, "onRequestPermissionResult")
         when (requestCode) {
             // handle location permission requests
             LOCATION_ACCESS_PERMISSION_REQUEST_CODE -> {
                 // request permissions again if location permission not granted
-                if (grantResults.isNotEmpty() &&
-                    (grantResults[0] == PackageManager.PERMISSION_DENIED ||
-                            grantResults[1] == PackageManager.PERMISSION_DENIED)) {
-                    Log.v(TAG, "request gps")
-                    PermissionHandler.requestLocationPermissions(this)
+                if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_DENIED)) {
+                    Log.v(TAG, "Location Access Denied")
+
+                    // not called after "Deny and dont ask again"
+                    if (Build.VERSION.SDK_INT >= 23 && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                        Toast.makeText(this, "Wenn Standortzugriff verweigert ist, können Infektionen nicht erkannt werden!", Toast.LENGTH_LONG)
+                        PermissionHandler.requestLocationPermissions(this)
+                    }
+                    Toast.makeText(this, "Kein Zugriff auf Standortdaten!. Um Infektionserkennung einzuschalten, muss Standortzugriff in den Einstellungen für diese App aktiviert werden!", Toast.LENGTH_LONG)
                 }
+                // permission was granted so start foreground service
                 else {
-                    Log.v(TAG, "request location service")
+                    Log.v(TAG, "start location service")
                     requestLocationService(createBackgroundLocationRequest())
                 }
             }

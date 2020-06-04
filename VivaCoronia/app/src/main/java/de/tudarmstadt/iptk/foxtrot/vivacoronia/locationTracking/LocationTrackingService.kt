@@ -15,6 +15,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.*
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage.AppDatabase
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage.Entities.DBLocation
 import kotlinx.coroutines.*
+import java.util.*
 
 class LocationTrackingService : Service() {
     // use this link as a hint
@@ -31,6 +32,7 @@ class LocationTrackingService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        Log.i(TAG, "startet location tracking service")
         notification = LocationNotificationHelper.getLocationNotification(this)
         // has to be called at least 5 sec after services starts
         startForeground(LOCATION_NOTIFICATION_ID, notification)
@@ -65,13 +67,12 @@ class LocationTrackingService : Service() {
             Log.e(TAG, "SecurityException")
         }
 
-        // start the service againg if it was killed
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     override fun onDestroy() {
-        Log.e(TAG, "Locatoin Tracking Service destroyed :(")
         super.onDestroy()
+        Log.e(TAG, "Locatoin Tracking Service destroyed :(")
     }
 
     suspend fun addLocationToDatabase(location: Location){
@@ -88,9 +89,12 @@ class LocationTrackingService : Service() {
             if (p0 != null) {
                 // database write has to be asyncronous because this service runs in main thread
                 GlobalScope.launch {
+                    // the time of the location object does not necessarily have to equal to the system time, so we have to get the System time seperatly and change the location time to the system time
+                    val date = Calendar.getInstance().time
+                    p0.time = date.time
                     addLocationToDatabase(p0)
-                    Log.i(TAG, "write in database")}
-                Log.i(TAG, "new Location added at <" + p0.time.toString() + ">: " + p0.longitude.toString() + ", " + p0.latitude.toString())
+                    Log.i(TAG, "new Location added at <" + Date(p0.time) + ">: " + p0.longitude.toString() + ", " + p0.latitude.toString())
+                }
             }
         }
 
