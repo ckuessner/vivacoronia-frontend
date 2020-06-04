@@ -15,6 +15,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.*
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage.AppDatabase
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage.Entities.DBLocation
 import kotlinx.coroutines.*
+import java.text.SimpleDateFormat
 import java.util.*
 
 class LocationTrackingService : Service() {
@@ -77,7 +78,10 @@ class LocationTrackingService : Service() {
 
     suspend fun addLocationToDatabase(location: Location){
         coroutineScope {
-            db.coronaDao().addLocation(DBLocation(location.time, location.longitude, location.latitude))
+            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+            val date = sdf.format(Date())
+            Log.i(TAG, date)
+            db.coronaDao().addLocation(DBLocation(date, location.longitude, location.latitude))
         }
     }
 

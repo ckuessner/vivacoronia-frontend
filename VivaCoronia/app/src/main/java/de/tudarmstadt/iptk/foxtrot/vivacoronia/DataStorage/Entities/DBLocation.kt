@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class DBLocation (
-    @PrimaryKey val time: Long,
+    @PrimaryKey val time: String,
     val longitude: Double,
     val latitude: Double
 )
