@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Viva Coronia</string>
+    <string name="send_pos_label">Send current position.</string>
+    <string name="send_pos_btn">Send</string>
 </resources>
