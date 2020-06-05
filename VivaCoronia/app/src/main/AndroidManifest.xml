@@ -39,12 +39,16 @@
             </intent-filter>
         </receiver>
 
+        <activity android:name=".InfectionStatusActivity"
+            android:label="Current Infection Status" />
 
-        <activity android:name=".UpdateInfectionActivity" android:label="@string/update_infection_label"></activity>
-        <activity android:name=".ScanQrCodeActivity" />
+        <activity android:name=".ScanQrCodeActivity"
+            android:label="Scan QR-Code"/>
+
         <activity
             android:name=".UpdateInfectionActivity"
             android:label="@string/update_infection_label" />
+            
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,6 +1,5 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
-import android.Manifest
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
@@ -18,13 +17,8 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploa
 
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-
-private const val ZXING_CAMERA_PERMISSION = 1
 
 class MainActivity : AppCompatActivity() {
     private var TAG = "MainActivity"
@@ -45,14 +39,10 @@ class MainActivity : AppCompatActivity() {
         // tracking in onResume startet
         checkPermissionsAndStartTracking()
 
-        val updateInfectionFab : View = findViewById(R.id.update_infection_fab)
-        updateInfectionFab.setOnClickListener { view ->
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
-                ActivityCompat.requestPermissions(this, Array(1) {Manifest.permission.CAMERA}, ZXING_CAMERA_PERMISSION)
-            else {
-                val intent = Intent(this, ScanQrCodeActivity::class.java).apply {}
-                startActivity(intent)
-            }
+        val button: Button = findViewById(R.id.go_to_update_infection)
+        button.setOnClickListener {
+            val intent = Intent(this, InfectionStatusActivity::class.java).apply {}
+            startActivity(intent)
         }
     }
 
@@ -156,6 +146,5 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     Toast.makeText(this,"Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show()
                 }
-        }
     }
 }
