@@ -1,11 +1,11 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage.Entities.DBLocation
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage.Entities.User
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.DBLocation
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.User
 
 @Database(entities = arrayOf(User::class, DBLocation::class), version = 1)
 abstract class AppDatabase : RoomDatabase() {

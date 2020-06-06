@@ -121,10 +121,10 @@ class MainActivity : AppCompatActivity() {
 
                     // not called after "Deny and dont ask again"
                     if (Build.VERSION.SDK_INT >= 23 && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                        Toast.makeText(this, "Wenn Standortzugriff verweigert ist, können Infektionen nicht erkannt werden!", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, getText(R.string.main_activity_toast_permission_rationale), Toast.LENGTH_LONG).show()
                         PermissionHandler.requestLocationPermissions(this)
                     }
-                    Toast.makeText(this, "Kein Zugriff auf Standortdaten!. Um Infektionserkennung einzuschalten, muss Standortzugriff in den Einstellungen für diese App aktiviert werden!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getText(R.string.main_activity_toast_location_permission_denied), Toast.LENGTH_LONG).show()
                 }
                 // permission was granted so start foreground service
                 else {

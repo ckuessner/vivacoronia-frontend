@@ -10,7 +10,6 @@ class PermissionHandler {
 
 
     companion object{
-        private val TAG = "PerminssionHandler"
 
         /**
          * requests permissions for location services

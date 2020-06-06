@@ -1,7 +1,22 @@
 <resources>
     <string name="app_name">Viva Coronia</string>
-    <string name="send_pos_label">Standortdaten werden automatisch aufgezeichnet.</string>
+    <string name="send_pos_label">Location is recorded automatically</string>
     <string name="send_pos_btn">Send</string>
 
-    <string name="location_service_description">Ermöglicht das Tracken der Bewegungen um mögliche Infizierungen zu erkennen und Sie davor zu warnen.</string>
+    <!-- main activity -->
+    <string name="main_activity_toast_permission_rationale">If location access is denied, the app can not warn for infections.</string>
+    <string name="main_activity_toast_location_permission_denied">Location access permission denied! Please enable it in the app settings to get warnings about infections.</string>
+
+    <!-- location tracking service -->
+    <string name="location_service_channel_name">LocationTrackingChannel</string>
+    <string name="location_service_channel_description">Shows the user that tracking is active</string>
+    <string name="location_service_channel_title">Corona Tracking active</string>
+
+    <string name="location_service_toast_started">Location tracking started…</string>
+
+    <!-- location upload service -->
+    <string name="location_upload_service_toast_no_internet">No permission on accessing the internet</string>
+
+    <!-- manifest -->
+    <string name="location_service_description_manifest">Allows to track your location and to warn you of possible infections.</string>
 </resources>

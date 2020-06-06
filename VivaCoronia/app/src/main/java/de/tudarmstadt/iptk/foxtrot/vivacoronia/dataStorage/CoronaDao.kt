@@ -1,7 +1,7 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage
 
 import androidx.room.*
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage.Entities.DBLocation
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.DBLocation
 
 // create different DAOs for Entities if this class gets to crowded
 @Dao

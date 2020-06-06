@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 
-class MyBroadcastReceiver : BroadcastReceiver() {
+class AlarmBroadcastReceiver : BroadcastReceiver() {
     private val TAG = "MyBroadcastReceiver"
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -21,7 +21,5 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                 Log.e(TAG, "couldnt register alarm because context was null")
             }
         }
-
-        // TODO if upload wasnt possible due to no internet connection upload again if internet connection is finally available
     }
 }

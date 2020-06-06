@@ -12,14 +12,14 @@ import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.*
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage.AppDatabase
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage.Entities.DBLocation
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.DBLocation
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 class LocationTrackingService : Service() {
-    // use this link as a hint
+    // used this link as a hint
     // https://bitbucket.org/tiitha/backgroundserviceexample/src/master/app/src/main/java/com/geoape/backgroundlocationexample/BackgroundService.java
     private val TAG = "LocationTrackingService"
 
@@ -53,10 +53,10 @@ class LocationTrackingService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // inform user that tracking is now active
-        Toast.makeText(context, "Location Tracking active ...", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, getString(R.string.location_service_toast_started), Toast.LENGTH_SHORT).show()
 
         try {
-            // location get requested with an delay of min 30sec and if the locatoins differ 15m
+            // location get requested with an delay of min 30sec and if the locations differ 15m
             locManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
                 Constants().LOCATION_TRACKING_MIN_UPDATE_TIME,
@@ -73,12 +73,12 @@ class LocationTrackingService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.e(TAG, "Locatoin Tracking Service destroyed :(")
+        Log.e(TAG, "Location Tracking Service destroyed :(")
     }
 
     suspend fun addLocationToDatabase(location: Location){
         coroutineScope {
-            val sdf = SimpleDateFormat(Constants().DATETIME_FORMAT) // "yyyy-MM-dd'T'HH:mm:ss.SSS"
+            val sdf = SimpleDateFormat(Constants().DATETIME_FORMAT, Locale.GERMANY) // "yyyy-MM-dd'T'HH:mm:ss.SSS"
             val date = sdf.format(Date())
             Log.i(TAG, date)
             db.coronaDao().addLocation(DBLocation(date, location.longitude, location.latitude))
@@ -88,11 +88,11 @@ class LocationTrackingService : Service() {
 
     inner class MyLocationListener: LocationListener {
 
-        private var TAG = "MyLocationListener"
+        private val TAG = "MyLocationListener"
 
         override fun onLocationChanged(p0: Location?) {
             if (p0 != null) {
-                // database write has to be asyncronous because this service runs in main thread
+                // database write has to be asynchronous because this service runs in main thread
                 GlobalScope.launch {
                     // the time of the location object does not necessarily have to equal to the system time, so we have to get the System time seperatly and change the location time to the system time
                     addLocationToDatabase(p0)

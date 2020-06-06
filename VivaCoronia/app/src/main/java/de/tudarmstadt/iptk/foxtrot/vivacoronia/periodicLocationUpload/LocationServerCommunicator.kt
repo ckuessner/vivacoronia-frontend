@@ -11,8 +11,9 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage.AppDatabase
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage.Entities.DBLocation
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.DBLocation
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -36,7 +37,7 @@ class LocationServerCommunicator {
                 // Permission is not granted
                 Toast.makeText(
                     context,
-                    "No permission on accessing the internet",
+                    context.getString(R.string.location_upload_service_toast_no_internet),
                     Toast.LENGTH_LONG
                 ).show()
                 return
@@ -62,8 +63,8 @@ class LocationServerCommunicator {
                         .put(
                             "coordinates",
                             JSONArray()
-                                .put(dataEntry.latitude)
                                 .put(dataEntry.longitude)
+                                .put(dataEntry.latitude)
                         )
                 )
                 locationJSONArray.put(locationJSONObject)
@@ -75,7 +76,7 @@ class LocationServerCommunicator {
             val mRequestBody: String = locationJSONArray.toString()
 
             // build a single request
-            val jsonStringRequest = object : StringRequest(Request.Method.POST, url,
+            val jsonStringRequest = object : StringRequest(Method.POST, url,
                 Response.Listener { response ->
                     Log.i(TAG, response)
                     GlobalScope.launch {
@@ -83,11 +84,9 @@ class LocationServerCommunicator {
                         val db = AppDatabase.getDatabase(context)
                         db.coronaDao().deleteLocations(data)
                     }
-                    // Toast.makeText(context, response, Toast.LENGTH_SHORT).show() // this would be annoying for the user
                 },
                 Response.ErrorListener { error ->
                     Log.i(TAG, error.toString())
-                    // Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
                 }
             ) {
                 override fun getBodyContentType(): String {
@@ -113,13 +112,11 @@ class LocationServerCommunicator {
                 // Permission is not granted
                 Toast.makeText(
                     context,
-                    "No permission on accessing the internet",
+                    context.getString(R.string.location_upload_service_toast_no_internet),
                     Toast.LENGTH_LONG
                 ).show()
                 return
             }
-
-            Log.i(TAG, "In location server method")
 
             // convert single point into an array of one element
             val array : ArrayList<DBLocation> = ArrayList()

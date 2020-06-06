@@ -4,8 +4,6 @@ import android.app.AlarmManager
 
 class Constants {
 
-    data class DataPoint(val x: Double, val y: Double, val time: String)
-
     // Location Upload stuff
     val LOCATION_UPLOAD_INTERVAL = AlarmManager.INTERVAL_HALF_DAY   // upload data every half a day for Debugging use smaller interval like 10000.toLong()
     val LOCATION_UPLOAD_REQUEST_CODE = 12

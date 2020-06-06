@@ -1,4 +1,4 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia.DataStorage.Entities
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
