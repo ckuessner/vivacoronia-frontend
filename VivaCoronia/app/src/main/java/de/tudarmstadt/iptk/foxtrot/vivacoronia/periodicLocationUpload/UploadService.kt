@@ -27,9 +27,18 @@ class UploadService : Service() {
         GlobalScope.launch {
             val locList = db.coronaDao().getLocations()
             Log.i(TAG, "locList: " + locList.toString())
+            Log.i(TAG, "locList Length: " + locList.size.toString())
 
-            // uploads the data and deletes it if upload was successfull
-            LocationServerCommunicator.sendPositionsToServer(applicationContext, Constants().USER_ID, locList)
+            // if location array is empty, no upload is needed
+            if (locList.size > 0){
+                // uploads the data and deletes it if upload was successfull
+                Log.i(TAG, "upload")
+                LocationServerCommunicator.sendPositionsToServer(applicationContext, Constants().USER_ID, locList)
+            }
+            else {
+                Log.i(TAG, "no upload")
+            }
+
         }
 
         // stop service after uploading

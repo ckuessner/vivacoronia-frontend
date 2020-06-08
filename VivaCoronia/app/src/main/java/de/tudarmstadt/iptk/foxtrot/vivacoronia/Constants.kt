@@ -5,7 +5,7 @@ import android.app.AlarmManager
 class Constants {
 
     // Location Upload stuff
-    val LOCATION_UPLOAD_INTERVAL = AlarmManager.INTERVAL_HALF_DAY   // upload data every half a day for Debugging use smaller interval like 10000.toLong()
+    val LOCATION_UPLOAD_INTERVAL = 10000.toLong() // for reallife use could be higher
     val LOCATION_UPLOAD_REQUEST_CODE = 12
 
     // Location stuff
@@ -24,7 +24,7 @@ class Constants {
 
     // local ip if you use an emulator, localhost if you use an external android device with port forwarding
     // otherwise this constant will contain the base url to the server api
-    val SERVER_BASE_URL = "http://localhost:3000"
+    val SERVER_BASE_URL = "http://192.168.1.101:3000"
 
     val DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS"
 }
