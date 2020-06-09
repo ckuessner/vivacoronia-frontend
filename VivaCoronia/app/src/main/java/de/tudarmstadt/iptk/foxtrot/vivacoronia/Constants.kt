@@ -24,8 +24,7 @@ class Constants {
 
     // local ip if you use an emulator, localhost if you use an external android device with port forwarding
     // otherwise this constant will contain the base url to the server api
-    val SERVER_BASE_URL = "http://localhost:3000"
+    val SERVER_BASE_URL = "http://10.0.2.2:3000"
 
     val DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS"
 }
-
