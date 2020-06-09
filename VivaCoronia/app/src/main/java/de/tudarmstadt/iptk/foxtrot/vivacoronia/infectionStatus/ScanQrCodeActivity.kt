@@ -1,4 +1,4 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity

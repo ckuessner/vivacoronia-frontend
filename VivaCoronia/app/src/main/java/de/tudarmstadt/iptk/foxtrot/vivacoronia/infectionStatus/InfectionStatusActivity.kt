@@ -1,4 +1,4 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -15,9 +15,11 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import kotlin.concurrent.thread
 
-private const val ZXING_CAMERA_PERMISSION = 1
+const val ZXING_CAMERA_PERMISSION = 1
 
 class InfectionStatusActivity : AppCompatActivity() {
 
@@ -30,7 +32,9 @@ class InfectionStatusActivity : AppCompatActivity() {
         val updateInfectionFab: View = findViewById(R.id.update_infection_fab)
         updateInfectionFab.setOnClickListener {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
-                ActivityCompat.requestPermissions(this, Array(1) { Manifest.permission.CAMERA }, ZXING_CAMERA_PERMISSION)
+                ActivityCompat.requestPermissions(this, Array(1) { Manifest.permission.CAMERA },
+                    ZXING_CAMERA_PERMISSION
+                )
             else {
                 val intent = Intent(this, ScanQrCodeActivity::class.java).apply {}
                 startActivity(intent)
@@ -43,14 +47,17 @@ class InfectionStatusActivity : AppCompatActivity() {
             val data = fetchData()
             if (!data.isNullOrEmpty())
                 runOnUiThread {
-                    InfectionStatusFragment.replaceFragment(data, supportFragmentManager)
+                    InfectionStatusFragment.replaceFragment(
+                        data,
+                        supportFragmentManager
+                    )
                 }
         }
     }
 
     private fun fetchData(): HashMap<String, String> {
-        val userId = "42"
-        val apiBaseUrl = "http://192.168.2.176:3000" // TODO load from config
+        val userId = Constants().USER_ID
+        val apiBaseUrl = Constants().SERVER_BASE_URL
         val url = "$apiBaseUrl/infection/$userId"
 
         val queue = Volley.newRequestQueue(this)

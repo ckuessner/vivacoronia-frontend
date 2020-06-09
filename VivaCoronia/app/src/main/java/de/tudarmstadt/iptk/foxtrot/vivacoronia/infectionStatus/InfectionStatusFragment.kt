@@ -1,4 +1,4 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus
 
 import android.os.Bundle
 import android.view.Gravity
@@ -10,6 +10,7 @@ import android.widget.TableRow
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import java.text.SimpleDateFormat
 import java.util.Locale
 

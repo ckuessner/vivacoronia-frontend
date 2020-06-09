@@ -1,4 +1,4 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import org.json.JSONObject
 import kotlin.collections.HashMap
 import kotlin.concurrent.thread
@@ -27,7 +29,7 @@ class UpdateInfectionActivity : AppCompatActivity() {
 
         // Display data
         @Suppress("UNCHECKED_CAST")  // TODO Check type and Log "wrong type" if inappropriate
-        val data: HashMap<String, String> = intent.getSerializableExtra("data") as HashMap<String, String>
+        val data = intent.getSerializableExtra("data") as HashMap<String, String>
         InfectionStatusFragment.replaceFragment(data, supportFragmentManager)
 
         setUploadStatus(NO_UPLOAD_STATUS) // TODO wird das gebraucht?
@@ -37,10 +39,10 @@ class UpdateInfectionActivity : AppCompatActivity() {
 
     private fun uploadData(data: Map<String, String>) {
         setUploadStatus(UPLOAD_IN_PROGRESS)
-        val queue = Volley.newRequestQueue(this)
-        val userId = "42"
-        val apiBaseUrl = "http://192.168.2.176:3000" // TODO
+        val userId = Constants().USER_ID
+        val apiBaseUrl = Constants().SERVER_BASE_URL
         val url = "$apiBaseUrl/infection/$userId"
+
         val requestBody = JSONObject(data).toString()
         val request = object : StringRequest(Method.POST, url,
             Response.Listener { onUploadSuccessful() },
@@ -55,6 +57,7 @@ class UpdateInfectionActivity : AppCompatActivity() {
             }
         }
 
+        val queue = Volley.newRequestQueue(this)
         queue.add(request)
     }
 

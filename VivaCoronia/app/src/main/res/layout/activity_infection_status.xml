@@ -7,7 +7,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/infection_status_fragment"
-        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.InfectionStatusFragment"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus.InfectionStatusFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
