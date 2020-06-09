@@ -1,7 +1,5 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
-import android.app.AlarmManager
-
 class Constants {
 
     // Location Upload stuff

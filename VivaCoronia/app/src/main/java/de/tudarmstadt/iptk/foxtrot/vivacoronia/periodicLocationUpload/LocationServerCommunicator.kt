@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -19,44 +20,61 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 
-class LocationServerCommunicator {
+object LocationServerCommunicator {
+    private const val TAG = "LocationSending"
 
-    companion object {
+    /**
+     * Sends the tracked locations of the user to the server
+     *
+     * @return true, if upload successful
+     */
+    fun sendPositionsToServer(context: Context, userID: Int, locations: List<DBLocation>) {
+        if (!checkInternetPermissions(context)) {
+            // Permission is not granted
+            Toast.makeText(
+                context,
+                context.getString(R.string.location_upload_service_toast_no_internet),
+                Toast.LENGTH_LONG
+            ).show()
+            return
+        }
 
-        private var TAG = "LocationSending"
+        // Create JSONArray for request body with location records in it
+        val locationJSONArray = marshalLocationRecordArray(locations)
 
+        // build a single request
+        val baseUrl = Constants().SERVER_BASE_URL
+        val url = "$baseUrl/locations/$userID"
 
-        /**
-         * method returns true if upload was successfull otherwise false
-         */
-        fun sendPositionsToServer(context: Context, userID: Int, data: List<DBLocation>){
-            if (!checkPermissions(
-                    context
-                )
-            ) {
-                // Permission is not granted
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.location_upload_service_toast_no_internet),
-                    Toast.LENGTH_LONG
-                ).show()
-                return
+        val jsonStringRequest = JSONArrayRequest(
+            Request.Method.POST, url, locationJSONArray,
+            Response.Listener { response ->
+                Log.i(TAG, "server response: $response")
+                GlobalScope.launch {
+                    // since upload was successful, delete the entries from the db
+                    val db = AppDatabase.getDatabase(context)
+                    db.coronaDao().deleteLocations(locations)
+                }
+            },
+            Response.ErrorListener { error ->
+                Log.e(TAG, "upload failed: $error")
             }
+        )
 
-            Log.i(TAG, "in send several positions method")
+        // Add the upload request to the request queue
+        Log.i(TAG, "uploading to $url: $locationJSONArray")
+        getRequestQueue(context)
+            .add(jsonStringRequest)
+    }
 
-            val queue = Volley.newRequestQueue(context)
-            val baseUrl = Constants().SERVER_BASE_URL
-            val url = "$baseUrl/locations/$userID"
-
-            // data that will get posted on server
-            val locationJSONArray = JSONArray()
-
-            // build a json array with the data that will be send to db
-            for(dataEntry in data){
-                val locationJSONObject = JSONObject()
-                locationJSONObject.put("time", dataEntry.time)
-                locationJSONObject.put(
+    /**
+     * Marshal the location record list to a JSONArray
+     */
+    private fun marshalLocationRecordArray(data: List<DBLocation>): JSONArray {
+        return JSONArray(data.map { dataEntry ->
+            JSONObject()
+                .put("time", dataEntry.time)
+                .put(
                     "location",
                     JSONObject()
                         .put("type", "Point")
@@ -67,79 +85,29 @@ class LocationServerCommunicator {
                                 .put(dataEntry.latitude)
                         )
                 )
-                locationJSONArray.put(locationJSONObject)
-            }
-
-            Log.i(TAG, locationJSONArray.toString())
-
-            // convert into string
-            val mRequestBody: String = locationJSONArray.toString()
-
-            // build a single request
-            val jsonStringRequest = object : StringRequest(Method.POST, url,
-                Response.Listener { response ->
-                    Log.i(TAG, response)
-                    GlobalScope.launch {
-                        // since upload was successfull delete the entries from the db
-                        val db = AppDatabase.getDatabase(context)
-                        db.coronaDao().deleteLocations(data)
-                    }
-                },
-                Response.ErrorListener { error ->
-                    Log.i(TAG, error.toString())
-                }
-            ) {
-                override fun getBodyContentType(): String {
-                    return "application/json; charset=utf-8"
-                }
-
-                override fun getBody(): ByteArray {
-                    return mRequestBody.toByteArray(Charsets.UTF_8)
-                }
-            }
-
-
-            // add request to queue
-            queue.add(jsonStringRequest)
-        }
-
-        fun sendCurrentPositionToServer(context: Context, userID: Int, data: DBLocation) {
-
-            if (!checkPermissions(
-                    context
-                )
-            ) {
-                // Permission is not granted
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.location_upload_service_toast_no_internet),
-                    Toast.LENGTH_LONG
-                ).show()
-                return
-            }
-
-            // convert single point into an array of one element
-            val array : ArrayList<DBLocation> = ArrayList()
-            array.add(data)
-
-            // call the array to server method
-            sendPositionsToServer(
-                context,
-                userID,
-                array
-            )
-        }
-
-        private fun checkPermissions(context: Context): Boolean {
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.INTERNET)
-                != PackageManager.PERMISSION_GRANTED
-            ) {
-                // Permission is not granted
-                return false
-            }
-
-            return true
-        }
-
+        })
     }
+
+    private fun getRequestQueue(context: Context): RequestQueue {
+        return Volley.newRequestQueue(context)
+    }
+
+    private fun checkInternetPermissions(context: Context): Boolean {
+        return ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.INTERNET
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private class JSONArrayRequest(
+        method: Int,
+        url: String,
+        val jsonArray: JSONArray,
+        req: Response.Listener<String>,
+        error: Response.ErrorListener
+    ) : StringRequest(method, url, req, error) {
+        override fun getBodyContentType(): String = "application/json; charset=utf-8"
+        override fun getBody(): ByteArray = jsonArray.toString().toByteArray(Charsets.UTF_8)
+    }
+
 }
