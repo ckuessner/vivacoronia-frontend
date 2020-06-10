@@ -17,8 +17,6 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationTracking
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
 import android.widget.Button
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus.InfectionStatusActivity
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus.ScanQrCodeActivity
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus.ZXING_CAMERA_PERMISSION
 
 class MainActivity : AppCompatActivity() {
     private var TAG = "MainActivity"
@@ -139,13 +137,6 @@ class MainActivity : AppCompatActivity() {
                     requestLocationService(createBackgroundLocationRequest())
                 }
             }
-            ZXING_CAMERA_PERMISSION ->
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    val intent = Intent(this, ScanQrCodeActivity::class.java).apply {}
-                    startActivity(intent)
-                } else {
-                    Toast.makeText(this, "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show()
-                }
         }
     }
 }

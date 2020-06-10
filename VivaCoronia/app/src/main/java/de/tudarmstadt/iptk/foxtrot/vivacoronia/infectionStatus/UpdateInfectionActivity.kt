@@ -6,7 +6,9 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.android.volley.ClientError
 import com.android.volley.Response
+import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
@@ -32,7 +34,6 @@ class UpdateInfectionActivity : AppCompatActivity() {
         val data = intent.getSerializableExtra("data") as HashMap<String, String>
         InfectionStatusFragment.replaceFragment(data, supportFragmentManager)
 
-        setUploadStatus(NO_UPLOAD_STATUS) // TODO wird das gebraucht?
         val button: Button = findViewById(R.id.upload_infection_status)
         button.setOnClickListener { uploadData(data) }
     }
@@ -46,7 +47,7 @@ class UpdateInfectionActivity : AppCompatActivity() {
         val requestBody = JSONObject(data).toString()
         val request = object : StringRequest(Method.POST, url,
             Response.Listener { onUploadSuccessful() },
-            Response.ErrorListener { onUploadFailed() }
+            Response.ErrorListener { e -> onUploadFailed(e) }
         ) {
             override fun getBodyContentType(): String {
                 return "application/json"
@@ -61,16 +62,19 @@ class UpdateInfectionActivity : AppCompatActivity() {
         queue.add(request)
     }
 
-    private fun onUploadFailed() {
-        // TODO Say try again / server not reachable
+    private fun onUploadFailed(e: VolleyError) {
+        if (e is ClientError)
+            Toast.makeText(this, R.string.invalid_qr_code, Toast.LENGTH_SHORT).show()
+        else
+            Toast.makeText(this, R.string.server_connection_failed, Toast.LENGTH_SHORT).show()
         setUploadStatus(UPLOAD_FAILED)
         resetUploadStatusDelayed(3000)
     }
 
     private fun onUploadSuccessful() {
         setUploadStatus(UPLOAD_SUCCESSFUL)
-        resetUploadStatusDelayed(2000)
-        Thread.sleep(2000)
+        resetUploadStatusDelayed(3000)
+        Thread.sleep(3000)
         val intent = Intent(this, InfectionStatusActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)

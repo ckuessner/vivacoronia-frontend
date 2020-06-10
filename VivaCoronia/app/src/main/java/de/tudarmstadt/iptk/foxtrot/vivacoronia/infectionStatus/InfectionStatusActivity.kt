@@ -1,15 +1,17 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.view.View
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.android.volley.Request
+import com.android.volley.VolleyError
 import com.android.volley.toolbox.RequestFuture
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -17,11 +19,15 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
+import java.util.concurrent.ExecutionException
 import kotlin.concurrent.thread
 
-const val ZXING_CAMERA_PERMISSION = 1
 
 class InfectionStatusActivity : AppCompatActivity() {
+    companion object {
+        const val ZXING_CAMERA_PERMISSION = 1
+        private const val TAG = "InfectionStatusActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,9 +73,16 @@ class InfectionStatusActivity : AppCompatActivity() {
         queue.add(request)
         try {
             val mapper = ObjectMapper()
-            return mapper.readValue(future.get())
-        } catch (e: Exception) {
-            // TODO exception abfangen und was anzeigen
+            val result = future.get()
+            return if (result != "") mapper.readValue(result) else HashMap()
+        } catch (exception: ExecutionException){
+            if (exception.cause is VolleyError && hasWindowFocus())
+                runOnUiThread {
+                    Toast.makeText(this, R.string.server_connection_failed, Toast.LENGTH_LONG).show()
+                }
+            else {
+                Log.e(TAG, "Error while fetching or parsing current infection status", exception)
+            }
         }
         return HashMap()
     }

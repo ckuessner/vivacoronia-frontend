@@ -28,7 +28,7 @@ class InfectionStatusFragment : Fragment() {
         }
     }
 
-    private val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()) // TODO zeigt noch die falsche Uhrzeit an (zeigt UTC statt local an)
+    private val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault())
     private val formatter: SimpleDateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
 
     override fun onCreateView(
@@ -87,9 +87,9 @@ class InfectionStatusFragment : Fragment() {
         infectionStatus.text = data["newStatus"]
 
         val infectionDateApprox: TextView = view.findViewById(R.id.infection_date_approx)
-        infectionDateApprox.text = formatter.format(parser.parse(data["occuredDateEstimation"]))
+        infectionDateApprox.text = formatter.format(parser.parse(data["occuredDateEstimation"]!!.replace("Z", "+0000"))!!)
 
         val testDate: TextView = view.findViewById(R.id.test_date)
-        testDate.text = formatter.format(parser.parse(data["dateOfTest"]))
+        testDate.text = formatter.format(parser.parse(data["dateOfTest"]!!.replace("Z", "+0000"))!!)
     }
 }
