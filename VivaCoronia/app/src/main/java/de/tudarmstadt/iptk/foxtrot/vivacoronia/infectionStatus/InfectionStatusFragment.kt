@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
@@ -61,6 +62,13 @@ class InfectionStatusFragment : Fragment() {
         val tableLayout: TableLayout = view.findViewById(R.id.update_infection_table)
         val padding: Int = (3 * resources.displayMetrics.density).toInt()
         for ((key, attributeValue) in additionalAttributes) {
+            val separatorView = View(activity!!)
+            val scale = context!!.resources.displayMetrics.density
+            val widthPx = (1 * scale + 0.5f).toInt()
+            separatorView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, widthPx)
+            separatorView.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.separatorColor))
+            tableLayout.addView(separatorView)
+
             val row = TableRow(activity!!)
             row.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT)
             row.weightSum = 1f

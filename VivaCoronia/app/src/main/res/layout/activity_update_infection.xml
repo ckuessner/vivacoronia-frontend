@@ -53,7 +53,9 @@
             android:id="@+id/upload_infection_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/upload_infection_status_button" />
+            android:text="@string/upload_infection_status_button"
+            android:background="@drawable/bg_button"
+            android:layout_margin="5dp"/>
 
     </LinearLayout>
 </LinearLayout>
