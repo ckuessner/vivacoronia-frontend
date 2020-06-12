@@ -22,13 +22,11 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import java.util.concurrent.ExecutionException
 import kotlin.concurrent.thread
 
+private const val TAG = "InfectionStatusActivity"
+private const val ZXING_CAMERA_PERMISSION = 1
+
 
 class InfectionStatusActivity : AppCompatActivity() {
-    companion object {
-        const val ZXING_CAMERA_PERMISSION = 1
-        private const val TAG = "InfectionStatusActivity"
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_infection_status)

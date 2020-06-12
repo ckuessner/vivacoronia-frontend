@@ -14,19 +14,19 @@ class ScanQrCodeActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mScannerView = ZXingScannerView(this) // Programmatically initialize the scanner view
-        setContentView(mScannerView) // Set the scanner view as the content view
+        mScannerView = ZXingScannerView(this)
+        setContentView(mScannerView)
     }
 
     override fun onResume() {
         super.onResume()
-        mScannerView!!.setResultHandler(this) // Register ourselves as a handler for scan results.
-        mScannerView!!.startCamera() // Start camera on resume
+        mScannerView!!.setResultHandler(this)
+        mScannerView!!.startCamera()
     }
 
     override fun onPause() {
         super.onPause()
-        mScannerView!!.stopCamera() // Stop camera on pause
+        mScannerView!!.stopCamera()
     }
 
     override fun handleResult(rawResult: Result) {
@@ -35,7 +35,6 @@ class ScanQrCodeActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             return
         }
 
-        // Setup view
         mScannerView!!.stopCamera()
 
         val mapper = jacksonObjectMapper()

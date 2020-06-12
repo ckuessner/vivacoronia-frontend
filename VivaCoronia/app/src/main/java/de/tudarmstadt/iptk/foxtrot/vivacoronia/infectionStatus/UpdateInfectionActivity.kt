@@ -17,10 +17,10 @@ import org.json.JSONObject
 import kotlin.collections.HashMap
 import kotlin.concurrent.thread
 
-const val UPLOAD_FAILED = 0
-const val UPLOAD_SUCCESSFUL = 1
-const val UPLOAD_IN_PROGRESS = 2
-const val NO_UPLOAD_STATUS = 3
+private const val UPLOAD_FAILED = 0
+private const val UPLOAD_SUCCESSFUL = 1
+private const val UPLOAD_IN_PROGRESS = 2
+private const val NO_UPLOAD_STATUS = 3
 
 class UpdateInfectionActivity : AppCompatActivity() {
     private var currentUploadStatus = NO_UPLOAD_STATUS
