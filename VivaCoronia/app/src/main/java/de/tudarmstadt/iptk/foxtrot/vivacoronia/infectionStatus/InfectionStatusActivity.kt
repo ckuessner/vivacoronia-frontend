@@ -10,15 +10,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.android.volley.Request
 import com.android.volley.VolleyError
-import com.android.volley.toolbox.RequestFuture
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.InfectionApiClient
 import java.util.concurrent.ExecutionException
 import kotlin.concurrent.thread
 
@@ -60,20 +54,9 @@ class InfectionStatusActivity : AppCompatActivity() {
     }
 
     private fun fetchData(): HashMap<String, String> {
-        val userId = Constants().USER_ID
-        val apiBaseUrl = Constants().SERVER_BASE_URL
-        val url = "$apiBaseUrl/infection/$userId"
-
-        val queue = Volley.newRequestQueue(this)
-        val future = RequestFuture.newFuture<String>()
-        val request = StringRequest(Request.Method.GET, url, future, future)
-
-        queue.add(request)
         try {
-            val mapper = ObjectMapper()
-            val result = future.get()
-            return if (result != "") mapper.readValue(result) else HashMap()
-        } catch (exception: ExecutionException){
+            return InfectionApiClient.getInfectionStatus(this)
+        } catch (exception: ExecutionException) {
             if (exception.cause is VolleyError && hasWindowFocus())
                 runOnUiThread {
                     Toast.makeText(this, R.string.server_connection_failed, Toast.LENGTH_LONG).show()

@@ -7,13 +7,9 @@ import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.ClientError
-import com.android.volley.Response
 import com.android.volley.VolleyError
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
-import org.json.JSONObject
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.InfectionApiClient
 import kotlin.collections.HashMap
 import kotlin.concurrent.thread
 
@@ -40,26 +36,7 @@ class UpdateInfectionActivity : AppCompatActivity() {
 
     private fun uploadData(data: Map<String, String>) {
         setUploadStatus(UPLOAD_IN_PROGRESS)
-        val userId = Constants().USER_ID
-        val apiBaseUrl = Constants().SERVER_BASE_URL
-        val url = "$apiBaseUrl/infection/$userId"
-
-        val requestBody = JSONObject(data).toString()
-        val request = object : StringRequest(Method.POST, url,
-            Response.Listener { onUploadSuccessful() },
-            Response.ErrorListener { e -> onUploadFailed(e) }
-        ) {
-            override fun getBodyContentType(): String {
-                return "application/json"
-            }
-
-            override fun getBody(): ByteArray {
-                return requestBody.toByteArray()
-            }
-        }
-
-        val queue = Volley.newRequestQueue(this)
-        queue.add(request)
+        InfectionApiClient.postInfectionStatus(this, data, ::onUploadSuccessful, ::onUploadFailed)
     }
 
     private fun onUploadFailed(e: VolleyError) {
