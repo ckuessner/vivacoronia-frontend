@@ -31,4 +31,12 @@
     <string name="update_failed">Update failed</string>
     <string name="server_connection_failed">Failed to connect to server</string>
     <string name="invalid_qr_code">Invalid QR-Code</string>
+
+    <!-- bottom navigation menu -->
+    <string name="menu_item_location_history">History</string>
+    <string name="menu_item_trading">Trading</string>
+    <string name="menu_item_achievements">Achievements</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

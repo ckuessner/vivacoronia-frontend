@@ -46,7 +46,7 @@
         <activity
             android:name=".infectionStatus.UpdateInfectionActivity"
             android:label="@string/update_infection_label" />
-            
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

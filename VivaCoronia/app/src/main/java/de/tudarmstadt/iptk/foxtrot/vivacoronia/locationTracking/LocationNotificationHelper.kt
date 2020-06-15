@@ -10,7 +10,7 @@ import android.graphics.Color
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.MainActivity
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.MainActivity
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 
 
@@ -40,7 +40,7 @@ class LocationNotificationHelper{
                 .setSmallIcon(R.drawable.ic_corona)     // without icon a default notification would be displayed
                 .setContentTitle(context.getString(R.string.location_service_channel_title))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT).setColor(Color.RED)
-                .setContentIntent(Intent(context, MainActivity::class.java).let {notificationIntent -> PendingIntent.getActivity(context, 0, notificationIntent, 0)})
+                .setContentIntent(Intent(context, MainActivity::class.java).let { notificationIntent -> PendingIntent.getActivity(context, 0, notificationIntent, 0)})
                 .build()
         }
     }

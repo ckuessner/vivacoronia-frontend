@@ -8,10 +8,21 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.widget.Toast
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
+import com.google.android.material.navigation.NavigationView
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationNotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationTrackingService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
@@ -22,6 +33,10 @@ class MainActivity : AppCompatActivity() {
     private var TAG = "MainActivity"
     // TODO check wheter google play services has the right version
     // TODO add licencing for location api
+
+    private lateinit var appBarConfiguration : AppBarConfiguration
+
+    private lateinit var navView : NavigationView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,11 +52,43 @@ class MainActivity : AppCompatActivity() {
         // tracking in onResume startet
         checkPermissionsAndStartTracking()
 
-        val button: Button = findViewById(R.id.go_to_update_infection)
-        button.setOnClickListener {
-            val intent = Intent(this, InfectionStatusActivity::class.java).apply {}
-            startActivity(intent)
+        // setup navigation
+        val navController = findNavController(R.id.nav_fragment)
+        navController.setGraph(R.navigation.nav_graph)
+
+        // the location history view, trading view and achievements view are all root views
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.locationHistoryFragment,
+            R.id.tradingOverviewFragment,
+            R.id.achievementsFragment),
+            findViewById<DrawerLayout>(R.id.drawer_layout))
+
+
+        // setup default toolbar with navcontroller
+        // changes need to made here if a custom toolbar shall be used
+        setupActionBarWithNavController(navController, appBarConfiguration)
+
+
+        // setup nav view
+        navView = findViewById(R.id.nav_view)
+        navView.setupWithNavController(navController)
+
+        navView.setNavigationItemSelectedListener { item ->
+            when(item.itemId){
+                R.id.menu_item_location_history -> {
+                    navController.navigate(R.id.locationHistoryFragment)
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.menu_item_trading -> {
+                    navController.navigate(R.id.tradingOverviewFragment)
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.menu_item_achievements -> {
+                    navController.navigate(R.id.achievementsFragment)
+                    return@setNavigationItemSelectedListener true}
+                else -> return@setNavigationItemSelectedListener false
+            }
         }
+
     }
 
 
@@ -49,13 +96,18 @@ class MainActivity : AppCompatActivity() {
         // application flow: check permission -> if false -> request permission
         // TODO add in onResume method the start of the service, if the service isnt running
         // all permission granted so start the service
-        if (PermissionHandler.checkLocationPermissions(this)) {
+        if (PermissionHandler.checkLocationPermissions(
+                this
+            )
+        ) {
             requestLocationService(createBackgroundLocationRequest())
         }
         // permissions not granted so ask the user for it
         else {
             Log.v(TAG, "requeste location permission")
-            PermissionHandler.requestLocationPermissions(this)
+            PermissionHandler.requestLocationPermissions(
+                this
+            )
         }
     }
 
@@ -127,7 +179,9 @@ class MainActivity : AppCompatActivity() {
                     // not called after "Deny and dont ask again"
                     if (Build.VERSION.SDK_INT >= 23 && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
                         Toast.makeText(this, getText(R.string.main_activity_toast_permission_rationale), Toast.LENGTH_LONG).show()
-                        PermissionHandler.requestLocationPermissions(this)
+                        PermissionHandler.requestLocationPermissions(
+                            this
+                        )
                     }
                     Toast.makeText(this, getText(R.string.main_activity_toast_location_permission_denied), Toast.LENGTH_LONG).show()
                 }
