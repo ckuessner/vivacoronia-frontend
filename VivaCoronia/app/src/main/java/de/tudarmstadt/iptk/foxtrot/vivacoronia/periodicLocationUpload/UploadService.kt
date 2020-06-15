@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.LocationApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -33,7 +34,7 @@ class UploadService : Service() {
             if (locList.size > 0){
                 // uploads the data and deletes it if upload was successfull
                 Log.i(TAG, "upload")
-                LocationServerCommunicator.sendPositionsToServer(applicationContext, Constants().USER_ID, locList)
+                LocationApiClient.sendPositionsToServer(applicationContext, locList)
             }
             else {
                 Log.i(TAG, "no upload")
