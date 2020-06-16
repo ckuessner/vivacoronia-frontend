@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:orientation="vertical"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+
+<androidx.fragment.app.FragmentContainerView
+    android:id="@+id/map"
+    android:name="com.google.android.gms.maps.SupportMapFragment"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    tools:context=".locationDrawing.LocationDrawing.kt" />
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:weightSum="2">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/date_picker_btn"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:layout_marginEnd="50dp"
+        android:contentDescription="@string/select_date_range"
+        android:src="@drawable/ic_baseline_date_range_24"
+        app:backgroundTint="#ffb4b4"
+        app:elevation="5dp"
+        app:fabCustomSize="100dp"
+        android:layout_weight="1"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/reset"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_gravity="end"
+        android:layout_marginStart="160dp"
+        android:layout_weight="1"
+        android:contentDescription="@string/reset_date_range"
+        android:src="@drawable/ic_baseline_cancel_presentation_24"
+        app:backgroundTint="#ffb4b4"
+        app:elevation="5dp"
+        app:fabCustomSize="100dp" />
+</LinearLayout>
+
+
+</LinearLayout>
+
+    <!--<?xml version="1.0" encoding="utf-8"?>
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".locationDrawing.LocationDrawing" />-->
+

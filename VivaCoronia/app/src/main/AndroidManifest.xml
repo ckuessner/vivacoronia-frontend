@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.tudarmstadt.iptk.foxtrot.vivacoronia">
+
+    <!--
+         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
+         Google Maps Android API v2, but you must specify either coarse or fine
+         location permissions for the "MyLocation" functionality.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -17,21 +21,33 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/.
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".locationDrawing.LocationDrawingService"
+            android:label="@string/title_activity_location_drawing" />
+
         <service
             android:name=".locationTracking.LocationTrackingService"
+            android:description="@string/location_service_description_manifest"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="location"
-            android:description="@string/location_service_description_manifest">
-        </service>
-
+            android:foregroundServiceType="location" />
         <service
             android:name=".periodicLocationUpload.UploadService"
-            android:exported="false">
-        </service>
+            android:exported="false" />
 
-        <receiver
-            android:name=".periodicLocationUpload.AlarmBroadcastReceiver">
+        <receiver android:name=".periodicLocationUpload.AlarmBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -55,6 +71,9 @@
                 android:value=".mainActivity.MainActivity"/>
         </activity>
 
+        <activity
+            android:name=".infectionStatus.ScanQrCodeActivity"
+            android:label="Scan QR-Code" />
         <activity
             android:name=".infectionStatus.UpdateInfectionActivity"
             android:label="@string/update_infection_label"
