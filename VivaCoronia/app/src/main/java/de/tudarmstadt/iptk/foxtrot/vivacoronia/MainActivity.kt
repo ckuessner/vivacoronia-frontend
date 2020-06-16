@@ -15,7 +15,8 @@ import com.google.android.gms.tasks.Task
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationNotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationTrackingService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
-
+import android.widget.Button
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus.InfectionStatusActivity
 
 class MainActivity : AppCompatActivity() {
     private var TAG = "MainActivity"
@@ -35,8 +36,13 @@ class MainActivity : AppCompatActivity() {
 
         // tracking in onResume startet
         checkPermissionsAndStartTracking()
-    }
 
+        val button: Button = findViewById(R.id.go_to_update_infection)
+        button.setOnClickListener {
+            val intent = Intent(this, InfectionStatusActivity::class.java).apply {}
+            startActivity(intent)
+        }
+    }
 
 
     private fun checkPermissionsAndStartTracking() {
@@ -56,7 +62,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * creates a request to determine which services (gps, wifi, cellular) have to be enabled
      */
-    private fun createBackgroundLocationRequest() : LocationRequest? {
+    private fun createBackgroundLocationRequest(): LocationRequest? {
         // code (with a few changes) from https://developer.android.com/training/location/change-location-settings see apache 2.0 licence
         val locationRequest = LocationRequest.create()?.apply {
             interval = Constants().LOCATION_TRACKING_REQUEST_INTERVAL
@@ -68,7 +74,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * requests the services specified by the locationrequest
      */
-    private fun requestLocationService(locationRequest: LocationRequest?){
+    private fun requestLocationService(locationRequest: LocationRequest?) {
         // code (with a few changes) from https://developer.android.com/training/location/change-location-settings see apache 2.0 licence
         val builder = LocationSettingsRequest.Builder()
             .addLocationRequest(locationRequest!!)
@@ -81,10 +87,9 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, LocationTrackingService::class.java)
             Log.v(TAG, "start service")
             // version check
-            if (Build.VERSION.SDK_INT >= 26){
+            if (Build.VERSION.SDK_INT >= 26) {
                 startForegroundService(intent)
-            }
-            else {
+            } else {
                 startService(intent)
             }
         }
@@ -92,19 +97,19 @@ class MainActivity : AppCompatActivity() {
         // gps, wifi etc is not enabled, so location tracking cannot be started
         // instead gps, wifi has to be enabled
         task.addOnFailureListener { exception ->
-            if (exception is ResolvableApiException){
+            if (exception is ResolvableApiException) {
                 try {
                     Log.v(TAG, "couldnt create foreground task")
                     // opens a dialog which offers the user to enable gps
-                    exception.startResolutionForResult(this@MainActivity,
-                        Constants().LOCATION_ACCESS_SETTINGS_REQUEST_CODE)
+                    exception.startResolutionForResult(
+                        this@MainActivity,
+                        Constants().LOCATION_ACCESS_SETTINGS_REQUEST_CODE
+                    )
                 } catch (sendEx: IntentSender.SendIntentException) {
                     // Ignore the error.
                 }
             }
         }
-
-
     }
 
     /**

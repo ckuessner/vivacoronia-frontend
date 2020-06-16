@@ -141,7 +141,9 @@
             if (rsaPrivateKey.value) {
                 var rsa = new RSAKey();
                 rsa.readPrivateKeyFromPEMString(rsaPrivateKey.value);
-                var hSig = rsa.sign(JSON.stringify(data), "sha256");
+                var datax = JSON.stringify(data, Object.keys(data).sort());
+                console.log(datax);
+                var hSig = rsa.sign(datax, "sha256");
                 data["signature"] = hSig;
             }
         }
