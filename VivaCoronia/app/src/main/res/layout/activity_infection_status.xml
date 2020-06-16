@@ -14,13 +14,14 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/update_infection_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:fabCustomSize="100dp"
         android:contentDescription="@string/update_infection_button"
-        android:src="@drawable/ic_bug_report_black_24dp"
+        android:src="@drawable/ic_corona"
         android:layout_margin="10dp"
-        android:layout_gravity="end"
-        app:backgroundTint="#ff0000"
-        app:elevation="0dp" />
+        android:layout_gravity="center"
+        app:backgroundTint="#ffb4b4"
+        app:elevation="5dp" />
 
 </LinearLayout>

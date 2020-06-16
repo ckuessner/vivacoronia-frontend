@@ -2,6 +2,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.*
@@ -45,19 +46,22 @@ class UpdateInfectionActivity : AppCompatActivity() {
         else
             Toast.makeText(this, R.string.server_connection_failed, Toast.LENGTH_SHORT).show()
         setUploadStatus(UPLOAD_FAILED)
-        resetUploadStatusDelayed(3000)
+        resetUploadStatusDelayed()
     }
 
     private fun onUploadSuccessful() {
         setUploadStatus(UPLOAD_SUCCESSFUL)
-        resetUploadStatusDelayed(3000)
-        Thread.sleep(3000)
         val intent = Intent(this, InfectionStatusActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        startActivity(intent)
+        val handler = Handler()
+        handler.postDelayed({
+            if (hasWindowFocus())
+                startActivity(intent)
+        }, 2000)
     }
 
-    private fun resetUploadStatusDelayed(delayInMillis: Long) {
+    private fun resetUploadStatusDelayed() {
+        val delayInMillis = 3000L
         thread {
             Thread.sleep(delayInMillis)
             synchronized(currentUploadStatus) {
