@@ -72,10 +72,17 @@ class MainActivity : AppCompatActivity() {
         navView = findViewById(R.id.nav_view)
         navView.setupWithNavController(navController)
 
+        // add actions for drawer menu item here
         navView.setNavigationItemSelectedListener { item ->
             when(item.itemId){
                 R.id.menu_item_location_history -> {
                     navController.navigate(R.id.locationHistoryFragment)
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.menu_item_infection_update -> {
+                    Log.i(TAG, "clicked infection update")
+                    val intent = Intent(this, InfectionStatusActivity::class.java).apply {}
+                    startActivity(intent)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.menu_item_trading -> {
@@ -98,6 +105,25 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
+    // needed to close the drawer with a click on the drawer icon
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item != null) {
+            when(item.itemId){
+                // the drawer button is pressed so close the drawer
+                android.R.id.home -> {
+                    if (findViewById<DrawerLayout>(R.id.drawer_layout).isDrawerOpen(navView)) {
+                        findViewById<DrawerLayout>(R.id.drawer_layout).closeDrawer(navView)
+                    }
+                    else {
+                        findViewById<DrawerLayout>(R.id.drawer_layout).openDrawer(navView)
+                    }
+                    return true
+                }
+                else -> return false
+            }
+        }
+        return false
+    }
 
 
     //==============================================================================================

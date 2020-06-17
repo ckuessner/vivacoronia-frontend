@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@+id/menu_item_location_history"
-        android:title="@string/menu_item_location_history"
-        android:icon="@drawable/ic_locationhistory"
-        />
+    <group>
+
+        <item
+            android:id="@+id/menu_item_location_history"
+            android:icon="@drawable/ic_locationhistory"
+            android:title="@string/menu_item_location_history" />
+
+        <item
+            android:id="@+id/menu_item_infection_update"
+            android:title="@string/menu_item_infection_update" />
+
+    </group>
 
     <item
         android:id="@+id/menu_item_trading"

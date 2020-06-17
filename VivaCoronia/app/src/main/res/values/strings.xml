@@ -34,6 +34,7 @@
 
     <!-- bottom navigation menu -->
     <string name="menu_item_location_history">History</string>
+    <string name="menu_item_infection_update">Infection Update</string>
     <string name="menu_item_trading">Trading</string>
     <string name="menu_item_achievements">Achievements</string>
     <!-- TODO: Remove or change this placeholder text -->
