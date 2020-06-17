@@ -37,23 +37,43 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".infectionStatus.InfectionStatusActivity"
-            android:label="Current Infection Status" />
-
-        <activity android:name=".infectionStatus.ScanQrCodeActivity"
-            android:label="Scan QR-Code"/>
-
-        <activity
-            android:name=".infectionStatus.UpdateInfectionActivity"
-            android:label="@string/update_infection_label" />
-
-        <activity android:name=".MainActivity">
+        <!-- activities here and first has to be main activity -->
+        <activity android:name=".mainActivity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".infectionStatus.InfectionStatusActivity"
+            android:label="Current Infection Status"
+            android:parentActivityName=".mainActivity.MainActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".mainActivity.MainActivity"/>
+        </activity>
+
+        <activity android:name=".infectionStatus.ScanQrCodeActivity"
+            android:label="Scan QR-Code"
+            android:parentActivityName=".infectionStatus.InfectionStatusActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".infectionStatus.InfectionStatusActivity"/>
+        </activity>
+
+        <activity
+            android:name=".infectionStatus.UpdateInfectionActivity"
+            android:label="@string/update_infection_label"
+            android:parentActivityName=".mainActivity.MainActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".mainActivity.MainActivity"/>
+        </activity>
+
     </application>
 
 </manifest>

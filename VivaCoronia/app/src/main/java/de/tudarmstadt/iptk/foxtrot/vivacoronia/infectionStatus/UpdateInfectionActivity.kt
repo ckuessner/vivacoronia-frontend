@@ -11,6 +11,7 @@ import com.android.volley.ClientError
 import com.android.volley.VolleyError
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.InfectionApiClient
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.MainActivity
 import kotlin.collections.HashMap
 import kotlin.concurrent.thread
 
@@ -32,7 +33,11 @@ class UpdateInfectionActivity : AppCompatActivity() {
         InfectionStatusFragment.replaceFragment(data, supportFragmentManager)
 
         val button: Button = findViewById(R.id.upload_infection_status)
-        button.setOnClickListener { uploadData(data) }
+        button.setOnClickListener {
+            uploadData(data)
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            startActivity(intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+        }
     }
 
     private fun uploadData(data: Map<String, String>) {

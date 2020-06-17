@@ -1,4 +1,4 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity
 
 import android.Manifest
 import android.content.Intent
@@ -91,7 +91,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    //==============================================================================================
+    // methods for drawer menu
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_fragment)
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
 
+
+
+    //==============================================================================================
+    // methods for starting location tracking service
     private fun checkPermissionsAndStartTracking() {
         // application flow: check permission -> if false -> request permission
         // TODO add in onResume method the start of the service, if the service isnt running
