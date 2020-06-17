@@ -132,8 +132,8 @@ class LocationDrawingService : AppCompatActivity(), OnMapReadyCallback {
                 //coordinateTime = formatter.parse(timestamps[x] as String).time
             }
             val latlong = coordinates[x] as JsonArray<*>
-            val lat = latlong[0] as Double
-            val long = latlong[1] as Double
+            val lat = latlong[1] as Double
+            val long = latlong[0] as Double
             val location = Location(Context.LOCATION_SERVICE)
             location.time = coordinateTime
             location.latitude = lat
@@ -163,7 +163,7 @@ class LocationDrawingService : AppCompatActivity(), OnMapReadyCallback {
         )
         mMap.addMarker(MarkerOptions().position(end).title("Last Tracked Position"))
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start, 15f))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(end, 15f))
     }
 
     private fun filterCoordinates(
@@ -171,9 +171,10 @@ class LocationDrawingService : AppCompatActivity(), OnMapReadyCallback {
         start: Long,
         end: Long
     ): ArrayList<Location> {
+        val newEnd = end + 86400000
         val filtered: ArrayList<Location> = ArrayList()
         for (x in coordinates) {
-            if (x.time in (start + 1) until end) {
+            if (x.time in (start + 1) until newEnd) {
                 filtered.add(x)
             }
         }
