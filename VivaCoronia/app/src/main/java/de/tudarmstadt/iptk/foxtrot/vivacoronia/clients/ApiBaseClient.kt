@@ -1,7 +1,11 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.HurlStack
 import com.android.volley.toolbox.Volley
@@ -26,7 +30,23 @@ abstract class ApiBaseClient {
         return Constants().USER_ID
     }
 
-    fun getRequestQueue(context: Context): RequestQueue {
+    private fun checkInternetPermissions(context: Context): Boolean {
+        return ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.INTERNET
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun getRequestQueue(context: Context): RequestQueue? {
+        if (!checkInternetPermissions(context)) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.toast_no_internet_permissions),
+                Toast.LENGTH_LONG
+            ).show()
+            return null
+        }
+
         return try {
             val sslContext =
                 getDevSSLContext(
@@ -51,7 +71,8 @@ abstract class ApiBaseClient {
     private fun getDevSSLContext(context: Context): SSLContext {
         // Load developer certificate
         val cf: CertificateFactory = CertificateFactory.getInstance("X.509")
-        val caInput: InputStream = BufferedInputStream(context.resources.openRawResource(R.raw.dev_der_crt))
+        val caInput: InputStream =
+            BufferedInputStream(context.resources.openRawResource(R.raw.dev_der_crt))
         val ca: X509Certificate = caInput.use {
             cf.generateCertificate(it) as X509Certificate
         }

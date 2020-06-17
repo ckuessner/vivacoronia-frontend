@@ -14,7 +14,7 @@
     <string name="location_service_toast_started">Location tracking started…</string>
 
     <!-- location upload service -->
-    <string name="location_upload_service_toast_no_internet">No permission on accessing the internet</string>
+    <string name="toast_no_internet_permissions">Permission to access the Internet not granted</string>
 
     <!-- manifest -->
     <string name="location_service_description_manifest">Allows to track your location and to warn you of possible infections.</string>

@@ -1,15 +1,10 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.util.Log
-import android.widget.Toast
-import androidx.core.content.ContextCompat
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.DBLocation
 import kotlinx.coroutines.GlobalScope
@@ -18,10 +13,10 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 object LocationApiClient : ApiBaseClient() {
-    private const val TAG = "LocationSending"
+    private const val TAG = "LocationClient"
 
     private fun getEndpoint(): String {
-        return "${getBaseUrl()}/location/${getUserId()}"
+        return "${getBaseUrl()}/locations/${getUserId()}"
     }
 
     /**
@@ -30,18 +25,7 @@ object LocationApiClient : ApiBaseClient() {
      * @return true, if upload successful
      */
     fun sendPositionsToServer(context: Context, locations: List<DBLocation>) {
-        if (!checkInternetPermissions(
-                context
-            )
-        ) {
-            // Permission is not granted
-            Toast.makeText(
-                context,
-                context.getString(R.string.location_upload_service_toast_no_internet),
-                Toast.LENGTH_LONG
-            ).show()
-            return
-        }
+        val requestQueue = getRequestQueue(context) ?: return
 
         // Create JSONArray for request body with location records in it
         val locationJSONArray =
@@ -77,10 +61,7 @@ object LocationApiClient : ApiBaseClient() {
 
         // Add the upload request to the request queue
         Log.i(TAG, "uploading to $url: $locationJSONArray")
-        getRequestQueue(
-            context
-        )
-            .add(jsonStringRequest)
+        requestQueue.add(jsonStringRequest)
     }
 
     /**
@@ -102,13 +83,6 @@ object LocationApiClient : ApiBaseClient() {
                         )
                 )
         })
-    }
-
-    private fun checkInternetPermissions(context: Context): Boolean {
-        return ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.INTERNET
-        ) == PackageManager.PERMISSION_GRANTED
     }
 
     private class JSONArrayRequest(

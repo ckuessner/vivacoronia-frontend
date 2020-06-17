@@ -16,6 +16,7 @@ object InfectionApiClient : ApiBaseClient() {
     }
 
     fun postInfectionStatus(context: Context, infectionStatusData: Map<String, String>, onUploadSuccessful: () -> Unit, onUploadFailed: (error: VolleyError) -> Unit){
+        val queue = getRequestQueue(context) ?: return
         val url = getEndpoint()
 
         val requestBody = JSONObject(infectionStatusData).toString()
@@ -33,16 +34,15 @@ object InfectionApiClient : ApiBaseClient() {
             }
         }
 
-        val queue = getRequestQueue(context)
         queue.add(request)
     }
 
     fun getInfectionStatus(context: Context): HashMap<String, String>{
+        val queue = getRequestQueue(context) ?: return HashMap()
         val url = getEndpoint()
         val future = RequestFuture.newFuture<String>()
         val request = StringRequest(Request.Method.GET, url, future, future)
 
-        val queue = getRequestQueue(context)
         queue.add(request)
         val mapper = ObjectMapper()
         val result = future.get()

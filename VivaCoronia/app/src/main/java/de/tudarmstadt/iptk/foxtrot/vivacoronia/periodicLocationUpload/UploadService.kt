@@ -4,7 +4,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.LocationApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
 import kotlinx.coroutines.GlobalScope
@@ -31,12 +30,11 @@ class UploadService : Service() {
             Log.i(TAG, "locList Length: " + locList.size.toString())
 
             // if location array is empty, no upload is needed
-            if (locList.size > 0){
-                // uploads the data and deletes it if upload was successfull
+            if (locList.isNotEmpty()) {
+                // uploads the data and deletes it if upload was successful
                 Log.i(TAG, "upload")
                 LocationApiClient.sendPositionsToServer(applicationContext, locList)
-            }
-            else {
+            } else {
                 Log.i(TAG, "no upload")
             }
 
