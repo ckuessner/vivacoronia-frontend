@@ -4,9 +4,12 @@ import android.content.Context
 import android.util.Log
 import com.android.volley.Request
 import com.android.volley.Response
+import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.RequestFuture
 import com.android.volley.toolbox.StringRequest
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.DBLocation
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationDrawing.LocationDrawingService
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -41,7 +44,7 @@ object LocationApiClient : ApiBaseClient() {
                 Request.Method.POST, url, locationJSONArray,
                 Response.Listener { response ->
                     Log.i(
-                        TAG,
+                        POST_TAG,
                         "server response: $response"
                     )
                     GlobalScope.launch {
@@ -53,7 +56,7 @@ object LocationApiClient : ApiBaseClient() {
                 Response.ErrorListener { error ->
                     error.printStackTrace()
                     Log.e(
-                        TAG,
+                        POST_TAG,
                         "upload failed: $error"
                     )
                 }
@@ -62,6 +65,25 @@ object LocationApiClient : ApiBaseClient() {
         // Add the upload request to the request queue
         Log.i(TAG, "uploading to $url: $locationJSONArray")
         requestQueue.add(jsonStringRequest)
+    }
+
+    fun getPositionsFromServer(context: Context): JSONArray{
+        if (!checkInternetPermissions(context)
+        ) {
+            // Permission is not granted
+            Toast.makeText(
+                context,
+                context.getString(R.string.location_upload_service_toast_no_internet),
+                Toast.LENGTH_LONG
+            ).show()
+            return JSONArray()
+        }
+
+        val responseFuture = RequestFuture.newFuture<JSONArray>();
+        val request = JsonArrayRequest(getEndpoint(), responseFuture, Response.ErrorListener { Log.e(
+            GET_TAG, it.message ?: "getPositions request failed") })
+        getRequestQueue(context).add(request)
+        return responseFuture.get()
     }
 
     /**
@@ -88,7 +110,7 @@ object LocationApiClient : ApiBaseClient() {
     private class JSONArrayRequest(
         method: Int,
         url: String,
-        val jsonArray: JSONArray,
+        val jsonArray: JSONArray?,
         req: Response.Listener<String>,
         error: Response.ErrorListener
     ) : StringRequest(method, url, req, error) {

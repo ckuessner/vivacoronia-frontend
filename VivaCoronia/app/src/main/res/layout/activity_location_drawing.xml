@@ -1,62 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:orientation="vertical"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-
-<androidx.fragment.app.FragmentContainerView
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="1"
-    tools:context=".locationDrawing.LocationDrawing.kt" />
+    android:layout_height="match_parent">
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:weightSum="2">
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/date_picker_btn"
-        android:layout_width="0dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center"
-        android:layout_marginEnd="50dp"
-        android:contentDescription="@string/select_date_range"
-        android:src="@drawable/ic_baseline_date_range_24"
-        app:backgroundTint="#ffb4b4"
-        app:elevation="5dp"
-        app:fabCustomSize="100dp"
-        android:layout_weight="1"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/reset"
-        android:layout_width="0dp"
-        android:layout_height="100dp"
-        android:layout_gravity="end"
-        android:layout_marginStart="160dp"
-        android:layout_weight="1"
-        android:contentDescription="@string/reset_date_range"
-        android:src="@drawable/ic_baseline_cancel_presentation_24"
-        app:backgroundTint="#ffb4b4"
-        app:elevation="5dp"
-        app:fabCustomSize="100dp" />
-</LinearLayout>
-
-
-</LinearLayout>
-
-    <!--<?xml version="1.0" encoding="utf-8"?>
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:map="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".locationDrawing.LocationDrawing" />-->
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        tools:context=".locationDrawing.LocationDrawing.kt" >
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/date_picker_btn"
+            android:layout_width="150dp"
+            android:layout_height="100dp"
+            android:layout_gravity="bottom|start"
+            android:contentDescription="@string/select_date_range"
+            style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
+            app:icon="@drawable/ic_baseline_date_range_24"
+            app:iconSize="60dp" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/reset"
+            android:layout_width="175dp"
+            android:layout_height="100dp"
+            android:layout_gravity="bottom|end"
+            android:contentDescription="@string/reset_date_range"
+            style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
+            app:icon="@drawable/ic_baseline_cancel_presentation_24"
+            app:iconSize="60dp" />
+    </androidx.fragment.app.FragmentContainerView>
+
+</RelativeLayout>
 
