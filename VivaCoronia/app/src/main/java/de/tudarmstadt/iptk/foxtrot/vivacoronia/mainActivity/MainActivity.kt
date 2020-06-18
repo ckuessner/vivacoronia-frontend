@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(setOf(R.id.locationHistoryFragment,
             R.id.tradingOverviewFragment,
             R.id.achievementsFragment),
-            findViewById<DrawerLayout>(R.id.drawer_layout))
+            findViewById(R.id.drawer_layout))
 
 
         // setup default toolbar with navcontroller
@@ -77,23 +77,22 @@ class MainActivity : AppCompatActivity() {
             when(item.itemId){
                 R.id.menu_item_location_history -> {
                     navController.navigate(R.id.locationHistoryFragment)
-                    return@setNavigationItemSelectedListener true
+                    findViewById<DrawerLayout>(R.id.drawer_layout).closeDrawer(navView)
                 }
                 R.id.menu_item_infection_update -> {
                     Log.i(TAG, "clicked infection update")
                     val intent = Intent(this, InfectionStatusActivity::class.java).apply {}
                     startActivity(intent)
-                    return@setNavigationItemSelectedListener true
                 }
                 R.id.menu_item_trading -> {
                     navController.navigate(R.id.tradingOverviewFragment)
-                    return@setNavigationItemSelectedListener true
                 }
                 R.id.menu_item_achievements -> {
                     navController.navigate(R.id.achievementsFragment)
-                    return@setNavigationItemSelectedListener true}
-                else -> return@setNavigationItemSelectedListener false
+                }
             }
+            findViewById<DrawerLayout>(R.id.drawer_layout).closeDrawer(navView)
+            return@setNavigationItemSelectedListener true
         }
 
     }

@@ -35,8 +35,6 @@ class UpdateInfectionActivity : AppCompatActivity() {
         val button: Button = findViewById(R.id.upload_infection_status)
         button.setOnClickListener {
             uploadData(data)
-            val intent = Intent(applicationContext, MainActivity::class.java)
-            startActivity(intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
         }
     }
 
@@ -56,7 +54,7 @@ class UpdateInfectionActivity : AppCompatActivity() {
 
     private fun onUploadSuccessful() {
         setUploadStatus(UPLOAD_SUCCESSFUL)
-        val intent = Intent(this, InfectionStatusActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val handler = Handler()
         handler.postDelayed({
