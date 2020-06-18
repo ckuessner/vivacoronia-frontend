@@ -9,7 +9,6 @@ import com.android.volley.toolbox.RequestFuture
 import com.android.volley.toolbox.StringRequest
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.DBLocation
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationDrawing.LocationDrawingService
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -44,7 +43,7 @@ object LocationApiClient : ApiBaseClient() {
                 Request.Method.POST, url, locationJSONArray,
                 Response.Listener { response ->
                     Log.i(
-                        POST_TAG,
+                        TAG,
                         "server response: $response"
                     )
                     GlobalScope.launch {
@@ -56,7 +55,7 @@ object LocationApiClient : ApiBaseClient() {
                 Response.ErrorListener { error ->
                     error.printStackTrace()
                     Log.e(
-                        POST_TAG,
+                        TAG,
                         "upload failed: $error"
                     )
                 }
@@ -68,21 +67,11 @@ object LocationApiClient : ApiBaseClient() {
     }
 
     fun getPositionsFromServer(context: Context): JSONArray{
-        if (!checkInternetPermissions(context)
-        ) {
-            // Permission is not granted
-            Toast.makeText(
-                context,
-                context.getString(R.string.location_upload_service_toast_no_internet),
-                Toast.LENGTH_LONG
-            ).show()
-            return JSONArray()
-        }
-
+        val requestQueue = getRequestQueue(context) ?: return JSONArray()
         val responseFuture = RequestFuture.newFuture<JSONArray>();
         val request = JsonArrayRequest(getEndpoint(), responseFuture, Response.ErrorListener { Log.e(
-            GET_TAG, it.message ?: "getPositions request failed") })
-        getRequestQueue(context).add(request)
+            TAG, it.message ?: "getPositions request failed") })
+        requestQueue.add(request)
         return responseFuture.get()
     }
 

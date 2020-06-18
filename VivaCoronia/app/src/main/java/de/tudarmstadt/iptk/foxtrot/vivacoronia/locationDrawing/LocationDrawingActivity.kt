@@ -28,7 +28,7 @@ import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 import kotlin.properties.Delegates
 
-class LocationDrawingService : AppCompatActivity(), OnMapReadyCallback {
+class LocationDrawingActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
 

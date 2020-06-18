@@ -35,7 +35,14 @@ class LocationHistoryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_location_history, container, false)
+        val view = inflater.inflate(R.layout.fragment_location_history, container, false)
+        val infection_button = view.findViewById<FloatingActionButton>(R.id.floatingActionButton_infection_update)
+        infection_button.setOnClickListener {
+            val intent = Intent(context, InfectionStatusActivity::class.java).apply {}
+            startActivity(intent)
+        }
+
+        return view
     }
 
     companion object {

@@ -29,23 +29,19 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
-
-        <activity
-            android:name=".locationDrawing.LocationDrawingService"
-            android:label="@string/title_activity_location_drawing" />
 
         <service
             android:name=".locationTracking.LocationTrackingService"
             android:description="@string/location_service_description_manifest"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="location" />
+            android:foregroundServiceType="location" >
+        </service>
+
         <service
             android:name=".periodicLocationUpload.UploadService"
-            android:exported="false" />
+            android:exported="false" >
+        </service>
 
         <receiver android:name=".periodicLocationUpload.AlarmBroadcastReceiver">
             <intent-filter>
@@ -72,9 +68,6 @@
         </activity>
 
         <activity
-            android:name=".infectionStatus.ScanQrCodeActivity"
-            android:label="Scan QR-Code" />
-        <activity
             android:name=".infectionStatus.UpdateInfectionActivity"
             android:label="@string/update_infection_label"
             android:parentActivityName=".infectionStatus.ScanQrCodeActivity">
@@ -83,6 +76,21 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".infectionStatus.ScanQrCodeActivity"/>
         </activity>
+
+        <activity android:name=".locationDrawing.LocationDrawingActivity"
+            android:label="Show Location History"
+            android:parentActivityName=".mainActivity.MainActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".infectionStatus.InfectionStatusActivity">
+            </meta-data>
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" >
+        </meta-data>
 
     </application>
 
