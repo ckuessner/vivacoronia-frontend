@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Viva Coronia</string>
-    <string name="send_pos_label">Location is recorded automatically</string>
 
     <!-- main activity -->
     <string name="main_activity_toast_permission_rationale">If location access is denied, the app can not warn for infections.</string>

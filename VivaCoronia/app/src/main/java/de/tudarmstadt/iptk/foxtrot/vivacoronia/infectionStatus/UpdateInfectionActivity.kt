@@ -70,7 +70,7 @@ class UpdateInfectionActivity : AppCompatActivity() {
                 finish()
             }
                 //startActivity(intent)
-        }, 2000)
+        }, 1000)
     }
 
     private fun resetUploadStatusDelayed() {
