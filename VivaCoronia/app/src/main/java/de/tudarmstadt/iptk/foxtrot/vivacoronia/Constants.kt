@@ -1,5 +1,6 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
+// TODO refactor to object
 class Constants {
 
     // Location Upload stuff

@@ -58,11 +58,11 @@
         <activity
             android:name=".infectionStatus.UpdateInfectionActivity"
             android:label="@string/update_infection_label"
-            android:parentActivityName=".mainActivity.MainActivity">
+            android:parentActivityName=".infectionStatus.ScanQrCodeActivity">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".mainActivity.MainActivity"/>
+                android:value=".infectionStatus.ScanQrCodeActivity"/>
         </activity>
 
     </application>
