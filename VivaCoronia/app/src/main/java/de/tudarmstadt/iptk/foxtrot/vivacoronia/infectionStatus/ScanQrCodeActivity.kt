@@ -1,15 +1,18 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus
 
+import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import androidx.appcompat.app.AppCompatActivity
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.Result
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 
 class ScanQrCodeActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
+    companion object {
+        const val UPDATE_INFECTION_STATUS_ACTIVITY = 1
+    }
+
     private var mScannerView: ZXingScannerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,12 +40,29 @@ class ScanQrCodeActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
         mScannerView!!.stopCamera()
 
-        val mapper = jacksonObjectMapper()
-        val data = mapper.readValue<HashMap<String, String>>(rawResult.text)
         val intent: Intent = Intent(this, UpdateInfectionActivity::class.java).apply {
-            putExtra("data", data)
+            putExtra("data", rawResult.text)
         }
 
-        startActivity(intent)
+        startActivityForResult(intent, UPDATE_INFECTION_STATUS_ACTIVITY)
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            finish()
+        } else {
+            supportFragmentManager.popBackStack()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == UPDATE_INFECTION_STATUS_ACTIVITY)
+            finish()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }

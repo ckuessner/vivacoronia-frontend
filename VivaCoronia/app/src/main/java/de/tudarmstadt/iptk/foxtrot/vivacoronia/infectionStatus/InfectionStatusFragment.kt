@@ -1,103 +1,106 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.Gravity
+import android.util.Log
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TableLayout
-import android.widget.TableRow
-import android.widget.TextView
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
+import com.android.volley.VolleyError
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
-import java.text.SimpleDateFormat
-import java.util.Locale
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.InfectionApiClient
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentInfectionStatusBinding
+import org.json.JSONObject
+import java.util.concurrent.ExecutionException
+import kotlin.concurrent.thread
 
+private const val TAG = "InfectionStatusFragment"
+private const val ZXING_CAMERA_PERMISSION = 1
 
 class InfectionStatusFragment : Fragment() {
-    companion object {
-        fun replaceFragment(data: HashMap<String, String>, fragmentManager: FragmentManager) {
-            val bundle = Bundle()
-            bundle.putSerializable("data", data)
-            val fragment = InfectionStatusFragment()
-            fragment.arguments = bundle
-            val transaction = fragmentManager.beginTransaction()
-            transaction.replace(R.id.infection_status_fragment, fragment)
-            transaction.commit()
-        }
-    }
-
-    private val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault())
-    private val formatter: SimpleDateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+    private lateinit var binding: FragmentInfectionStatusBinding
+    private lateinit var viewModel: InfectionStatusViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.infection_status_fragment, container, false)
+        val viewModelFactory = InfectionStatusViewModelFactory(resources.getString(R.string.unknown))
+        viewModel = ViewModelProvider(this, viewModelFactory).get(InfectionStatusViewModel::class.java)
 
-        if (arguments != null && arguments!!.containsKey("data")) {
-            @Suppress("UNCHECKED_CAST") // TODO Check type and Log wrong type if inappropriate
-            val data: HashMap<String, String> = arguments!!.get("data") as HashMap<String, String>
-            setFields(data, view)
+        // Inflate the layout for this fragment
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_infection_status,
+            container,
+            false
+        )
+
+        loadCurrentInfectionStatus()
+
+        binding.updateInfectionFab.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+                ActivityCompat.requestPermissions(requireActivity(), Array(1) { Manifest.permission.CAMERA },
+                    ZXING_CAMERA_PERMISSION
+                )
+            else {
+                val intent = Intent(requireActivity(), ScanQrCodeActivity::class.java).apply {}
+                startActivity(intent)
+            }
         }
 
-        return view
+        return binding.root
     }
 
-    private fun setFields(data: HashMap<String, String>, view: View) {
-        setDefaultFields(data, view)
-
-        val defaultAttributes = listOf("newStatus", "dateOfTest", "occuredDateEstimation", "signature")
-        val additionalAttributes = data.filter { entry ->
-            !defaultAttributes.contains(entry.key)
-        }
-
-        addAdditionalFields(additionalAttributes, view)
+    override fun onResume() {
+        super.onResume()
+        loadCurrentInfectionStatus()
     }
 
-    private fun addAdditionalFields(additionalAttributes: Map<String, String>, view: View) {
-        val tableLayout: TableLayout = view.findViewById(R.id.update_infection_table)
-        val padding: Int = (3 * resources.displayMetrics.density).toInt()
-        for ((key, attributeValue) in additionalAttributes) {
-            val separatorView = View(activity!!)
-            val scale = context!!.resources.displayMetrics.density
-            val widthPx = (1 * scale + 0.5f).toInt()
-            separatorView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, widthPx)
-            separatorView.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.separatorColor))
-            tableLayout.addView(separatorView)
-
-            val row = TableRow(activity!!)
-            row.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT)
-            row.weightSum = 1f
-
-            val labelView = TextView(activity!!)
-            labelView.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 0.5f)
-            labelView.setPadding(padding, padding, padding, padding)
-            labelView.text = key
-            row.addView(labelView)
-
-            val valueView = TextView(activity!!)
-            valueView.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 0.5f)
-            valueView.gravity = Gravity.END
-            labelView.setPadding(padding, padding, padding, padding)
-            valueView.text = attributeValue
-            row.addView(valueView)
-
-            tableLayout.addView(row, TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT))
+    private fun loadCurrentInfectionStatus() {
+        thread {
+            val data = fetchData()
+            if (data.length() != 0) {
+                requireActivity().runOnUiThread {
+                    viewModel.update(data)
+                }
+            }
         }
     }
 
-    private fun setDefaultFields(data: HashMap<String, String>, view: View) {
-        val infectionStatus: TextView = view.findViewById(R.id.infection_status)
-        infectionStatus.text = data["newStatus"]
+    private fun fetchData(): JSONObject {
+        try {
+            return InfectionApiClient.getInfectionStatus(requireActivity())
+        } catch (exception: ExecutionException) {
+            if (exception.cause is VolleyError && requireActivity().hasWindowFocus())
+                requireActivity().runOnUiThread {
+                    Toast.makeText(requireActivity(), R.string.server_connection_failed, Toast.LENGTH_LONG).show()
+                }
+            else {
+                Log.e(TAG, "Error while fetching or parsing current infection status", exception)
+            }
+        }
+        return JSONObject()
+    }
 
-        val infectionDateApprox: TextView = view.findViewById(R.id.infection_date_approx)
-        infectionDateApprox.text = formatter.format(parser.parse(data["occuredDateEstimation"]!!.replace("Z", "+0000"))!!)
-
-        val testDate: TextView = view.findViewById(R.id.test_date)
-        testDate.text = formatter.format(parser.parse(data["dateOfTest"]!!.replace("Z", "+0000"))!!)
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            ZXING_CAMERA_PERMISSION ->
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    val intent = Intent(requireActivity(), ScanQrCodeActivity::class.java).apply {}
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(requireActivity(), "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 }

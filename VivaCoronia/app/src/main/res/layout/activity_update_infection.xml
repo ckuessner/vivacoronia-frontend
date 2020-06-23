@@ -1,61 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/infection_status_fragment"
-        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus.InfectionStatusFragment"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="bottom"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <ProgressBar
-                android:id="@+id/upload_infection_status_progress_bar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="invisible" />
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/infection_status_base_fragment"
+            android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus.InfectionStatusBaseFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-            <ImageView
-                android:contentDescription="@string/update_successful"
-                android:id="@+id/update_infection_status_success"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@id/upload_infection_status_progress_bar"
-                android:layout_alignBottom="@id/upload_infection_status_progress_bar"
-                android:visibility="invisible"
-                app:srcCompat="@drawable/ic_check_circle_green_24dp" />
-
-            <ImageView
-                android:contentDescription="@string/update_failed"
-                android:id="@+id/update_infection_status_failed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@id/upload_infection_status_progress_bar"
-                android:layout_alignBottom="@id/upload_infection_status_progress_bar"
-                android:visibility="invisible"
-                app:srcCompat="@drawable/ic_failed_red_24dp" />
-        </RelativeLayout>
-
-        <Button
-            android:id="@+id/upload_infection_status"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/upload_infection_status_button"
-            android:background="@drawable/bg_button"
-            android:layout_margin="5dp"/>
+            android:gravity="bottom"
+            android:orientation="vertical">
 
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ProgressBar
+                    android:id="@+id/upload_infection_status_progress_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="invisible" />
+
+                <ImageView
+                    android:id="@+id/update_infection_status_success"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/upload_infection_status_progress_bar"
+                    android:layout_alignBottom="@id/upload_infection_status_progress_bar"
+                    android:contentDescription="@string/update_successful"
+                    android:visibility="invisible"
+                    app:srcCompat="@drawable/ic_check_circle_green_24dp" />
+
+                <ImageView
+                    android:id="@+id/update_infection_status_failed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/upload_infection_status_progress_bar"
+                    android:layout_alignBottom="@id/upload_infection_status_progress_bar"
+                    android:contentDescription="@string/update_failed"
+                    android:visibility="invisible"
+                    app:srcCompat="@drawable/ic_failed_red_24dp" />
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/upload_infection_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/bg_button"
+                android:text="@string/upload_infection_status_button" />
+
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</layout>

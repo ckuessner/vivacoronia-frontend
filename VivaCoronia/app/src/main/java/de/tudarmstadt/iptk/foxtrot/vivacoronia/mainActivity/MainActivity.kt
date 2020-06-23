@@ -26,8 +26,6 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationNotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationTrackingService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
-import android.widget.Button
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus.InfectionStatusActivity
 
 class MainActivity : AppCompatActivity() {
     private var TAG = "MainActivity"
@@ -59,7 +57,8 @@ class MainActivity : AppCompatActivity() {
         // the location history view, trading view and achievements view are all root views
         appBarConfiguration = AppBarConfiguration(setOf(R.id.locationHistoryFragment,
             R.id.tradingOverviewFragment,
-            R.id.achievementsFragment),
+            R.id.achievementsFragment,
+            R.id.infectionStatusFragment),
             findViewById(R.id.drawer_layout))
 
 
@@ -77,12 +76,9 @@ class MainActivity : AppCompatActivity() {
             when(item.itemId){
                 R.id.menu_item_location_history -> {
                     navController.navigate(R.id.locationHistoryFragment)
-                    findViewById<DrawerLayout>(R.id.drawer_layout).closeDrawer(navView)
                 }
                 R.id.menu_item_infection_update -> {
-                    Log.i(TAG, "clicked infection update")
-                    val intent = Intent(this, InfectionStatusActivity::class.java).apply {}
-                    startActivity(intent)
+                    navController.navigate(R.id.infectionStatusFragment)
                 }
                 R.id.menu_item_trading -> {
                     navController.navigate(R.id.tradingOverviewFragment)

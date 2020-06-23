@@ -1,18 +1,22 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.animation.AnimationUtils
-import android.widget.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import com.android.volley.ClientError
 import com.android.volley.VolleyError
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.InfectionApiClient
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.ActivityUpdateInfectionBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.MainActivity
-import kotlin.collections.HashMap
+import org.json.JSONObject
 import kotlin.concurrent.thread
 
 private const val UPLOAD_FAILED = 0
@@ -22,23 +26,25 @@ private const val NO_UPLOAD_STATUS = 3
 
 class UpdateInfectionActivity : AppCompatActivity() {
     private var currentUploadStatus = NO_UPLOAD_STATUS
+    private lateinit var binding: ActivityUpdateInfectionBinding
+    private lateinit var viewModel: InfectionStatusViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_update_infection)
+        val viewModelFactory = InfectionStatusViewModelFactory(resources.getString(R.string.unknown))
+        viewModel = ViewModelProvider(this, viewModelFactory).get(InfectionStatusViewModel::class.java)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_update_infection)
 
         // Display data
-        @Suppress("UNCHECKED_CAST")  // TODO Check type and Log "wrong type" if inappropriate
-        val data = intent.getSerializableExtra("data") as HashMap<String, String>
-        InfectionStatusFragment.replaceFragment(data, supportFragmentManager)
+        val data = JSONObject(intent.getStringExtra("data")!!)
+        viewModel.update(data)
 
-        val button: Button = findViewById(R.id.upload_infection_status)
-        button.setOnClickListener {
+        binding.uploadInfectionStatus.setOnClickListener {
             uploadData(data)
         }
     }
 
-    private fun uploadData(data: Map<String, String>) {
+    private fun uploadData(data: JSONObject) {
         setUploadStatus(UPLOAD_IN_PROGRESS)
         InfectionApiClient.postInfectionStatus(this, data, ::onUploadSuccessful, ::onUploadFailed)
     }
@@ -58,8 +64,12 @@ class UpdateInfectionActivity : AppCompatActivity() {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val handler = Handler()
         handler.postDelayed({
-            if (hasWindowFocus())
-                startActivity(intent)
+            if (hasWindowFocus()){
+                val retIntent = Intent()
+                setResult(Activity.RESULT_OK, retIntent)
+                finish()
+            }
+                //startActivity(intent)
         }, 2000)
     }
 
@@ -75,29 +85,18 @@ class UpdateInfectionActivity : AppCompatActivity() {
     }
 
     private fun resetUploadStatus() {
-        val progressBar: View = findViewById(R.id.upload_infection_status_progress_bar)
-        val successIcon: View = findViewById(R.id.update_infection_status_success)
-        val failedIcon: View = findViewById(R.id.update_infection_status_failed)
-        val uploadButton: Button = findViewById(R.id.upload_infection_status)
-
-        var viewToHide: View = progressBar
+        var viewToHide: View = binding.uploadInfectionStatusProgressBar
         when (currentUploadStatus) {
-            UPLOAD_FAILED -> viewToHide = failedIcon
-            UPLOAD_SUCCESSFUL -> viewToHide = successIcon
-            UPLOAD_IN_PROGRESS -> viewToHide = progressBar
+            UPLOAD_FAILED -> viewToHide = binding.updateInfectionStatusFailed
+            UPLOAD_SUCCESSFUL -> viewToHide = binding.updateInfectionStatusSuccess
         }
         val fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out)
         viewToHide.startAnimation(fadeOut)
         viewToHide.visibility = View.INVISIBLE
-        uploadButton.isEnabled = true
+        binding.uploadInfectionStatus.isEnabled = true
     }
 
     private fun setUploadStatus(newStatus: Int) {
-        val progressBar: View = findViewById(R.id.upload_infection_status_progress_bar)
-        val successIcon: View = findViewById(R.id.update_infection_status_success)
-        val failedIcon: View = findViewById(R.id.update_infection_status_failed)
-        val uploadButton: Button = findViewById(R.id.upload_infection_status)
-
         resetUploadStatus()
         currentUploadStatus = newStatus
         if (newStatus == NO_UPLOAD_STATUS)
@@ -105,11 +104,11 @@ class UpdateInfectionActivity : AppCompatActivity() {
 
         val viewToShow: View?
         when (newStatus) {
-            UPLOAD_FAILED -> viewToShow = failedIcon
-            UPLOAD_SUCCESSFUL -> viewToShow = successIcon
+            UPLOAD_FAILED -> viewToShow = binding.updateInfectionStatusFailed
+            UPLOAD_SUCCESSFUL -> viewToShow = binding.updateInfectionStatusSuccess
             UPLOAD_IN_PROGRESS -> {
-                viewToShow = progressBar
-                uploadButton.isEnabled = false
+                viewToShow = binding.uploadInfectionStatusProgressBar
+                binding.uploadInfectionStatus.isEnabled = false
             }
             else -> return
         }
@@ -117,5 +116,10 @@ class UpdateInfectionActivity : AppCompatActivity() {
         val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in)
         viewToShow.startAnimation(fadeIn)
         viewToShow.visibility = View.VISIBLE
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }

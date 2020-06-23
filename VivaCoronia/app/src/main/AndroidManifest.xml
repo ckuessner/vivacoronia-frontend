@@ -46,22 +46,13 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".infectionStatus.InfectionStatusActivity"
-            android:label="Current Infection Status"
+        <activity android:name=".infectionStatus.ScanQrCodeActivity"
+            android:label="Scan QR-Code"
             android:parentActivityName=".mainActivity.MainActivity">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".mainActivity.MainActivity"/>
-        </activity>
-
-        <activity android:name=".infectionStatus.ScanQrCodeActivity"
-            android:label="Scan QR-Code"
-            android:parentActivityName=".infectionStatus.InfectionStatusActivity">
-
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".infectionStatus.InfectionStatusActivity"/>
         </activity>
 
         <activity
