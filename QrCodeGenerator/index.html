@@ -29,7 +29,19 @@
                     <label for="occured-date-estimation">Date and time of infection or recovery</label>
                 </div>
                 <div class="col">
-                    <input id="occured-date-estimation" type="datetime-local" value="2020-05-11T11:30" />
+                    <input id="occured-date-estimation" type="datetime-local" />
+                    <script>
+                        var dt = new Date();
+                        document.getElementById("occured-date-estimation").value = 
+                            dt.getFullYear() + "-" + appendZero(dt.getMonth()+1) + "-" + appendZero(dt.getDate()-1) + "T" + appendZero(dt.getHours()) + ":" + appendZero(dt.getMinutes())
+
+                        function appendZero(s){
+                            if (s < 10){
+                                return "0"+s 
+                            }
+                            return s 
+                        }
+                    </script>
                 </div>
             </div>
             <div class="row">
@@ -37,7 +49,19 @@
                     <label for="date-of-test">Date and time of approving test<span class="required">*</span></label>
                 </div>
                 <div class="col">
-                    <input id="date-of-test" type="datetime-local" value="2020-05-12T11:30" />
+                    <input id="date-of-test" type="datetime-local" />
+                    <script>
+                        var dt = new Date();
+                        document.getElementById("date-of-test").value = 
+                            dt.getFullYear() + "-" + appendZero(dt.getMonth()+1) + "-" + appendZero(dt.getDate()) + "T" + appendZero(dt.getHours()) + ":" + appendZero(dt.getMinutes())
+
+                        function appendZero(s){
+                            if (s < 10){
+                                return "0"+s 
+                            }
+                            return s 
+                        }
+                    </script>
                 </div>
             </div>
             <div class="row">
