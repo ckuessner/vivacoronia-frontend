@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/locationHistoryFragment"
-        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.LocationHistoryFragment"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.locationDrawing.LocationHistoryFragment"
         android:label="Location History"
         tools:layout="@layout/fragment_location_history" />
     <fragment
