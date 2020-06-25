@@ -27,6 +27,8 @@ import com.jakewharton.threetenabp.AndroidThreeTen
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.LocationApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentLocationHistoryBinding
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.threeten.bp.ZonedDateTime
 import java.util.*
@@ -60,9 +62,9 @@ class LocationHistoryFragment : Fragment() {
 
         getGeoJSONFromServer(googleMap, false, selectionStart, selectionEnd)
 
-        binding.datePickerBtn.setOnClickListener(fun(_: View) {
+        binding.datePickerBtn.setOnClickListener{
             picker.show(requireActivity().supportFragmentManager, "DATE_PICKER")
-        })
+        }
         picker.addOnPositiveButtonClickListener {
             selectionStart = picker.selection?.first!!
             selectionEnd = picker.selection?.second!!
@@ -70,10 +72,10 @@ class LocationHistoryFragment : Fragment() {
             getGeoJSONFromServer(googleMap, true, selectionStart, selectionEnd)
         }
 
-        binding.reset.setOnClickListener(fun(_: View){
+        binding.reset.setOnClickListener{
             googleMap.clear()
             getGeoJSONFromServer(googleMap, false, 0, 0)
-        })
+        }
 
         viewModel.locationHistory.observe(this, androidx.lifecycle.Observer { drawCoordinates(viewModel.locationHistory.value!!, googleMap) })
     }
@@ -97,12 +99,14 @@ class LocationHistoryFragment : Fragment() {
 
     /**
      * @param mMap: GoogleMap to work on
-     * gets userID and server address, sends request to server to receive JSONArray
-     * the array is then parsed into coordinates which are then drawn onto the given map
-     * the first and last point are marked, all other points are connected with polylines
+     * @param filter: enable filtering by timestamps
+     * @param start: start for timestamp filtering
+     * @param end: end for timestamp filtering
+     * sends a request to the server from the LocationApiClient and writes resulting list of locations
+     * into the respective live data
      */
     private fun getGeoJSONFromServer(mMap: GoogleMap, filter: Boolean, start: Long, end: Long) {
-        thread {
+        GlobalScope.launch {
             val response: JSONArray = LocationApiClient.getPositionsFromServer(requireContext())
             requireActivity().runOnUiThread {
                 var coordinates = parseGeoJSON(response.toString())
@@ -117,7 +121,8 @@ class LocationHistoryFragment : Fragment() {
     }
 
     /**
-     * Parses given JSONArray into an arrayList of Locations with coordinates and timestamp
+     * @param json: given json file as string
+     * @return list of locations parsed from given JSONArray
      */
     private fun parseGeoJSON(json: String): ArrayList<Location>{
         val parser: Parser = Parser.default()
@@ -129,6 +134,11 @@ class LocationHistoryFragment : Fragment() {
         return createCoordinates(coordinates, timestamps)
     }
 
+    /**
+     * @param coordinates: JsonArray to parse coordinates from
+     * @param timestamps: JsonArray to parse timestamps from
+     * @return a list of locations with coordinates and their respective timestamps
+     */
     private fun createCoordinates(coordinates: JsonArray<*>, timestamps: JsonArray<*>): ArrayList<Location>{
         val formatter = org.threeten.bp.format.DateTimeFormatter.ISO_ZONED_DATE_TIME
         //val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -152,10 +162,12 @@ class LocationHistoryFragment : Fragment() {
         return listOfCoordinates
     }
 
-    private fun drawCoordinates(
-        coordinates: ArrayList<Location>,
-        mMap: GoogleMap
-    ) {
+    /**
+     * @param coordinates: list of coordinates to be drawn
+     * @param mMap: map to be drawn on
+     * Draws the given list of coordinates onto the given map and connects them with polylines
+     */
+    private fun drawCoordinates(coordinates: ArrayList<Location>, mMap: GoogleMap) {
         for (x in 0..coordinates.size - 2) {
             val left = LatLng(coordinates[x].latitude, coordinates[x].longitude)
             val right =
@@ -175,12 +187,15 @@ class LocationHistoryFragment : Fragment() {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(end, 15f))
     }
 
-    private fun filterCoordinates(
-        coordinates: ArrayList<Location>,
-        start: Long,
-        end: Long
-    ): ArrayList<Location> {
-        val newEnd = end + 86400000
+    /**
+     * @param coordinates: coordinate list to be filtered
+     * @param start: start time in milliseconds
+     * @param end: end time in milliseconds
+     * @return given list of coordinates filtered to only contain entries with a timestamp between start and end + 24 hours
+     */
+    private fun filterCoordinates(coordinates: ArrayList<Location>, start: Long, end: Long): ArrayList<Location> {
+        //increase end time by 24 hours
+        val newEnd = end + (24*60*60*1000)
         val filtered: ArrayList<Location> = ArrayList()
         for (x in coordinates) {
             if (x.time in (start + 1) until newEnd) {
