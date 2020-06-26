@@ -18,6 +18,8 @@ import com.android.volley.VolleyError
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.InfectionApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentInfectionStatusBinding
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.concurrent.ExecutionException
 import kotlin.concurrent.thread
@@ -66,7 +68,7 @@ class InfectionStatusFragment : Fragment() {
     }
 
     private fun loadCurrentInfectionStatus() {
-        thread {
+        GlobalScope.launch {
             val data = fetchData()
             if (data.length() != 0) {
                 requireActivity().runOnUiThread {
