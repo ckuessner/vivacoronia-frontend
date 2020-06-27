@@ -1,6 +1,5 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.locationDrawing
 
-import android.content.Context
 import android.location.Location
 import androidx.fragment.app.Fragment
 
@@ -10,9 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
-import com.beust.klaxon.JsonArray
-import com.beust.klaxon.Parser
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -22,18 +18,14 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.jakewharton.threetenabp.AndroidThreeTen
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.LocationApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentLocationHistoryBinding
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import org.threeten.bp.ZonedDateTime
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.concurrent.thread
 
 class LocationHistoryFragment : Fragment() {
 
@@ -107,59 +99,16 @@ class LocationHistoryFragment : Fragment() {
      */
     private fun getGeoJSONFromServer(mMap: GoogleMap, filter: Boolean, start: Long, end: Long) {
         GlobalScope.launch {
-            val response: JSONArray = LocationApiClient.getPositionsFromServer(requireContext())
+            var response: ArrayList<Location> = LocationApiClient.getPositionsFromServerForID(requireContext())
             requireActivity().runOnUiThread {
-                var coordinates = parseGeoJSON(response.toString())
                 if (filter) {
-                    coordinates = filterCoordinates(coordinates, start, end)
+                    response = filterCoordinates(response, start, end)
                 }
-                if (coordinates.isNotEmpty()) {
-                    viewModel.locationHistory.value = coordinates
+                if (response.isNotEmpty()) {
+                    viewModel.locationHistory.value = response
                 }
             }
         }
-    }
-
-    /**
-     * @param json: given json file as string
-     * @return list of locations parsed from given JSONArray
-     */
-    private fun parseGeoJSON(json: String): ArrayList<Location>{
-        val parser: Parser = Parser.default()
-        val parsed: JsonArray<*> = parser.parse(StringBuilder(json)) as JsonArray<*>
-        val loc = parsed["location"] as JsonArray<*>
-        val timestamps = parsed["time"] as JsonArray<*>
-        val coordinates = loc["coordinates"] as JsonArray<*>
-
-        return createCoordinates(coordinates, timestamps)
-    }
-
-    /**
-     * @param coordinates: JsonArray to parse coordinates from
-     * @param timestamps: JsonArray to parse timestamps from
-     * @return a list of locations with coordinates and their respective timestamps
-     */
-    private fun createCoordinates(coordinates: JsonArray<*>, timestamps: JsonArray<*>): ArrayList<Location>{
-        val formatter = org.threeten.bp.format.DateTimeFormatter.ISO_ZONED_DATE_TIME
-        //val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        val listOfCoordinates = ArrayList<Location>()
-        for (x in 0 until coordinates.size) {
-            var coordinateTime: Long = 0
-            if (timestamps[x] != null) {
-                coordinateTime = ZonedDateTime.parse(timestamps[x] as String, formatter)
-                    .toInstant().toEpochMilli()
-                //coordinateTime = formatter.parse(timestamps[x] as String).time
-            }
-            val latlong = coordinates[x] as JsonArray<*>
-            val lat = latlong[1] as Double
-            val long = latlong[0] as Double
-            val location = Location(Context.LOCATION_SERVICE)
-            location.time = coordinateTime
-            location.latitude = lat
-            location.longitude = long
-            listOfCoordinates.add(location)
-        }
-        return listOfCoordinates
     }
 
     /**

@@ -3,7 +3,6 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.locationDrawing
 import android.content.Context
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.beust.klaxon.JsonArray
@@ -18,15 +17,12 @@ import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.jakewharton.threetenabp.AndroidThreeTen
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.LocationApiClient
-import org.json.JSONArray
 import org.threeten.bp.ZonedDateTime
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
-import kotlin.properties.Delegates
 
 class LocationDrawingActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -94,9 +90,8 @@ class LocationDrawingActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     private fun getGeoJSONFromServer(mMap: GoogleMap, filter: Boolean, start: Long, end: Long) {
         thread {
-            val response: JSONArray = LocationApiClient.getPositionsFromServer(applicationContext)
+            var coordinates: ArrayList<Location> = LocationApiClient.getPositionsFromServerForID(applicationContext)
             runOnUiThread {
-                var coordinates = parseGeoJSON(response.toString())
                 if (filter) {
                     coordinates = filterCoordinates(coordinates, start, end)
                 }
