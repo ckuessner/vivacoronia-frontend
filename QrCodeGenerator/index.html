@@ -55,14 +55,7 @@
                     <input id="date-of-test" type="datetime-local" />
                     <script>
                         var dt = new Date();
-                        document.getElementById("date-of-test").value = 
-                            dt.getFullYear() + "-" + appendZero(dt.getMonth()+1) + "-" + appendZero(dt.getDate()) + "T" + appendZero(dt.getHours()) + ":" + appendZero(dt.getMinutes())
-
-                        function appendZero(s){
-                            if (s < 10){
-                                return "0"+s 
-                            }
-                            return s 
+                        document.getElementById("date-of-test").value = toDateString(dt)
                         }
                     </script>
                 </div>
