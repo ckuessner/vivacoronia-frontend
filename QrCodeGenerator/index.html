@@ -32,8 +32,11 @@
                     <input id="occured-date-estimation" type="datetime-local" />
                     <script>
                         var dt = new Date();
-                        document.getElementById("occured-date-estimation").value = 
-                            dt.getFullYear() + "-" + appendZero(dt.getMonth()+1) + "-" + appendZero(dt.getDate()-1) + "T" + appendZero(dt.getHours()) + ":" + appendZero(dt.getMinutes())
+                        document.getElementById("occured-date-estimation").value = toDateString(dt)
+                        
+                        function toDateString(dt){
+                            return dt.getFullYear() + "-" + appendZero(dt.getMonth()+1) + "-" + appendZero(dt.getDate()-1) + "T" + appendZero(dt.getHours()) + ":" + appendZero(dt.getMinutes())
+                        }
 
                         function appendZero(s){
                             if (s < 10){
