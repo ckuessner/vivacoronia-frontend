@@ -29,7 +29,7 @@
             android:layout_marginBottom="2dp"
             android:layout_toEndOf="@+id/date_picker_btn"
             android:contentDescription="@string/reset_date_range"
-            app:icon="@drawable/ic_baseline_cancel_presentation_24"
+            app:icon="@drawable/ic_baseline_undo_24"
             app:iconSize="60dp" />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
