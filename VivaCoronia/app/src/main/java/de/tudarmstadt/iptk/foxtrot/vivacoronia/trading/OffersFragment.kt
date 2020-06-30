@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -23,39 +22,51 @@ import java.util.concurrent.ExecutionException
 private const val TAG = "OffersFragment"
 
 class OffersFragment : Fragment() {
-
-    companion object {
-        fun newInstance() = OffersFragment()
-    }
-
     private lateinit var binding: FragmentOfferBinding
-    private lateinit var viewModel: OffersViewModel
+    private lateinit var viewModel: OfferListViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_offer,
-            container,
-            false
-        )
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_offer, container, false)
+        viewModel = ViewModelProvider(this).get(OfferListViewModel::class.java)
 
-        viewModel = ViewModelProvider(this).get(OffersViewModel::class.java)
-        val adapter = OffersAdapter()
+        val adapter = OffersAdapter(::deleteOfferCallback)
+        adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                if (positionStart == 0)
+                    binding.offersList.layoutManager!!.smoothScrollToPosition(binding.offersList, null, 0)
+            }
+        })
+
         binding.offersList.adapter = adapter
-        viewModel.offers.observe(viewLifecycleOwner, Observer { it?.let { adapter.data = it }})
+        viewModel.offers.observe(viewLifecycleOwner, Observer { it?.let { adapter.submitList(it) } })
+
+        binding.offersListSwipeRefresh.setOnRefreshListener {
+            GlobalScope.launch {
+                fetchMyOffers()
+                binding.offersListSwipeRefresh.isRefreshing = false
+            }
+        }
 
         GlobalScope.launch { fetchMyOffers() }
 
         return binding.root
     }
 
+    private fun deleteOfferCallback(id: String) {
+        val deleted = TradingApiClient.deleteOffer(id)
+        if (deleted)
+            viewModel.remove(id)
+        // TODO better fetch again and reset whole list. Does not change efficiency because only differences matter
+    }
+
     private fun fetchMyOffers() {
         try {
             val offers = TradingApiClient.getMyOffers()
-            requireActivity().runOnUiThread { viewModel.offers.value = offers }
+            requireActivity().runOnUiThread { viewModel.setOffers(offers) }
         } catch (exception: ExecutionException) {
             if (exception.cause is VolleyError && requireActivity().hasWindowFocus())
                 requireActivity().runOnUiThread {
