@@ -212,7 +212,7 @@ object LocationApiClient : ApiBaseClient() {
     private class JSONArrayRequest(
         method: Int,
         url: String,
-        val jsonArray: JSONArray?,
+        val jsonArray: JSONArray,
         req: Response.Listener<String>,
         error: Response.ErrorListener
     ) : StringRequest(method, url, req, error) {
