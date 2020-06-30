@@ -11,7 +11,7 @@
     >
     <!--
         To change the background color of the view, change the both solid color.
-        To change border color and width, change the both stroke color and both stroke width.
+        To change border_top_bottom color and width, change the both stroke color and both stroke width.
     -->
     <item>
         <shape android:shape="rectangle">

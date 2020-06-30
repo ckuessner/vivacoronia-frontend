@@ -40,6 +40,10 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="expand_arrow">expand</string>
     <string name="clear">clear</string>
+    <string name="amount">Amount</string>
+    <string name="price">Price</string>
+    <string name="details">Details</string>
+    <string name="edit">edit</string>
 
     <string name="title_activity_location_drawing">Map</string>
     <string name="set_time_period">Set time period</string>

@@ -14,22 +14,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.VolleyError
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.TradingApiClient
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentOfferBinding
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentOfferOverviewBinding
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutionException
 
-private const val TAG = "OffersFragment"
+private const val TAG = "OfferOverviewFragment"
 
 class OffersFragment : Fragment() {
-    private lateinit var binding: FragmentOfferBinding
+    private lateinit var binding: FragmentOfferOverviewBinding
     private lateinit var viewModel: OfferListViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_offer, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_offer_overview, container, false)
         viewModel = ViewModelProvider(this).get(OfferListViewModel::class.java)
 
         val adapter = OffersAdapter(::deleteOfferCallback)

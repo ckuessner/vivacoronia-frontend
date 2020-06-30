@@ -9,50 +9,165 @@
             type="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.OfferViewModel" />
     </data>
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dip"
-        android:background="@drawable/border"
-        android:orientation="horizontal"
+        android:background="@drawable/border_top_bottom"
+        android:orientation="vertical"
         android:padding="15dip">
 
-        <ImageView
-            android:id="@+id/expand_arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:background="@drawable/ic_expand_arrow"
-            android:contentDescription="@string/expand_arrow"
-            app:expandArrowRotation="@{offer}" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/product_name"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.9"
-            android:singleLine="true"
-            android:textSize="24sp"
-            android:text="@{offer.offer.productName}" />
+            <ImageView
+                android:id="@+id/expand_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@drawable/ic_expand_arrow"
+                android:contentDescription="@string/expand_arrow"
+                app:expandArrowRotation="@{offer}" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.3"
-            android:textAlignment="viewEnd"
-            android:text="@{Integer.toString(offer.offer.amount)}"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:textSize="24sp" />
+            <TextView
+                android:id="@+id/product_name"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.9"
+                android:singleLine="true"
+                android:text="@{offer.productName}"
+                android:textSize="24sp" />
 
-        <ImageView
-            android:id="@+id/clear"
-            android:layout_width="wrap_content"
-            android:layout_weight="0.03"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/clear"
-            android:scaleType="fitEnd"
-            android:src="@drawable/ic_clear" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@{offer.amount}"
+                android:textAlignment="viewEnd"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:id="@+id/clear"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0.03"
+                android:contentDescription="@string/clear"
+                android:scaleType="fitEnd"
+                android:src="@drawable/ic_clear" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/list_item_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dip"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:weightSum="1">
+
+            <TableLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.975"
+                android:stretchColumns="1">
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@string/product"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@{offer.productName}"
+                        android:textAlignment="viewEnd"
+                        android:textSize="14sp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@string/amount"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@{offer.amount}"
+                        android:textAlignment="viewEnd"
+                        android:textSize="14sp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@string/price"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@{offer.price}"
+                        android:textAlignment="viewEnd"
+                        android:textSize="14sp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@string/details"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@{offer.details}"
+                        android:textAlignment="viewEnd"
+                        android:textSize="14sp" />
+                </TableRow>
+            </TableLayout>
+
+            <ImageView
+                android:id="@+id/edit_product"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0.025"
+                android:contentDescription="@string/edit"
+                android:scaleType="fitEnd"
+                android:src="@drawable/ic_edit" />
+        </LinearLayout>
     </LinearLayout>
 </layout>
