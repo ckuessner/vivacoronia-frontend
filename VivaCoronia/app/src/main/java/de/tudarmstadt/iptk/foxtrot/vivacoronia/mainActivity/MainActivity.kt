@@ -1,6 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.Toast
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
@@ -26,6 +28,18 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationNotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationTrackingService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.MyWebSocket
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import java.io.BufferedInputStream
+import java.io.InputStream
+import java.security.KeyStore
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 class MainActivity : AppCompatActivity() {
     private var TAG = "MainActivity"
@@ -36,10 +50,13 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navView : NavigationView
 
+    private lateinit var client : OkHttpClient
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        initWebSocket()
 
         // notification channel should be created as soon as possible when the application starts
         LocationNotificationHelper.createLocationNotificationChannel(this)
@@ -91,6 +108,51 @@ class MainActivity : AppCompatActivity() {
             return@setNavigationItemSelectedListener true
         }
 
+        val webButton = findViewById<Button>(R.id.websocket)
+        webButton.setOnClickListener( {v -> initWebSocket()})
+
+    }
+
+    //==============================================================================================
+    // methods for websockets
+    fun initWebSocket(){
+        Log.i(TAG, "init Web Socket")
+        val (sslContext, trustManager) = getDevSSLContext(this)
+        client = OkHttpClient.Builder().sslSocketFactory(sslContext.socketFactory, trustManager as X509TrustManager).build()
+        val listener = MyWebSocket()
+
+        val request = Request.Builder().url(Constants().SERVER_WEBSOCKET_URL).addHeader("userID", Constants().USER_ID.toString()).build()  // addHeader("userID", Constants().USER_ID.toString()).
+
+        val wss = client.newWebSocket(request, listener)
+        Log.i(TAG, wss.toString())
+    }
+
+    private fun getDevSSLContext(context: Context): Pair<SSLContext, TrustManager> {
+        // Load developer certificate
+        val cf: CertificateFactory = CertificateFactory.getInstance("X.509")
+        val caInput: InputStream =
+            BufferedInputStream(context.resources.openRawResource(R.raw.dev_der_crt))
+        val ca: X509Certificate = caInput.use {
+            cf.generateCertificate(it) as X509Certificate
+        }
+
+        // Create a KeyStore containing our trusted CAs
+        val keyStoreType = KeyStore.getDefaultType()
+        val keyStore = KeyStore.getInstance(keyStoreType).apply {
+            load(null, null)
+            setCertificateEntry("ca", ca)
+        }
+
+        // Create a TrustManager that trusts the CAs inputStream our KeyStore
+        val tmfAlgorithm: String = TrustManagerFactory.getDefaultAlgorithm()
+        val tmf: TrustManagerFactory = TrustManagerFactory.getInstance(tmfAlgorithm).apply {
+            init(keyStore)
+        }
+
+        // Create an SSLContext that uses our TrustManager
+        return Pair(SSLContext.getInstance("TLS").apply {
+            init(null, tmf.trustManagers, null)
+        }, tmf.trustManagers[0])
     }
 
     //==============================================================================================

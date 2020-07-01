@@ -26,7 +26,11 @@ class Constants {
 
     // local ip if you use an emulator, localhost if you use an external android device with port forwarding
     // otherwise this constant will contain the base url to the server api
-    val SERVER_BASE_URL = "https://10.0.2.2:3443"
+    val SERVER_BASE_IP = "10.0.2.2"
+
+    val SERVER_WEBSOCKET_URL = "wss://${SERVER_BASE_IP}:3443"
+    val SERVER_BASE_URL = "https://${SERVER_BASE_IP}:3443"
+
 
     val DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS"
 }
