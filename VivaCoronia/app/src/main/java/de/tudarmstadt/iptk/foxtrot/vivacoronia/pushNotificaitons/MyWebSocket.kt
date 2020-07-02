@@ -1,6 +1,8 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons
 
 import android.util.Log
+import androidx.core.app.NotificationManagerCompat
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
@@ -11,7 +13,7 @@ class MyWebSocket : WebSocketListener(){
     override fun onOpen(webSocket: WebSocket, response: Response) {
         super.onOpen(webSocket, response)
         Log.i(TAG, "onOpen: " + response)
-        webSocket.send("hello world")
+        webSocket.send(Constants.USER_ID.toString())
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {

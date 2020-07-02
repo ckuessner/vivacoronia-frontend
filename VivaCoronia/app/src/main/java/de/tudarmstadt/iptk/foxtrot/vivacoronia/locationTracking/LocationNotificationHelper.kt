@@ -25,7 +25,7 @@ class LocationNotificationHelper{
                 val name = context.getString(R.string.location_service_channel_name)
                 val descriptionText = context.getString(R.string.location_service_channel_description)
                 val importance = NotificationManager.IMPORTANCE_DEFAULT
-                val channel = NotificationChannel(Constants().LOCATION_NOTIFICATION_CHANNEL_ID, name, importance).apply {
+                val channel = NotificationChannel(Constants.LOCATION_NOTIFICATION_CHANNEL_ID, name, importance).apply {
                     description = descriptionText
                 }
                 // Register the channel with the system
@@ -36,7 +36,7 @@ class LocationNotificationHelper{
         }
 
         fun getLocationNotification(context: Context) : Notification {
-            return NotificationCompat.Builder(context, Constants().LOCATION_NOTIFICATION_CHANNEL_ID)
+            return NotificationCompat.Builder(context, Constants.LOCATION_NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_corona)     // without icon a default notification would be displayed
                 .setContentTitle(context.getString(R.string.location_service_channel_title))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT).setColor(Color.RED)

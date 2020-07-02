@@ -28,9 +28,11 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationNotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationTrackingService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.InfectedNotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.MyWebSocket
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.WebSocket
 import java.io.BufferedInputStream
 import java.io.InputStream
 import java.security.KeyStore
@@ -51,6 +53,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navView : NavigationView
 
     private lateinit var client : OkHttpClient
+    private lateinit var wss : WebSocket
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +63,7 @@ class MainActivity : AppCompatActivity() {
 
         // notification channel should be created as soon as possible when the application starts
         LocationNotificationHelper.createLocationNotificationChannel(this)
+        InfectedNotificationHelper.createInfectedNotificationChannel(this)
 
         // setup upload alarm
         setupUploadAlarm(applicationContext)
@@ -108,8 +112,6 @@ class MainActivity : AppCompatActivity() {
             return@setNavigationItemSelectedListener true
         }
 
-        val webButton = findViewById<Button>(R.id.websocket)
-        webButton.setOnClickListener( {v -> initWebSocket()})
 
     }
 
@@ -121,9 +123,9 @@ class MainActivity : AppCompatActivity() {
         client = OkHttpClient.Builder().sslSocketFactory(sslContext.socketFactory, trustManager as X509TrustManager).build()
         val listener = MyWebSocket()
 
-        val request = Request.Builder().url(Constants().SERVER_WEBSOCKET_URL).addHeader("userID", Constants().USER_ID.toString()).build()  // addHeader("userID", Constants().USER_ID.toString()).
+        val request = Request.Builder().url(Constants.SERVER_WEBSOCKET_URL).addHeader("userID", Constants.USER_ID.toString()).build()  // addHeader("userID", Constants.USER_ID.toString()).
 
-        val wss = client.newWebSocket(request, listener)
+        wss = client.newWebSocket(request, listener)
         Log.i(TAG, wss.toString())
     }
 
@@ -210,7 +212,7 @@ class MainActivity : AppCompatActivity() {
     private fun createBackgroundLocationRequest(): LocationRequest? {
         // code (with a few changes) from https://developer.android.com/training/location/change-location-settings see apache 2.0 licence
         val locationRequest = LocationRequest.create()?.apply {
-            interval = Constants().LOCATION_TRACKING_REQUEST_INTERVAL
+            interval = Constants.LOCATION_TRACKING_REQUEST_INTERVAL
             priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY // can be changed to low power settings depending on what we need
         }
         return locationRequest
@@ -248,7 +250,7 @@ class MainActivity : AppCompatActivity() {
                     // opens a dialog which offers the user to enable gps
                     exception.startResolutionForResult(
                         this@MainActivity,
-                        Constants().LOCATION_ACCESS_SETTINGS_REQUEST_CODE
+                        Constants.LOCATION_ACCESS_SETTINGS_REQUEST_CODE
                     )
                 } catch (sendEx: IntentSender.SendIntentException) {
                     // Ignore the error.
@@ -265,7 +267,7 @@ class MainActivity : AppCompatActivity() {
         Log.i(TAG, "onRequestPermissionResult")
         when (requestCode) {
             // handle location permission requests
-            Constants().LOCATION_ACCESS_PERMISSION_REQUEST_CODE -> {
+            Constants.LOCATION_ACCESS_PERMISSION_REQUEST_CODE -> {
                 // request permissions again if location permission not granted
                 if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_DENIED)) {
                     Log.v(TAG, "Location Access Denied")

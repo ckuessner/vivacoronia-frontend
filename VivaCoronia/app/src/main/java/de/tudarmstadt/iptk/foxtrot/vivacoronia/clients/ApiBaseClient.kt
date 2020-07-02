@@ -24,11 +24,11 @@ abstract class ApiBaseClient {
     private val _tag = "ApiBaseClient"
 
     fun getBaseUrl(): String {
-        return Constants().SERVER_BASE_URL
+        return Constants.SERVER_BASE_URL
     }
 
     fun getUserId(): Int {
-        return Constants().USER_ID
+        return Constants.USER_ID
     }
 
     fun joinPaths(basePath: String, vararg paths: String): String {

@@ -31,6 +31,12 @@
     <string name="server_connection_failed">Failed to connect to server</string>
     <string name="invalid_qr_code">Invalid QR-Code</string>
 
+    <!-- infected notification -->
+    <string name="infected_notification_channel_name">InfectedNotificationChannel</string>
+    <string name="infected_notification_channel_description">This channel warns you of possible infections.</string>
+    <string name="infected_notification_channel_title">You may be infected.</string>
+    <string name="infected_notification_channel_text">You may have had contact with a corona infected person. Please visit a corona test center and provide the test result in the app.</string>
+
     <!-- bottom navigation menu -->
     <string name="menu_item_location_history">History</string>
     <string name="menu_item_infection_update">Infection Status</string>

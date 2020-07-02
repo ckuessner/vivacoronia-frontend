@@ -45,6 +45,12 @@
         <activity
             android:name=".trading.offers.LocationPickerActivity"
             android:label="@string/title_activity_location_picker" />
+
+        <service
+            android:name=".pushNotificaitons.WebsocketService"
+            android:enabled="true"
+            android:exported="false"/>
+
         <service
             android:name=".locationTracking.LocationTrackingService"
             android:description="@string/location_service_description_manifest"
@@ -54,6 +60,7 @@
         <service
             android:name=".periodicLocationUpload.UploadService"
             android:exported="false" />
+
 
         <receiver android:name=".periodicLocationUpload.AlarmBroadcastReceiver">
             <intent-filter>
@@ -67,20 +74,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".infectionStatus.ScanQrCodeActivity"
+        <activity
+            android:name=".infectionStatus.ScanQrCodeActivity"
             android:label="Scan QR-Code"
             android:parentActivityName=".mainActivity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".mainActivity.MainActivity" />
         </activity>
-
         <activity
             android:name=".infectionStatus.UpdateInfectionActivity"
             android:label="@string/update_infection_label"
             android:parentActivityName=".infectionStatus.ScanQrCodeActivity">
-
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".infectionStatus.ScanQrCodeActivity"/>

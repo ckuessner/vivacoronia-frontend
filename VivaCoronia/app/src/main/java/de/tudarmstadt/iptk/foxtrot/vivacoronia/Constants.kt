@@ -1,7 +1,6 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
-// TODO refactor to object
-class Constants {
+object Constants {
 
     // Location Upload stuff
     val LOCATION_UPLOAD_INTERVAL = 10000.toLong() // for reallife use could be higher
@@ -23,6 +22,11 @@ class Constants {
     val CAMERA_PERMISSION_REQUEST_CODE = 59
 
     val USER_ID = 1234
+
+    // infected stuff
+    val INFECTED_NOTIFICATION_ID = 66
+    val INFECTED_NOTIFICATION_CHANNEL_ID = "infected_channel"
+
 
     // local ip if you use an emulator, localhost if you use an external android device with port forwarding
     // otherwise this constant will contain the base url to the server api
