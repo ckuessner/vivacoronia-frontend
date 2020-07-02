@@ -1,7 +1,6 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons
 
 import android.util.Log
-import androidx.core.app.NotificationManagerCompat
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -9,6 +8,8 @@ import okhttp3.WebSocketListener
 
 class MyWebSocket : WebSocketListener(){
     private val TAG = "MyWebSocket"
+
+    lateinit var socketService : WebSocketService
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         super.onOpen(webSocket, response)
@@ -18,7 +19,8 @@ class MyWebSocket : WebSocketListener(){
 
     override fun onMessage(webSocket: WebSocket, text: String) {
         super.onMessage(webSocket, text)
-        // TODO make notification
+        // tell service to make a notification
+        socketService.makeNotification()
         Log.i(TAG, "received " + text)
     }
 

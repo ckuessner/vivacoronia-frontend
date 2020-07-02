@@ -16,10 +16,8 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.MainActivity
 class InfectedNotificationHelper {
 
     companion object {
-        private lateinit var con : Context
 
         fun createInfectedNotificationChannel(context: Context) {
-            con = context
             // if we use api lower 26 we have to check it here because this is only available for 26 and higher
             if (Build.VERSION.SDK_INT >= 26) {
                 val name = context.getString(R.string.infected_notification_channel_name)
@@ -37,13 +35,13 @@ class InfectedNotificationHelper {
 
         // TODO add a button which leads to the camera to scan the infected qr code
         // TODO has to called if a infection is discovered
-        fun getInfectedNotification() : Notification {
-            return NotificationCompat.Builder(con, Constants.INFECTED_NOTIFICATION_CHANNEL_ID)
+        fun getInfectedNotification(context: Context) : Notification {
+            return NotificationCompat.Builder(context, Constants.INFECTED_NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_corona)     // TODO biohazard icon
-                .setContentTitle(con.getString(R.string.location_service_channel_title))
-                .setContentText(con.getString(R.string.infected_notification_channel_text))
-                .setPriority(NotificationCompat.PRIORITY_MAX).setColor(Color.RED)
-                .setContentIntent(Intent(con, MainActivity::class.java).let { notificationIntent -> PendingIntent.getActivity(con, 0, notificationIntent, 0)})
+                .setContentTitle(context.getString(R.string.location_service_channel_title))
+                .setContentText(context.getString(R.string.infected_notification_channel_text))
+                .setPriority(NotificationCompat.PRIORITY_HIGH).setColor(Color.RED)
+                .setContentIntent(Intent(context, MainActivity::class.java).let { notificationIntent -> PendingIntent.getActivity(context, 0, notificationIntent, 0)})
                 // .addAction( cameraIcon, "send status", cameraIntent)
                 .build()
         }
