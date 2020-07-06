@@ -1,13 +1,18 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.locationDrawing
 
+import android.animation.ArgbEvaluator
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.ColorUtils
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.common.util.Hex
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -22,6 +27,9 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.LocationApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentLocationHistoryBinding
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.threeten.bp.ZonedDateTime
+import java.time.LocalDate
+import java.time.ZoneOffset
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.*
@@ -47,35 +55,36 @@ class LocationHistoryFragment : Fragment() {
         val builder = MaterialDatePicker.Builder.dateRangePicker()
         val now = Calendar.getInstance()
 
-        var selectionStart: Long = now.timeInMillis
-        var selectionEnd: Long = now.timeInMillis
+        var selectionStart: Date = Date(LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000)
+        var selectionEnd: Date = Date(LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000 + (24 * 60 * 60 * 1000))
 
         builder.setSelection(androidx.core.util.Pair(now.timeInMillis, now.timeInMillis))
         builder.setTitleText("Select a tracking period")
         val picker = builder.build()
 
-        getGeoJSONFromServer(googleMap, false, selectionStart, selectionEnd)
+        getGeoJSONFromServer(selectionStart, selectionEnd)
 
         binding.datePickerBtn.setOnClickListener {
             picker.show(requireActivity().supportFragmentManager, "DATE_PICKER")
         }
         picker.addOnPositiveButtonClickListener {
-            selectionStart = picker.selection?.first!!
-            selectionEnd = picker.selection?.second!!
+            selectionStart = Date(picker.selection?.first!!)
+            selectionEnd = Date(picker.selection?.second!!)
             googleMap.clear()
-            getGeoJSONFromServer(googleMap, true, selectionStart, selectionEnd)
+            getGeoJSONFromServer(selectionStart, selectionEnd)
         }
 
         binding.reset.setOnClickListener {
             googleMap.clear()
-            getGeoJSONFromServer(googleMap, false, 0, 0)
+            val startOfDay = LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000
+            getGeoJSONFromServer(Date(startOfDay), Date(startOfDay + (24 * 60 * 60 * 1000)))
         }
 
         viewModel.locationHistory.observe(
             this,
             androidx.lifecycle.Observer {
                 drawCoordinates(
-                    viewModel.locationHistory.value!!,
+                    it,
                     googleMap
                 )
             })
@@ -100,22 +109,17 @@ class LocationHistoryFragment : Fragment() {
     }
 
     /**
-     * @param mMap: GoogleMap to work on
-     * @param filter: enable filtering by timestamps
      * @param start: start for timestamp filtering
      * @param end: end for timestamp filtering
      * sends a request to the server from the LocationApiClient and writes resulting list of locations
      * into the respective live data
      */
-    private fun getGeoJSONFromServer(mMap: GoogleMap, filter: Boolean, start: Long, end: Long) {
+    private fun getGeoJSONFromServer(start: Date, end: Date) {
         GlobalScope.launch {
             var response: ArrayList<Location> =
-                LocationApiClient.getPositionsFromServerForID(requireContext())
-            requireActivity().runOnUiThread {
-                if (filter) {
-                    response = filterCoordinates(response, start, end)
-                }
-                if (response.isNotEmpty()) {
+                LocationApiClient.getPositionsFromServerForID(requireContext(), start, end)
+            if (response.isNotEmpty()) {
+                requireActivity().runOnUiThread {
                     viewModel.locationHistory.value = response
                 }
             }
@@ -128,12 +132,12 @@ class LocationHistoryFragment : Fragment() {
      * Draws the given list of coordinates onto the given map and connects them with polylines
      */
     private fun drawCoordinates(coordinates: ArrayList<Location>, mMap: GoogleMap) {
-        var notDrawnBefore: Boolean = false
-        for (x in 0..coordinates.size - 2) {
-            val left = LatLng(coordinates[x].latitude, coordinates[x].longitude)
-            val right = LatLng(coordinates[x + 1].latitude, coordinates[x + 1].longitude)
-            if (checkCoordinateDistance(left, right)) {
-                mMap.addPolyline(PolylineOptions().add(left, right).color(getNextColor()))
+        val colors = getColorArray(coordinates.size, Color.parseColor("#4169E1"), Color.parseColor("#FF0000"))
+        for (currentCoordinateIndex in 0..coordinates.size - 2) {
+            val left = LatLng(coordinates[currentCoordinateIndex].latitude, coordinates[currentCoordinateIndex].longitude)
+            val right = LatLng(coordinates[currentCoordinateIndex + 1].latitude, coordinates[currentCoordinateIndex + 1].longitude)
+            if (isCoordinateDistanceLessThanThreshold(left, right)) {
+                mMap.addPolyline(PolylineOptions().add(left, right).color(colors[currentCoordinateIndex]))
             }
         }
         val start = LatLng(coordinates[0].latitude, coordinates[0].longitude)
@@ -149,60 +153,41 @@ class LocationHistoryFragment : Fragment() {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(end, 15f))
     }
 
-    private fun checkCoordinateDistance(left: LatLng, right: LatLng): Boolean {
-        val lon1 = Math.toRadians(left.longitude)
-        val lat1 = Math.toRadians(left.latitude)
-        val lon2 = Math.toRadians(right.longitude)
-        val lat2 = Math.toRadians(right.latitude)
+    /**
+     * @param start: location of starting point
+     * @param end: location of end point
+     * @return boolean whether the distance between start and end is smaller than the given threshold
+     */
+    private fun isCoordinateDistanceLessThanThreshold(start: LatLng, end: LatLng): Boolean {
+        val lon1 = Math.toRadians(start.longitude)
+        val lat1 = Math.toRadians(start.latitude)
+        val lon2 = Math.toRadians(end.longitude)
+        val lat2 = Math.toRadians(end.latitude)
 
-        val dlon = lon2 - lon1
-        val dlat = lat2 - lat1
-        val a = sin(dlat / 2).pow(2.0) + cos(lat1) * cos(lat2) * sin(dlon / 2).pow(2.0)
-        val c = 2 * asin(sqrt(a))
+        //Haversine formula, determines the great-circle distance between two points on a sphere with given longitude and latitude
+        val deltaLon = lon2 - lon1
+        val deltaLat = lat2 - lat1
+        val innerFormula = sin(deltaLat / 2).pow(2.0) + cos(lat1) * cos(lat2) * sin(deltaLon / 2).pow(2.0)
+        val outerFormula = 2 * asin(sqrt(innerFormula))
 
+        //radius of the earth in kilometers
         val radius = 6371
 
-        return (c * radius) <= distanceThreshold
-    }
-
-    private var currentColorIndex: Int = 0
-    private val BLACK = -0x1000000
-    private val GRAY = -0x777778
-    private val RED = -0x10000
-    private val GREEN = -0xff0100
-    private val BLUE = -0xffff01
-    private val YELLOW = -0x100
-    private val CYAN = -0xff0001
-    private val MAGENTA = -0xff01
-    private val colorArray: ArrayList<Int> =
-        arrayListOf(BLACK, GRAY, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA)
-
-    private fun getNextColor(): Int {
-        val color = colorArray[currentColorIndex]
-        currentColorIndex += 1
-        currentColorIndex %= 8
-        return color
+        return (outerFormula * radius) <= distanceThreshold
     }
 
     /**
-     * @param coordinates: coordinate list to be filtered
-     * @param start: start time in milliseconds
-     * @param end: end time in milliseconds
-     * @return given list of coordinates filtered to only contain entries with a timestamp between start and end + 24 hours
+     * @param amount: amount of lines to be drawn/colored
+     * @param startColor: color to start with
+     * @param endColor: color to end with
+     * @return ArrayList of colors for each line to be drawn interpolated between startColor and endColor
      */
-    private fun filterCoordinates(
-        coordinates: ArrayList<Location>,
-        start: Long,
-        end: Long
-    ): ArrayList<Location> {
-        //increase end time by 24 hours
-        val newEnd = end + (24 * 60 * 60 * 1000)
-        val filtered: ArrayList<Location> = ArrayList()
-        for (x in coordinates) {
-            if (x.time in (start + 1) until newEnd) {
-                filtered.add(x)
-            }
+    private fun getColorArray(amount: Int, startColor: Int, endColor: Int): ArrayList<Int>{
+        val fraction = 1f / amount
+        val colorArray = ArrayList<Int>()
+        for (i in 0 until amount){
+            colorArray.add(ColorUtils.blendARGB(startColor, endColor, i * fraction))
         }
-        return filtered
+        return colorArray
     }
 }

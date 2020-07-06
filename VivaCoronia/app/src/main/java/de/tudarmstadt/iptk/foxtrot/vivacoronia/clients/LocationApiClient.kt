@@ -2,6 +2,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
 import android.content.Context
 import android.location.Location
+import android.net.Uri
 import android.util.Log
 import com.android.volley.Request
 import com.android.volley.Response
@@ -17,12 +18,15 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import org.threeten.bp.ZonedDateTime
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 object LocationApiClient : ApiBaseClient() {
     private const val TAG = "LocationClient"
 
     private fun getUserEndpoint(): String {
-        return "${getBaseUrl()}/locations/${getUserId()}"
+        return "${getEndpoint()}${getUserId()}"
     }
 
     private fun getEndpoint(): String{
@@ -113,21 +117,15 @@ object LocationApiClient : ApiBaseClient() {
         val formatter = org.threeten.bp.format.DateTimeFormatter.ISO_ZONED_DATE_TIME
         //val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         val map = HashMap<Int, ArrayList<Location>>()
-        for (x in 0 until coordinates.size) {
-            val currentID = ids[x] as Int
+        for (currentCoordinateIndex in 0 until coordinates.size) {
+            val currentID = ids[currentCoordinateIndex] as Int
             var coordinateTime: Long = 0
-            if (timestamps[x] != null) {
-                coordinateTime = ZonedDateTime.parse(timestamps[x] as String, formatter)
+            if (timestamps[currentCoordinateIndex] != null) {
+                coordinateTime = ZonedDateTime.parse(timestamps[currentCoordinateIndex] as String, formatter)
                     .toInstant().toEpochMilli()
-                //coordinateTime = formatter.parse(timestamps[x] as String).time
             }
-            val latlong = coordinates[x] as JsonArray<*>
-            val lat = latlong[1] as Double
-            val long = latlong[0] as Double
-            val location = Location(Context.LOCATION_SERVICE)
-            location.time = coordinateTime
-            location.latitude = lat
-            location.longitude = long
+            val latlong = coordinates[currentCoordinateIndex] as JsonArray<*>
+            val location = createLocation(latlong, coordinateTime)
             if(map.containsKey(currentID)){
                 val list = map[currentID]
                 list!!.add(location)
@@ -140,6 +138,19 @@ object LocationApiClient : ApiBaseClient() {
             }
         }
         return map
+    }
+
+    private fun createLocation(
+        latlong: JsonArray<*>,
+        coordinateTime: Long
+    ): Location {
+        val lat = latlong[1] as Double
+        val long = latlong[0] as Double
+        val location = Location(Context.LOCATION_SERVICE)
+        location.time = coordinateTime
+        location.latitude = lat
+        location.longitude = long
+        return location
     }
 
     /**
@@ -156,25 +167,23 @@ object LocationApiClient : ApiBaseClient() {
             if (timestamps[x] != null) {
                 coordinateTime = ZonedDateTime.parse(timestamps[x] as String, formatter)
                     .toInstant().toEpochMilli()
-                //coordinateTime = formatter.parse(timestamps[x] as String).time
             }
             val latlong = coordinates[x] as JsonArray<*>
-            val lat = latlong[1] as Double
-            val long = latlong[0] as Double
-            val location = Location(Context.LOCATION_SERVICE)
-            location.time = coordinateTime
-            location.latitude = lat
-            location.longitude = long
+            val location = createLocation(latlong, coordinateTime)
             listOfCoordinates.add(location)
         }
         return listOfCoordinates
     }
 
-    fun getPositionsFromServerForID(context: Context): ArrayList<Location>{
+    fun getPositionsFromServerForID(context: Context, startTime: Date, endTime: Date): ArrayList<Location>{
         val requestQueue = getRequestQueue(context) ?: return ArrayList()
         val responseFuture = RequestFuture.newFuture<JSONArray>()
-        val request = JsonArrayRequest(getUserEndpoint(), responseFuture, Response.ErrorListener { Log.e(
-            TAG, it.message ?: "getPositionsForID request failed") })
+        val requestUrl = Uri.parse(getUserEndpoint()).buildUpon()
+                .appendQueryParameter("start", startTime.toString())
+                .appendQueryParameter("end", endTime.toString())
+                .build().toString()
+        val request = JsonArrayRequest(requestUrl, responseFuture, Response.ErrorListener { Log.e(
+            TAG, it.message ?: "getPositionsFromServerForID request failed") })
         requestQueue.add(request)
         return parseGeoJSONForOneID(responseFuture.get().toString())
     }
@@ -183,7 +192,7 @@ object LocationApiClient : ApiBaseClient() {
         val requestQueue = getRequestQueue(context) ?: return HashMap()
         val responseFuture = RequestFuture.newFuture<JSONArray>()
         val request = JsonArrayRequest(getEndpoint(), responseFuture, Response.ErrorListener { Log.e(
-            TAG, it.message ?: "getPositions request failed") })
+            TAG, it.message ?: "getPositionsFromServer request failed") })
         requestQueue.add(request)
         return parseGeoJSONForMultipleID(responseFuture.get().toString())
     }
