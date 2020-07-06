@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -119,13 +120,12 @@ object LocationApiClient : ApiBaseClient() {
         val map = HashMap<Int, ArrayList<Location>>()
         for (currentCoordinateIndex in 0 until coordinates.size) {
             val currentID = ids[currentCoordinateIndex] as Int
-            var coordinateTime: Long = 0
-            if (timestamps[currentCoordinateIndex] != null) {
-                coordinateTime = ZonedDateTime.parse(timestamps[currentCoordinateIndex] as String, formatter)
-                    .toInstant().toEpochMilli()
-            }
-            val latlong = coordinates[currentCoordinateIndex] as JsonArray<*>
-            val location = createLocation(latlong, coordinateTime)
+            val location = createLocationWithTimestamp(
+                timestamps,
+                currentCoordinateIndex,
+                formatter,
+                coordinates
+            )
             if(map.containsKey(currentID)){
                 val list = map[currentID]
                 list!!.add(location)
@@ -140,6 +140,44 @@ object LocationApiClient : ApiBaseClient() {
         return map
     }
 
+    /**
+     * @param coordinates: JsonArray to parse coordinates from
+     * @param timestamps: JsonArray to parse timestamps from
+     * @return a list of locations with coordinates and their respective timestamps
+     */
+    private fun createCoordinates(coordinates: JsonArray<*>, timestamps: JsonArray<*>): ArrayList<Location>{
+        val formatter = org.threeten.bp.format.DateTimeFormatter.ISO_ZONED_DATE_TIME
+        //val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        val listOfCoordinates = ArrayList<Location>()
+        for (currentCoordinateIndex in 0 until coordinates.size) {
+            val location = createLocationWithTimestamp(
+                timestamps,
+                currentCoordinateIndex,
+                formatter,
+                coordinates
+            )
+            listOfCoordinates.add(location)
+        }
+        return listOfCoordinates
+    }
+
+    private fun createLocationWithTimestamp(
+        timestamps: JsonArray<*>,
+        currentCoordinateIndex: Int,
+        formatter: DateTimeFormatter?,
+        coordinates: JsonArray<*>
+    ): Location {
+        var coordinateTime: Long = 0
+        if (timestamps[currentCoordinateIndex] != null) {
+            coordinateTime =
+                ZonedDateTime.parse(timestamps[currentCoordinateIndex] as String, formatter)
+                    .toInstant().toEpochMilli()
+        }
+        val latlong = coordinates[currentCoordinateIndex] as JsonArray<*>
+        val location = createLocation(latlong, coordinateTime)
+        return location
+    }
+
     private fun createLocation(
         latlong: JsonArray<*>,
         coordinateTime: Long
@@ -151,28 +189,6 @@ object LocationApiClient : ApiBaseClient() {
         location.latitude = lat
         location.longitude = long
         return location
-    }
-
-    /**
-     * @param coordinates: JsonArray to parse coordinates from
-     * @param timestamps: JsonArray to parse timestamps from
-     * @return a list of locations with coordinates and their respective timestamps
-     */
-    private fun createCoordinates(coordinates: JsonArray<*>, timestamps: JsonArray<*>): ArrayList<Location>{
-        val formatter = org.threeten.bp.format.DateTimeFormatter.ISO_ZONED_DATE_TIME
-        //val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        val listOfCoordinates = ArrayList<Location>()
-        for (x in 0 until coordinates.size) {
-            var coordinateTime: Long = 0
-            if (timestamps[x] != null) {
-                coordinateTime = ZonedDateTime.parse(timestamps[x] as String, formatter)
-                    .toInstant().toEpochMilli()
-            }
-            val latlong = coordinates[x] as JsonArray<*>
-            val location = createLocation(latlong, coordinateTime)
-            listOfCoordinates.add(location)
-        }
-        return listOfCoordinates
     }
 
     fun getPositionsFromServerForID(context: Context, startTime: Date, endTime: Date): ArrayList<Location>{
