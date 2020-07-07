@@ -21,7 +21,7 @@ object Constants {
 
     val CAMERA_PERMISSION_REQUEST_CODE = 59
 
-    val USER_ID = 4321
+    val USER_ID = 1234
 
     // infected stuff
     val INFECTED_NOTIFICATION_ID = 66

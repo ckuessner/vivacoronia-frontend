@@ -86,6 +86,6 @@ dependencies {
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0'
     implementation 'com.android.volley:volley:1.1.1'
 
-    // websockets TODO add licence
+    // websockets (see license) https://github.com/square/okhttp
     implementation("com.squareup.okhttp3:okhttp:4.7.2")
 }

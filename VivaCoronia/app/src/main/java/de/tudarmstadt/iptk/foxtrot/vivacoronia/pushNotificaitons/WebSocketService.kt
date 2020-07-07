@@ -39,7 +39,7 @@ class WebSocketService : Service() {
         Log.i(TAG, "init Web Socket")
         val (sslContext, trustManager) = getDevSSLContext(this)
         client = OkHttpClient.Builder().sslSocketFactory(sslContext.socketFactory, trustManager as X509TrustManager).build()
-        val listener = MyWebSocket()
+        val listener = PushNotificationListener()
         listener.socketService = this
 
         val request = Request.Builder().url(Constants.SERVER_WEBSOCKET_URL).addHeader("userID", Constants.USER_ID.toString()).build()  // addHeader("userID", Constants.USER_ID.toString()).
@@ -47,6 +47,7 @@ class WebSocketService : Service() {
         val wss = client.newWebSocket(request, listener)
         Log.i(TAG, wss.toString())
     }
+
 
     private fun getDevSSLContext(context: Context): Pair<SSLContext, TrustManager> {
         // Load developer certificate
@@ -82,6 +83,10 @@ class WebSocketService : Service() {
             notify(Constants.INFECTED_NOTIFICATION_ID,
                 InfectedNotificationHelper.getInfectedNotification(applicationContext))
         }
+    }
+
+    fun closeClient(){
+        client.dispatcher.executorService.shutdown()
     }
 
     override fun onBind(intent: Intent): IBinder? {

@@ -6,8 +6,8 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 
-class MyWebSocket : WebSocketListener(){
-    private val TAG = "MyWebSocket"
+class PushNotificationListener : WebSocketListener(){
+    private val TAG = "PushListener"
 
     lateinit var socketService : WebSocketService
 
@@ -20,8 +20,11 @@ class MyWebSocket : WebSocketListener(){
     override fun onMessage(webSocket: WebSocket, text: String) {
         super.onMessage(webSocket, text)
         // tell service to make a notification
-        socketService.makeNotification()
+        if(text == "you are infected") {
+            socketService.makeNotification()
+        }
         Log.i(TAG, "received " + text)
+        this.onClosing(webSocket, 100, "fun")
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
@@ -29,6 +32,7 @@ class MyWebSocket : WebSocketListener(){
         Log.i(TAG, "closing connection")
     }
 
+    // TODO maybe reconnect if server is down
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         super.onFailure(webSocket, t, response)
         Log.e(TAG, "websocket failure: " + response.toString())

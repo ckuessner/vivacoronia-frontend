@@ -50,10 +50,9 @@ class MainActivity : AppCompatActivity() {
         // setup upload alarm
         setupUploadAlarm(applicationContext)
 
-        //start websocket
+        //start websocket to listen for push notifications
         val websocketIntent = Intent(this, WebSocketService::class.java)
         startService(websocketIntent)
-
 
         // tracking in onResume startet
         checkPermissionsAndStartTracking()
