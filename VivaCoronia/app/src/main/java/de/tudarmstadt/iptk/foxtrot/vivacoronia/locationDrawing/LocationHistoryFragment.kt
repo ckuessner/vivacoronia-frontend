@@ -3,6 +3,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.locationDrawing
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
@@ -62,6 +64,7 @@ class LocationHistoryFragment : Fragment() {
         val selectionEnd = Date(LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000 + dayInMillis)
         getGeoJSONFromServer(selectionStart, selectionEnd)
 
+        binding.progressHorizontal.max = 100
         binding.datePickerBtn.setOnClickListener {
             picker.show(requireActivity().supportFragmentManager, "DATE_PICKER")
         }
@@ -113,6 +116,8 @@ class LocationHistoryFragment : Fragment() {
      * into the respective live data
      */
     private fun getGeoJSONFromServer(start: Date, end: Date) {
+        binding.progressHorizontal.visibility = View.VISIBLE
+        binding.progressHorizontal.isIndeterminate = true
         GlobalScope.launch {
             val response: ArrayList<Location> =
                 LocationApiClient.getPositionsFromServerForID(requireContext(), start, end)
@@ -131,15 +136,30 @@ class LocationHistoryFragment : Fragment() {
      */
     private fun drawCoordinates(coordinates: ArrayList<Location>, mMap: GoogleMap) {
         val colors = getColorArray(coordinates.size, Color.parseColor("#4169E1"), Color.parseColor("#FF0000"))
-        for (currentCoordinateIndex in 0..coordinates.size - 2) {
-            val left = LatLng(coordinates[currentCoordinateIndex].latitude, coordinates[currentCoordinateIndex].longitude)
-            val right = LatLng(coordinates[currentCoordinateIndex + 1].latitude, coordinates[currentCoordinateIndex + 1].longitude)
-            val leftTime = coordinates[currentCoordinateIndex].time
-            val rightTime = coordinates[currentCoordinateIndex + 1].time
-            if (isCoordinateDistanceLessOrEqualThanThreshold(left, right) && isPathSpeedMoreThanThreshold(leftTime, rightTime, left, right)) {
-                mMap.addPolyline(PolylineOptions().add(left, right).color(colors[currentCoordinateIndex]))
+        var currentColorIndex = 0
+        val processedCoordinates = preprocessedCoordinatesForDrawing(coordinates)
+        for (currentCoordinateSubList in 0 until processedCoordinates.size){
+            if(processedCoordinates[currentCoordinateSubList].size == 1){
+                val currentColor = colors[currentColorIndex]
+                currentColorIndex++
+                val circleOptions = CircleOptions()
+                circleOptions.center(getLatLongFromLocation(processedCoordinates[currentCoordinateSubList][0]))
+                circleOptions.radius(2.0)
+                circleOptions.strokeColor(currentColor)
+                circleOptions.fillColor(currentColor)
+                circleOptions.strokeWidth(2f)
+                mMap.addCircle(circleOptions)
+            }
+            else{
+                for (currentCoordinateIndex in 0..processedCoordinates[currentCoordinateSubList].size - 2) {
+                    val left = LatLng(coordinates[currentCoordinateIndex].latitude, coordinates[currentCoordinateIndex].longitude)
+                    val right = LatLng(coordinates[currentCoordinateIndex + 1].latitude, coordinates[currentCoordinateIndex + 1].longitude)
+                    mMap.addPolyline(PolylineOptions().add(left, right).color(colors[currentColorIndex]))
+                    currentColorIndex++
+                }
             }
         }
+
         val start = LatLng(coordinates[0].latitude, coordinates[0].longitude)
         val end = LatLng(
             coordinates[coordinates.size - 1].latitude,
@@ -151,6 +171,54 @@ class LocationHistoryFragment : Fragment() {
         mMap.addMarker(MarkerOptions().position(end).title("Last Tracked Position"))
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(end, 15f))
+        binding.progressHorizontal.visibility = View.GONE
+    }
+
+    /**
+     * @param coordinates: list of unprocessed coordinates
+     * @return list of lists containing coordinates which are closer to each other than the distance threshold and
+     * the speed between them is greater than the speed threshold
+     */
+    private fun preprocessedCoordinatesForDrawing(coordinates: ArrayList<Location>): ArrayList<ArrayList<Location>>{
+        val returnList = ArrayList<ArrayList<Location>>()
+        for (i in 0 until coordinates.size){
+            when {
+                returnList.isEmpty() -> {
+                    returnList.add(arrayListOf(coordinates[i]))
+                }
+                testDistanceAndSpeed(returnList.flatten().last(), coordinates[i]) -> {
+                    returnList.last().add(coordinates[i])
+                }
+                else -> {
+                    returnList.add(arrayListOf(coordinates[i]))
+                }
+            }
+        }
+        return returnList
+    }
+
+    /**
+     * @param start: location of starting point
+     * @param end: location of end point
+     * @return boolean whether the two points are closer to each other than the distance threshold and
+     * the speed between them is greater than the speed threshold
+     */
+    private fun testDistanceAndSpeed(start: Location, end: Location): Boolean {
+        val startLatLng = getLatLongFromLocation(start)
+        val endLatLng = getLatLongFromLocation(end)
+        val speedBool = isPathSpeedMoreThanThreshold(start.time, end.time, startLatLng, endLatLng)
+        val distBool = isCoordinateDistanceLessOrEqualThanThreshold(startLatLng, endLatLng)
+        return speedBool && distBool
+    }
+
+    /**
+     * @param location: location to extract latitude and longitude from
+     * @return LatLng containing the latitude and longitude of the given location
+     */
+    private fun getLatLongFromLocation(location: Location): LatLng {
+        val lat = location.latitude
+        val long = location.longitude
+        return LatLng(lat, long)
     }
 
     /**
@@ -177,6 +245,11 @@ class LocationHistoryFragment : Fragment() {
         return speed > speedThreshold
     }
 
+    /**
+     * @param startLocation: location of starting point
+     * @param endLocation: location of end point
+     * @return the distance between the two given locations on a sphere with the size of earth
+     */
     private fun getCoordinateDistanceOnSphere(
         startLocation: LatLng,
         endLocation: LatLng
