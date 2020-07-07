@@ -37,6 +37,8 @@ class LocationHistoryFragment : Fragment() {
 
     //Polyline length threshold in kilometers
     private val distanceThreshold: Double = 0.1
+    //Polyline speed threshold in kilometers per hour
+    private val speedThreshold = 1
 
     private val dayInMillis = 24 * 60 * 60 * 1000
     private val callback = OnMapReadyCallback { googleMap ->
@@ -132,7 +134,9 @@ class LocationHistoryFragment : Fragment() {
         for (currentCoordinateIndex in 0..coordinates.size - 2) {
             val left = LatLng(coordinates[currentCoordinateIndex].latitude, coordinates[currentCoordinateIndex].longitude)
             val right = LatLng(coordinates[currentCoordinateIndex + 1].latitude, coordinates[currentCoordinateIndex + 1].longitude)
-            if (isCoordinateDistanceLessThanThreshold(left, right)) {
+            val leftTime = coordinates[currentCoordinateIndex].time
+            val rightTime = coordinates[currentCoordinateIndex + 1].time
+            if (isCoordinateDistanceLessOrEqualThanThreshold(left, right) && isPathSpeedMoreThanThreshold(leftTime, rightTime, left, right)) {
                 mMap.addPolyline(PolylineOptions().add(left, right).color(colors[currentCoordinateIndex]))
             }
         }
@@ -152,24 +156,46 @@ class LocationHistoryFragment : Fragment() {
     /**
      * @param start: location of starting point
      * @param end: location of end point
-     * @return boolean whether the distance between start and end is smaller than the given threshold
+     * @return boolean whether the distance between start and end is smaller/equal than the given threshold
      */
-    private fun isCoordinateDistanceLessThanThreshold(start: LatLng, end: LatLng): Boolean {
-        val lon1 = Math.toRadians(start.longitude)
-        val lat1 = Math.toRadians(start.latitude)
-        val lon2 = Math.toRadians(end.longitude)
-        val lat2 = Math.toRadians(end.latitude)
+    private fun isCoordinateDistanceLessOrEqualThanThreshold(start: LatLng, end: LatLng): Boolean {
+        val distance = getCoordinateDistanceOnSphere(start, end)
+        return distance <= distanceThreshold
+    }
+
+    /**
+     * @param startTime: timestamp of starting point
+     * @param endTime: timestamp of end point
+     * @param startLocation: location of starting point
+     * @param endLocation: location of end point
+     * @return boolean whether the average speed between start and end is greater than the given threshold
+     */
+    private fun isPathSpeedMoreThanThreshold(startTime: Long, endTime: Long, startLocation: LatLng, endLocation: LatLng): Boolean {
+        val distance = getCoordinateDistanceOnSphere(startLocation, endLocation)
+        val timeDifference = (endTime - startTime) / (1000 * 60 * 60)
+        val speed = distance / timeDifference
+        return speed > speedThreshold
+    }
+
+    private fun getCoordinateDistanceOnSphere(
+        startLocation: LatLng,
+        endLocation: LatLng
+    ): Double {
+        val lon1 = Math.toRadians(startLocation.longitude)
+        val lat1 = Math.toRadians(startLocation.latitude)
+        val lon2 = Math.toRadians(endLocation.longitude)
+        val lat2 = Math.toRadians(endLocation.latitude)
 
         //Haversine formula, determines the great-circle distance between two points on a sphere with given longitude and latitude
         val deltaLon = lon2 - lon1
         val deltaLat = lat2 - lat1
-        val innerFormula = sin(deltaLat / 2).pow(2.0) + cos(lat1) * cos(lat2) * sin(deltaLon / 2).pow(2.0)
+        val innerFormula =
+            sin(deltaLat / 2).pow(2.0) + cos(lat1) * cos(lat2) * sin(deltaLon / 2).pow(2.0)
         val outerFormula = 2 * asin(sqrt(innerFormula))
 
         //radius of the earth in kilometers
         val radius = 6371
-
-        return (outerFormula * radius) <= distanceThreshold
+        return outerFormula * radius
     }
 
     /**
