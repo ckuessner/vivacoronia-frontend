@@ -2,7 +2,9 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
+import java.lang.IllegalArgumentException
 import java.text.NumberFormat
 import java.util.*
 
@@ -35,7 +37,7 @@ class OfferListViewModel : ViewModel() {
     }
 }
 
-class OfferViewModel(val offer: Offer) {
+class OfferViewModel(var offer: Offer) : ViewModel() {
     object CurrencyFormatter {
         private val currencyFormatter: NumberFormat = NumberFormat.getCurrencyInstance()
 
@@ -63,4 +65,17 @@ class OfferViewModel(val offer: Offer) {
         get() = offer.details
     val amount: String
         get() = offer.amount.toString()
+
+    val category: String
+        get() = offer.category
+}
+
+class OfferViewModelFactory(private val offer: Offer): ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(OfferViewModel::class.java)) {
+            return OfferViewModel(offer) as T
+        }
+        throw IllegalArgumentException("Unknown OfferViewModel class")
+    }
+
 }

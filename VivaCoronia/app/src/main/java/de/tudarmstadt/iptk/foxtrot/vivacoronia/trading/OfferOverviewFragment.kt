@@ -1,5 +1,6 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -15,6 +16,7 @@ import com.android.volley.VolleyError
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.TradingApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentOfferOverviewBinding
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutionException
@@ -32,7 +34,7 @@ class OffersFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_offer_overview, container, false)
         viewModel = ViewModelProvider(this).get(OfferListViewModel::class.java)
 
-        val adapter = OffersAdapter(::deleteOfferCallback)
+        val adapter = OffersAdapter(::deleteOfferCallback, ::editOfferCallback)
         adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
@@ -53,6 +55,8 @@ class OffersFragment : Fragment() {
 
         GlobalScope.launch { fetchMyOffers() }
 
+        binding.add.setOnClickListener { AddOfferActivity.start(requireContext(), null) }
+
         return binding.root
     }
 
@@ -61,6 +65,10 @@ class OffersFragment : Fragment() {
         if (deleted)
             viewModel.remove(id)
         // TODO better fetch again and reset whole list. Does not change efficiency because only differences matter
+    }
+
+    private fun editOfferCallback(offer: Offer){
+        AddOfferActivity.start(requireContext(), offer)
     }
 
     private fun fetchMyOffers() {

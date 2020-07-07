@@ -10,8 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.animation.collapse
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.animation.expand
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.ListItemOfferBinding
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 
-class OffersAdapter(private val deleteOfferCallback: (id: String) -> Unit
+class OffersAdapter(
+    private val deleteOfferCallback: (id: String) -> Unit,
+    private val editOfferCallback: (offer: Offer) -> Unit
 ) :
     ListAdapter<OfferViewModel, OfferDetailsViewHolder>(OffersDiffCallback()) {
     override fun onBindViewHolder(holder: OfferDetailsViewHolder, position: Int) {
@@ -19,7 +22,7 @@ class OffersAdapter(private val deleteOfferCallback: (id: String) -> Unit
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OfferDetailsViewHolder {
-        val holder = OfferDetailsViewHolder.from(parent, deleteOfferCallback)
+        val holder = OfferDetailsViewHolder.from(parent, deleteOfferCallback, editOfferCallback)
         holder.binding.clear.setOnClickListener {
             holder.onDeleteClick()
         }
@@ -46,17 +49,19 @@ class OffersDiffCallback : DiffUtil.ItemCallback<OfferViewModel>() {
 
 class OfferDetailsViewHolder private constructor(
     val binding: ListItemOfferBinding,
-    private val deleteOfferCallback: (id: String) -> Unit
+    private val deleteOfferCallback: (id: String) -> Unit,
+    private val editOfferCallback: (offer: Offer) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     companion object {
         fun from(
             parent: ViewGroup,
-            deleteOfferCallback: (id: String) -> Unit
+            deleteOfferCallback: (id: String) -> Unit,
+            editOfferCallback: (offer: Offer) -> Unit
         ): OfferDetailsViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             val binding = ListItemOfferBinding.inflate(inflater, parent, false)
-            return OfferDetailsViewHolder(binding, deleteOfferCallback)
+            return OfferDetailsViewHolder(binding, deleteOfferCallback, editOfferCallback)
         }
     }
 
@@ -76,8 +81,7 @@ class OfferDetailsViewHolder private constructor(
     }
 
     fun onEditClick() {
-        // TODO
-        Log.d("OFFER-VIEW-HOLDER", "Clicked edit")
+        editOfferCallback(binding.offer!!.offer)
     }
 
     fun bind(item: OfferViewModel) {

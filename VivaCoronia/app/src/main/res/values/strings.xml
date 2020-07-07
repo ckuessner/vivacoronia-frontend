@@ -43,7 +43,11 @@
     <string name="amount">Amount</string>
     <string name="price">Price</string>
     <string name="details">Details</string>
+    <string name="product">Product</string>
     <string name="edit">edit</string>
+    <string name="category">Category</string>
+    <string name="add_offer">Add Offer</string>
+    <string name="save">Save</string>
 
     <string name="title_activity_location_drawing">Map</string>
     <string name="set_time_period">Set time period</string>
