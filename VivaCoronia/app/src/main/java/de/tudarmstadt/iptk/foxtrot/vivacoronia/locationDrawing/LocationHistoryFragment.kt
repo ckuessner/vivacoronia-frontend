@@ -1,10 +1,8 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.locationDrawing
 
-import android.animation.ArgbEvaluator
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +10,6 @@ import androidx.core.graphics.ColorUtils
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.common.util.Hex
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -27,9 +24,8 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.LocationApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentLocationHistoryBinding
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.threeten.bp.ZonedDateTime
-import java.time.LocalDate
-import java.time.ZoneOffset
+import org.threeten.bp.LocalDate
+import org.threeten.bp.ZoneOffset
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.*
@@ -42,6 +38,7 @@ class LocationHistoryFragment : Fragment() {
     //Polyline length threshold in kilometers
     private val distanceThreshold: Double = 0.1
 
+    private val dayInMillis = 24 * 60 * 60 * 1000
     private val callback = OnMapReadyCallback { googleMap ->
         /**
          * Manipulates the map once available.
@@ -55,29 +52,28 @@ class LocationHistoryFragment : Fragment() {
         val builder = MaterialDatePicker.Builder.dateRangePicker()
         val now = Calendar.getInstance()
 
-        var selectionStart: Date = Date(LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000)
-        var selectionEnd: Date = Date(LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000 + (24 * 60 * 60 * 1000))
-
         builder.setSelection(androidx.core.util.Pair(now.timeInMillis, now.timeInMillis))
         builder.setTitleText("Select a tracking period")
         val picker = builder.build()
 
+        val selectionStart = Date(LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000)
+        val selectionEnd = Date(LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000 + dayInMillis)
         getGeoJSONFromServer(selectionStart, selectionEnd)
 
         binding.datePickerBtn.setOnClickListener {
             picker.show(requireActivity().supportFragmentManager, "DATE_PICKER")
         }
         picker.addOnPositiveButtonClickListener {
-            selectionStart = Date(picker.selection?.first!!)
-            selectionEnd = Date(picker.selection?.second!!)
+            val start = Date(picker.selection?.first!!)
+            val end = Date(picker.selection?.second!! + dayInMillis)
             googleMap.clear()
-            getGeoJSONFromServer(selectionStart, selectionEnd)
+            getGeoJSONFromServer(start, end)
         }
 
         binding.reset.setOnClickListener {
             googleMap.clear()
             val startOfDay = LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000
-            getGeoJSONFromServer(Date(startOfDay), Date(startOfDay + (24 * 60 * 60 * 1000)))
+            getGeoJSONFromServer(Date(startOfDay), Date(startOfDay + dayInMillis))
         }
 
         viewModel.locationHistory.observe(
@@ -116,7 +112,7 @@ class LocationHistoryFragment : Fragment() {
      */
     private fun getGeoJSONFromServer(start: Date, end: Date) {
         GlobalScope.launch {
-            var response: ArrayList<Location> =
+            val response: ArrayList<Location> =
                 LocationApiClient.getPositionsFromServerForID(requireContext(), start, end)
             if (response.isNotEmpty()) {
                 requireActivity().runOnUiThread {
