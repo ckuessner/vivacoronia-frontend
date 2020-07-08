@@ -120,10 +120,9 @@ class LocationHistoryFragment : Fragment() {
         GlobalScope.launch {
             val response: ArrayList<Location> =
                 LocationApiClient.getPositionsFromServerForID(requireContext(), start, end)
-            if (response.isNotEmpty()) {
-                requireActivity().runOnUiThread {
-                    viewModel.locationHistory.value = response
-                }
+
+            requireActivity().runOnUiThread {
+                viewModel.locationHistory.value = response
             }
         }
     }
@@ -134,43 +133,54 @@ class LocationHistoryFragment : Fragment() {
      * Draws the given list of coordinates onto the given map and connects them with polylines
      */
     private fun drawCoordinates(coordinates: List<Location>, mMap: GoogleMap) {
-        val colors = getColorArray(coordinates.size, Color.parseColor("#4169E1"), Color.parseColor("#FF0000"))
-        var currentColorIndex = 0
-        val processedCoordinates = preprocessedCoordinatesForDrawing(coordinates)
-        for (currentCoordinateSubList in processedCoordinates){
-            if(currentCoordinateSubList.size == 1){
-                val currentColor = colors[currentColorIndex]
-                currentColorIndex++
-                val circleOptions = createCircleOptions(
-                    currentCoordinateSubList[0].getLatLong(),
-                    currentColor
-                )
-                mMap.addCircle(circleOptions)
-            }
-            else{
-                for (currentCoordinateIndex in 0..currentCoordinateSubList.size - 2) {
-                    val left = coordinates[currentCoordinateIndex].getLatLong()
-                    val right = coordinates[currentCoordinateIndex + 1].getLatLong()
-                    mMap.addPolyline(PolylineOptions().add(left, right).color(colors[currentColorIndex]))
+        if(coordinates.isEmpty()){
+            binding.progressHorizontal.visibility = View.GONE
+        }
+        else {
+            val colors = getColorArray(
+                coordinates.size,
+                Color.parseColor("#4169E1"),
+                Color.parseColor("#FF0000")
+            )
+            var currentColorIndex = 0
+            val processedCoordinates = preprocessedCoordinatesForDrawing(coordinates)
+            for (currentCoordinateSubList in processedCoordinates) {
+                if (currentCoordinateSubList.size == 1) {
+                    val currentColor = colors[currentColorIndex]
                     currentColorIndex++
+                    val circleOptions = createCircleOptions(
+                        currentCoordinateSubList[0].getLatLong(),
+                        currentColor
+                    )
+                    mMap.addCircle(circleOptions)
+                } else {
+                    for (currentCoordinateIndex in 0..currentCoordinateSubList.size - 2) {
+                        val left = coordinates[currentCoordinateIndex].getLatLong()
+                        val right = coordinates[currentCoordinateIndex + 1].getLatLong()
+                        mMap.addPolyline(
+                            PolylineOptions().add(left, right).color(colors[currentColorIndex])
+                        )
+                        currentColorIndex++
+                    }
                 }
             }
+
+            val startMarkerLocation = coordinates[0].getLatLong()
+            val endMarkerLocation = coordinates[coordinates.size - 1].getLatLong()
+            mMap.addMarker(
+                MarkerOptions().position(startMarkerLocation).title("Start Of Tracking Period")
+            )
+            mMap.addMarker(
+                MarkerOptions().position(endMarkerLocation).title("Last Tracked Position")
+            )
+
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(endMarkerLocation, 15f))
+            binding.progressHorizontal.visibility = View.GONE
         }
-
-        val startMarkerLocation = coordinates[0].getLatLong()
-        val endMarkerLocation = coordinates[coordinates.size - 1].getLatLong()
-        mMap.addMarker(
-            MarkerOptions().position(startMarkerLocation).title("Start Of Tracking Period")
-        )
-        mMap.addMarker(MarkerOptions().position(endMarkerLocation).title("Last Tracked Position"))
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(endMarkerLocation, 15f))
-        binding.progressHorizontal.visibility = View.GONE
     }
 
     /**
-     * @param processedCoordinates: list of preprocessed coordinate lists
-     * @param currentCoordinateSubList: currently drawn coordinate sublist
+     * @param center: coordinates of center point
      * @param currentColor: current color from color array
      * @return Circle options to be drawn onto the map
      */
