@@ -90,7 +90,7 @@
             android:parentActivityName=".infectionStatus.ScanQrCodeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".infectionStatus.ScanQrCodeActivity"/>
+                android:value=".infectionStatus.ScanQrCodeActivity" />
         </activity>
     </application>
 

@@ -5,5 +5,5 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class LocationHistoryViewModel: ViewModel() {
-    val locationHistory = MutableLiveData<ArrayList<Location>>()
+    val locationHistory = MutableLiveData<List<Location>>()
 }

@@ -12,6 +12,7 @@ import com.android.volley.toolbox.RequestFuture
 import com.android.volley.toolbox.StringRequest
 import com.beust.klaxon.JsonArray
 import com.beust.klaxon.Parser
+import com.google.android.gms.maps.model.LatLng
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.DBLocation
 import kotlinx.coroutines.GlobalScope
@@ -84,7 +85,7 @@ object LocationApiClient : ApiBaseClient() {
      * @param json: given json file as string
      * @return list of locations parsed from given JSONArray
      */
-    private fun parseGeoJSONForOneID(json: String): ArrayList<Location>{
+    private fun parseGeoJSONForOneID(json: String): List<Location>{
         val parser: Parser = Parser.default()
         val parsed: JsonArray<*> = parser.parse(StringBuilder(json)) as JsonArray<*>
         val loc = parsed["location"] as JsonArray<*>
@@ -98,7 +99,7 @@ object LocationApiClient : ApiBaseClient() {
      * @param json: given json file as string
      * @return hashmap with userID as key and the corresponding locations as entries
      */
-    private fun parseGeoJSONForMultipleID(json: String): HashMap<Int, ArrayList<Location>>{
+    private fun parseGeoJSONForMultipleID(json: String): MutableMap<Int, List<Location>>{
         val parser: Parser = Parser.default()
         val parsed: JsonArray<*> = parser.parse(StringBuilder(json)) as JsonArray<*>
         val loc = parsed["location"] as JsonArray<*>
@@ -115,10 +116,10 @@ object LocationApiClient : ApiBaseClient() {
      * @param ids JsonArray to parse userIDs from
      * @return hashmap with userID as key and the corresponding locations as entries
      */
-    private fun createCoordinatesUserMap(coordinates: JsonArray<*>, timestamps: JsonArray<*>, ids: JsonArray<*>): HashMap<Int, ArrayList<Location>>{
+    private fun createCoordinatesUserMap(coordinates: JsonArray<*>, timestamps: JsonArray<*>, ids: JsonArray<*>): MutableMap<Int, List<Location>>{
         val formatter = org.threeten.bp.format.DateTimeFormatter.ISO_ZONED_DATE_TIME
         //val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        val map = HashMap<Int, ArrayList<Location>>()
+        val map = mutableMapOf<Int, List<Location>>()
         for (currentCoordinateIndex in 0 until coordinates.size) {
             val currentID = ids[currentCoordinateIndex] as Int
             val location = createLocationWithTimestamp(
@@ -128,8 +129,8 @@ object LocationApiClient : ApiBaseClient() {
                 coordinates
             )
             if(map.containsKey(currentID)){
-                val list = map[currentID]
-                list!!.add(location)
+                val list: ArrayList<Location> = map[currentID] as ArrayList<Location>
+                list.add(location)
                 map[currentID] = list
             }
             else{
@@ -146,7 +147,7 @@ object LocationApiClient : ApiBaseClient() {
      * @param timestamps: JsonArray to parse timestamps from
      * @return a list of locations with coordinates and their respective timestamps
      */
-    private fun createCoordinates(coordinates: JsonArray<*>, timestamps: JsonArray<*>): ArrayList<Location>{
+    private fun createCoordinates(coordinates: JsonArray<*>, timestamps: JsonArray<*>): List<Location>{
         val formatter = org.threeten.bp.format.DateTimeFormatter.ISO_ZONED_DATE_TIME
         //val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         val listOfCoordinates = ArrayList<Location>()
@@ -205,8 +206,14 @@ object LocationApiClient : ApiBaseClient() {
     }
 
     fun getPositionsFromServer(context: Context, onErrorCallback: ((error: VolleyError) -> Unit)): HashMap<Int, ArrayList<Location>>{
+    fun getPositionsFromServer(context: Context, location: LatLng, distance: Int): MutableMap<Int, List<Location>>{
         val requestQueue = getRequestQueue(context) ?: return HashMap()
         val responseFuture = RequestFuture.newFuture<JSONArray>()
+        val requestUrl = Uri.parse(getEndpoint()).buildUpon()
+            .appendQueryParameter("latitude", location.latitude.toString())
+            .appendQueryParameter("longitude", location.longitude.toString())
+            .appendQueryParameter("distance", distance.toString())
+            .build().toString()
         val request = JsonArrayRequest(getEndpoint(), responseFuture, Response.ErrorListener { onErrorCallback(it) })
         requestQueue.add(request)
         return parseGeoJSONForMultipleID(responseFuture.get().toString())

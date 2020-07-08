@@ -16,7 +16,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            tools:context=".locationDrawing.LocationDrawing.kt" />
+            tools:context=".locationDrawing.LocationHistoryFragment.kt" />
 
         <ProgressBar
             android:id="@+id/progress_horizontal"
