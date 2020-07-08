@@ -3,7 +3,6 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.locationDrawing
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -134,44 +133,60 @@ class LocationHistoryFragment : Fragment() {
      * @param mMap: map to be drawn on
      * Draws the given list of coordinates onto the given map and connects them with polylines
      */
-    private fun drawCoordinates(coordinates: ArrayList<Location>, mMap: GoogleMap) {
+    private fun drawCoordinates(coordinates: List<Location>, mMap: GoogleMap) {
         val colors = getColorArray(coordinates.size, Color.parseColor("#4169E1"), Color.parseColor("#FF0000"))
         var currentColorIndex = 0
         val processedCoordinates = preprocessedCoordinatesForDrawing(coordinates)
-        for (currentCoordinateSubList in 0 until processedCoordinates.size){
+        for (currentCoordinateSubList in processedCoordinates.indices){
             if(processedCoordinates[currentCoordinateSubList].size == 1){
                 val currentColor = colors[currentColorIndex]
                 currentColorIndex++
-                val circleOptions = CircleOptions()
-                circleOptions.center(getLatLongFromLocation(processedCoordinates[currentCoordinateSubList][0]))
-                circleOptions.radius(2.0)
-                circleOptions.strokeColor(currentColor)
-                circleOptions.fillColor(currentColor)
-                circleOptions.strokeWidth(2f)
+                val circleOptions = createCircleOptions(
+                    processedCoordinates,
+                    currentCoordinateSubList,
+                    currentColor
+                )
                 mMap.addCircle(circleOptions)
             }
             else{
                 for (currentCoordinateIndex in 0..processedCoordinates[currentCoordinateSubList].size - 2) {
-                    val left = LatLng(coordinates[currentCoordinateIndex].latitude, coordinates[currentCoordinateIndex].longitude)
-                    val right = LatLng(coordinates[currentCoordinateIndex + 1].latitude, coordinates[currentCoordinateIndex + 1].longitude)
+                    val left = coordinates[currentCoordinateIndex].getLatLong()
+                    val right = coordinates[currentCoordinateIndex + 1].getLatLong()
                     mMap.addPolyline(PolylineOptions().add(left, right).color(colors[currentColorIndex]))
                     currentColorIndex++
                 }
             }
         }
 
-        val start = LatLng(coordinates[0].latitude, coordinates[0].longitude)
-        val end = LatLng(
-            coordinates[coordinates.size - 1].latitude,
-            coordinates[coordinates.size - 1].longitude
-        )
+        val startMarkerLocation = coordinates[0].getLatLong()
+        val endMarkerLocation = coordinates[coordinates.size - 1].getLatLong()
         mMap.addMarker(
-            MarkerOptions().position(start).title("Start Of Tracking Period")
+            MarkerOptions().position(startMarkerLocation).title("Start Of Tracking Period")
         )
-        mMap.addMarker(MarkerOptions().position(end).title("Last Tracked Position"))
+        mMap.addMarker(MarkerOptions().position(endMarkerLocation).title("Last Tracked Position"))
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(end, 15f))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(endMarkerLocation, 15f))
         binding.progressHorizontal.visibility = View.GONE
+    }
+
+    /**
+     * @param processedCoordinates: list of preprocessed coordinate lists
+     * @param currentCoordinateSubList: currently drawn coordinate sublist
+     * @param currentColor: current color from color array
+     * @return Circle options to be drawn onto the map
+     */
+    private fun createCircleOptions(
+        processedCoordinates: List<List<Location>>,
+        currentCoordinateSubList: Int,
+        currentColor: Int
+    ): CircleOptions {
+        val circleOptions = CircleOptions()
+        circleOptions.center(processedCoordinates[currentCoordinateSubList][0].getLatLong())
+        circleOptions.radius(2.0)
+        circleOptions.strokeColor(currentColor)
+        circleOptions.fillColor(currentColor)
+        circleOptions.strokeWidth(2f)
+        return circleOptions
     }
 
     /**
@@ -179,18 +194,18 @@ class LocationHistoryFragment : Fragment() {
      * @return list of lists containing coordinates which are closer to each other than the distance threshold and
      * the speed between them is greater than the speed threshold
      */
-    private fun preprocessedCoordinatesForDrawing(coordinates: ArrayList<Location>): ArrayList<ArrayList<Location>>{
+    private fun preprocessedCoordinatesForDrawing(coordinates: List<Location>): List<List<Location>>{
         val returnList = ArrayList<ArrayList<Location>>()
-        for (i in 0 until coordinates.size){
+        for (coordinate in coordinates){
             when {
                 returnList.isEmpty() -> {
-                    returnList.add(arrayListOf(coordinates[i]))
+                    returnList.add(arrayListOf(coordinate))
                 }
-                testDistanceAndSpeed(returnList.flatten().last(), coordinates[i]) -> {
-                    returnList.last().add(coordinates[i])
+                isTimeAndDistanceRelevant(returnList.last().last(), coordinate) -> {
+                    returnList.last().add(coordinate)
                 }
                 else -> {
-                    returnList.add(arrayListOf(coordinates[i]))
+                    returnList.add(arrayListOf(coordinate))
                 }
             }
         }
@@ -203,21 +218,20 @@ class LocationHistoryFragment : Fragment() {
      * @return boolean whether the two points are closer to each other than the distance threshold and
      * the speed between them is greater than the speed threshold
      */
-    private fun testDistanceAndSpeed(start: Location, end: Location): Boolean {
-        val startLatLng = getLatLongFromLocation(start)
-        val endLatLng = getLatLongFromLocation(end)
-        val speedBool = isPathSpeedMoreThanThreshold(start.time, end.time, startLatLng, endLatLng)
-        val distBool = isCoordinateDistanceLessOrEqualThanThreshold(startLatLng, endLatLng)
+    private fun isTimeAndDistanceRelevant(start: Location, end: Location): Boolean {
+        val startLatLng = start.getLatLong()
+        val endLatLng = end.getLatLong()
+        val speedBool = isTimeRelevant(start.time, end.time, startLatLng, endLatLng)
+        val distBool = isDistanceRelevant(startLatLng, endLatLng)
         return speedBool && distBool
     }
 
     /**
-     * @param location: location to extract latitude and longitude from
      * @return LatLng containing the latitude and longitude of the given location
      */
-    private fun getLatLongFromLocation(location: Location): LatLng {
-        val lat = location.latitude
-        val long = location.longitude
+    private fun Location.getLatLong(): LatLng {
+        val lat = this.latitude
+        val long = this.longitude
         return LatLng(lat, long)
     }
 
@@ -226,7 +240,7 @@ class LocationHistoryFragment : Fragment() {
      * @param end: location of end point
      * @return boolean whether the distance between start and end is smaller/equal than the given threshold
      */
-    private fun isCoordinateDistanceLessOrEqualThanThreshold(start: LatLng, end: LatLng): Boolean {
+    private fun isDistanceRelevant(start: LatLng, end: LatLng): Boolean {
         val distance = getCoordinateDistanceOnSphere(start, end)
         return distance <= distanceThreshold
     }
@@ -238,7 +252,7 @@ class LocationHistoryFragment : Fragment() {
      * @param endLocation: location of end point
      * @return boolean whether the average speed between start and end is greater than the given threshold
      */
-    private fun isPathSpeedMoreThanThreshold(startTime: Long, endTime: Long, startLocation: LatLng, endLocation: LatLng): Boolean {
+    private fun isTimeRelevant(startTime: Long, endTime: Long, startLocation: LatLng, endLocation: LatLng): Boolean {
         val distance = getCoordinateDistanceOnSphere(startLocation, endLocation)
         val timeDifference = (endTime - startTime) / (1000 * 60 * 60)
         val speed = distance / timeDifference
@@ -277,7 +291,7 @@ class LocationHistoryFragment : Fragment() {
      * @param endColor: color to end with
      * @return ArrayList of colors for each line to be drawn interpolated between startColor and endColor
      */
-    private fun getColorArray(amount: Int, startColor: Int, endColor: Int): ArrayList<Int>{
+    private fun getColorArray(amount: Int, startColor: Int, endColor: Int): List<Int>{
         val fraction = 1f / amount
         val colorArray = ArrayList<Int>()
         for (i in 0 until amount){
