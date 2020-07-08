@@ -3,13 +3,16 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.locationDrawing
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.graphics.ColorUtils
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.android.volley.VolleyError
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -28,8 +31,12 @@ import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 import org.threeten.bp.ZoneOffset
 import java.util.*
+import java.util.concurrent.ExecutionException
 import kotlin.collections.ArrayList
 import kotlin.math.*
+
+
+private const val TAG = "LocationHistoryFragment"
 
 class LocationHistoryFragment : Fragment() {
 
@@ -61,7 +68,7 @@ class LocationHistoryFragment : Fragment() {
 
         val selectionStart = Date(LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000)
         val selectionEnd = Date(LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000 + dayInMillis)
-        getGeoJSONFromServer(selectionStart, selectionEnd)
+        fetchData(selectionStart, selectionEnd)
 
         binding.progressHorizontal.max = 100
         binding.datePickerBtn.setOnClickListener {
@@ -71,13 +78,13 @@ class LocationHistoryFragment : Fragment() {
             val start = Date(picker.selection?.first!!)
             val end = Date(picker.selection?.second!! + dayInMillis)
             googleMap.clear()
-            getGeoJSONFromServer(start, end)
+            fetchData(start, end)
         }
 
         binding.reset.setOnClickListener {
             googleMap.clear()
             val startOfDay = LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000
-            getGeoJSONFromServer(Date(startOfDay), Date(startOfDay + dayInMillis))
+            fetchData(Date(startOfDay), Date(startOfDay + dayInMillis))
         }
 
         viewModel.locationHistory.observe(
@@ -88,6 +95,30 @@ class LocationHistoryFragment : Fragment() {
                     googleMap
                 )
             })
+    }
+
+    /**
+     * @param start: start date to filter with
+     * @param end: end date to filter with
+     * gets filtered location data from server with locations only between start
+     * and end, also handles exceptions for failed requests
+     */
+    private fun fetchData(start: Date, end: Date) {
+        try {
+            getGeoJSONFromServer(start, end)
+        } catch (exception: ExecutionException) {
+            if (exception.cause is VolleyError && requireActivity().hasWindowFocus())
+                requireActivity().runOnUiThread {
+                    Toast.makeText(
+                        requireActivity(),
+                        "Failed to connect to server",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            else {
+                Log.e(TAG, "Error while getting location data from server", exception)
+            }
+        }
     }
 
     override fun onCreateView(
