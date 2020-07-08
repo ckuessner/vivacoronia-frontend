@@ -107,6 +107,7 @@ class LocationHistoryFragment : Fragment() {
         try {
             getGeoJSONFromServer(start, end)
         } catch (exception: ExecutionException) {
+            binding.progressHorizontal.visibility = View.GONE
             if (exception.cause is VolleyError && requireActivity().hasWindowFocus())
                 requireActivity().runOnUiThread {
                     Toast.makeText(
