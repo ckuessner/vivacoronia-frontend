@@ -5,12 +5,15 @@ import android.location.Location
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.graphics.ColorUtils
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import com.android.volley.VolleyError
 import com.google.android.gms.maps.CameraUpdateFactory
 
 import com.google.android.gms.maps.GoogleMap
@@ -23,14 +26,17 @@ import com.google.android.gms.maps.model.PolylineOptions
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.LocationApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentLocationHistoryBinding
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentSpreadMapBinding
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.*
+import kotlin.random.Random.Default.nextFloat
 
 class SpreadMapFragment : Fragment() {
 
-    private lateinit var binding: FragmentLocationHistoryBinding
+    private lateinit var binding: FragmentSpreadMapBinding
     private lateinit var viewModel: SpreadMapDataViewModel
 
     //Polyline length threshold in kilometers
@@ -65,7 +71,7 @@ class SpreadMapFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_location_history, container, false)
+            DataBindingUtil.inflate(inflater, R.layout.fragment_spread_map, container, false)
         viewModel = ViewModelProvider(this).get(SpreadMapDataViewModel::class.java)
         return binding.root
     }
@@ -87,11 +93,24 @@ class SpreadMapFragment : Fragment() {
         binding.progressHorizontal.isIndeterminate = true
         GlobalScope.launch {
             val response: MutableMap<Int, List<Location>> =
-                LocationApiClient.getPositionsFromServer(requireContext(), location, distance)
+                LocationApiClient.getPositionsFromServer(requireContext(), location, distance, ::onFetchErrorCallback)
 
             requireActivity().runOnUiThread {
                 viewModel.spreadMapData.value = response
             }
+        }
+    }
+
+    private fun onFetchErrorCallback(exception: VolleyError) {
+        binding.progressHorizontal.visibility = View.GONE
+        if (requireActivity().hasWindowFocus())
+            Toast.makeText(
+                requireActivity(),
+                "Failed to connect to server",
+                Toast.LENGTH_LONG
+            ).show()
+        else {
+            Log.e("SpreadMapFragment", "Error while fetching location data from server", exception)
         }
     }
 
@@ -105,13 +124,13 @@ class SpreadMapFragment : Fragment() {
             for((key,list) in coordinatesMap) {
                 elementCount += list.size
             }
-            val colors = getColorArray(
-                elementCount,
-                Color.parseColor("#4169E1"),
-                Color.parseColor("#FF0000"))
-            var currentColorIndex = 0
+            val idColors = generateColors(processedMap.size)
+            var currentIdColor = 0
             for((key, processedList) in processedMap){
-                for (processedSubList in processedList){
+                val colors = getColorArray(processedList.flatten().size, idColors[currentIdColor][0], idColors[currentIdColor][1])
+                currentIdColor++
+                var currentColorIndex = 0
+                for (processedSubList in processedList) {
                     if (processedSubList.size == 1) {
                         val currentColor = colors[currentColorIndex]
                         currentColorIndex++
@@ -130,8 +149,9 @@ class SpreadMapFragment : Fragment() {
                             currentColorIndex++
                         }
                     }
-                    val startMarkerLocation = processedSubList[0].getLatLong()
-                    val endMarkerLocation = processedSubList[processedSubList.size - 1].getLatLong()
+                }
+                    val startMarkerLocation = processedList.first().first().getLatLong()
+                    val endMarkerLocation = processedList.last().last().getLatLong()
                     mMap.addMarker(
                         MarkerOptions().position(startMarkerLocation).title("Start for ID: $key")
                     )
@@ -140,7 +160,6 @@ class SpreadMapFragment : Fragment() {
                     )
 
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(endMarkerLocation, 15f))
-                }
             }
             binding.progressHorizontal.visibility = View.GONE
         }
@@ -162,6 +181,27 @@ class SpreadMapFragment : Fragment() {
         circleOptions.fillColor(currentColor)
         circleOptions.strokeWidth(2f)
         return circleOptions
+    }
+
+    private fun generateColors(amount: Int): List<List<Int>>{
+        val colors = ArrayList<ArrayList<Int>>()
+        val doubleAmount = amount * 2
+        for(i in 0..doubleAmount){
+            if(i%2==0) {
+                val hue1 = i
+                val saturation1 = 90 + Random().nextFloat() * 10
+                val lightness1 = 50 + Random().nextFloat() * 10
+                val color1 =
+                    ColorUtils.HSLToColor(floatArrayOf(hue1.toFloat(), saturation1, lightness1))
+                val hue2 = i
+                val saturation2 = 90 + Random().nextFloat() * 10
+                val lightness2 = 50 + Random().nextFloat() * 10
+                val color2 =
+                    ColorUtils.HSLToColor(floatArrayOf(hue1.toFloat(), saturation1, lightness1))
+                colors.add(arrayListOf(color1, color2))
+            }
+        }
+        return colors
     }
 
     /**
@@ -252,7 +292,7 @@ class SpreadMapFragment : Fragment() {
      */
     private fun isSpeedOnPathGreaterThanThreshold(startTime: Long, endTime: Long, startLocation: LatLng, endLocation: LatLng): Boolean {
         val distance = getCoordinateDistanceOnSphere(startLocation, endLocation)
-        val timeDifference = (endTime - startTime) / (1000 * 60 * 60)
+        val timeDifference = (endTime - startTime) / (1000f * 60 * 60)
         val speed = distance / timeDifference
         return speed > speedThreshold
     }

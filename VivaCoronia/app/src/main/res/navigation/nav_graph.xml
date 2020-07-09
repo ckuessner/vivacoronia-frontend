@@ -26,4 +26,9 @@
         android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus.InfectionStatusFragment"
         android:label="Infection Status"
         tools:layout="@layout/fragment_infection_status" />
+    <fragment
+        android:id="@+id/spreadMapFragment"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.spreadMap.SpreadMapFragment"
+        android:label="Spread Map"
+        tools:layout="@layout/fragment_spread_map" />
 </navigation>

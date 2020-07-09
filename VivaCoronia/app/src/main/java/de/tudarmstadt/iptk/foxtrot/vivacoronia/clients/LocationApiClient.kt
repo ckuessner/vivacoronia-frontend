@@ -193,7 +193,7 @@ object LocationApiClient : ApiBaseClient() {
         return location
     }
 
-    fun getPositionsFromServerForID(context: Context, startTime: Date, endTime: Date, onErrorCallback: ((error: VolleyError) -> Unit)): ArrayList<Location>{
+    fun getPositionsFromServerForID(context: Context, startTime: Date, endTime: Date, onErrorCallback: ((error: VolleyError) -> Unit)): List<Location>{
         val requestQueue = getRequestQueue(context) ?: return ArrayList()
         val responseFuture = RequestFuture.newFuture<JSONArray>()
         val requestUrl = Uri.parse(getUserEndpoint()).buildUpon()
@@ -205,8 +205,7 @@ object LocationApiClient : ApiBaseClient() {
         return parseGeoJSONForOneID(responseFuture.get().toString())
     }
 
-    fun getPositionsFromServer(context: Context, onErrorCallback: ((error: VolleyError) -> Unit)): HashMap<Int, ArrayList<Location>>{
-    fun getPositionsFromServer(context: Context, location: LatLng, distance: Int): MutableMap<Int, List<Location>>{
+    fun getPositionsFromServer(context: Context, location: LatLng, distance: Int, onErrorCallback: ((error: VolleyError) -> Unit)): MutableMap<Int, List<Location>>{
         val requestQueue = getRequestQueue(context) ?: return HashMap()
         val responseFuture = RequestFuture.newFuture<JSONArray>()
         val requestUrl = Uri.parse(getEndpoint()).buildUpon()
@@ -214,7 +213,7 @@ object LocationApiClient : ApiBaseClient() {
             .appendQueryParameter("longitude", location.longitude.toString())
             .appendQueryParameter("distance", distance.toString())
             .build().toString()
-        val request = JsonArrayRequest(getEndpoint(), responseFuture, Response.ErrorListener { onErrorCallback(it) })
+        val request = JsonArrayRequest(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) })
         requestQueue.add(request)
         return parseGeoJSONForMultipleID(responseFuture.get().toString())
     }

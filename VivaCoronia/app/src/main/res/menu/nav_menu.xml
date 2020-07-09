@@ -22,5 +22,10 @@
         android:title="@string/menu_item_achievements"
         android:icon="@drawable/ic_achievement"/>
 
+    <item
+        android:id="@+id/menu_item_spreadmap"
+        android:title="Spreadmap"
+        android:icon="@drawable/ic_corona"/>
+
 
 </menu>

@@ -124,7 +124,7 @@ class LocationHistoryFragment : Fragment() {
         binding.progressHorizontal.visibility = View.VISIBLE
         binding.progressHorizontal.isIndeterminate = true
         GlobalScope.launch {
-            val response: ArrayList<Location> =
+            val response: List<Location> =
                 LocationApiClient.getPositionsFromServerForID(requireContext(), start, end, ::onFetchErrorCallback)
 
             requireActivity().runOnUiThread {
