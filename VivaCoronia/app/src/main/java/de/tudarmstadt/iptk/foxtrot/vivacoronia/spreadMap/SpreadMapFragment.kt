@@ -150,16 +150,15 @@ class SpreadMapFragment : Fragment() {
                         }
                     }
                 }
-                    val startMarkerLocation = processedList.first().first().getLatLong()
-                    val endMarkerLocation = processedList.last().last().getLatLong()
-                    mMap.addMarker(
-                        MarkerOptions().position(startMarkerLocation).title("Start for ID: $key")
-                    )
-                    mMap.addMarker(
-                        MarkerOptions().position(endMarkerLocation).title("End for ID: $key")
-                    )
-
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(endMarkerLocation, 15f))
+                val startMarkerLocation = processedList.first().first().getLatLong()
+                val endMarkerLocation = processedList.last().last().getLatLong()
+                mMap.addMarker(
+                    MarkerOptions().position(startMarkerLocation).title("Start for ID: $key")
+                )
+                mMap.addMarker(
+                    MarkerOptions().position(endMarkerLocation).title("End for ID: $key")
+                )
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(endMarkerLocation, 15f))
             }
             binding.progressHorizontal.visibility = View.GONE
         }
@@ -185,21 +184,11 @@ class SpreadMapFragment : Fragment() {
 
     private fun generateColors(amount: Int): List<List<Int>>{
         val colors = ArrayList<ArrayList<Int>>()
-        val doubleAmount = amount * 2
-        for(i in 0..doubleAmount){
-            if(i%2==0) {
-                val hue1 = i
-                val saturation1 = 90 + Random().nextFloat() * 10
-                val lightness1 = 50 + Random().nextFloat() * 10
-                val color1 =
-                    ColorUtils.HSLToColor(floatArrayOf(hue1.toFloat(), saturation1, lightness1))
-                val hue2 = i
-                val saturation2 = 90 + Random().nextFloat() * 10
-                val lightness2 = 50 + Random().nextFloat() * 10
-                val color2 =
-                    ColorUtils.HSLToColor(floatArrayOf(hue1.toFloat(), saturation1, lightness1))
-                colors.add(arrayListOf(color1, color2))
-            }
+        for(i in 0 until amount){
+            val rnd = Random()
+            val color1 = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+            val color2 = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+            colors.add(arrayListOf(color1, color2))
         }
         return colors
     }
