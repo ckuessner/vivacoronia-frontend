@@ -281,7 +281,7 @@ class LocationHistoryFragment : Fragment() {
      */
     private fun isSpeedOnPathGreaterThanThreshold(startTime: Long, endTime: Long, startLocation: LatLng, endLocation: LatLng): Boolean {
         val distance = getCoordinateDistanceOnSphere(startLocation, endLocation)
-        val timeDifference = (endTime - startTime) / (1000 * 60 * 60)
+        val timeDifference = (endTime - startTime) / (1000f * 60 * 60)
         val speed = distance / timeDifference
         return speed > speedThreshold
     }
