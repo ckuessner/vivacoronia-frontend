@@ -6,6 +6,7 @@ import android.net.Uri
 import android.util.Log
 import com.android.volley.Request
 import com.android.volley.Response
+import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.RequestFuture
 import com.android.volley.toolbox.StringRequest
@@ -191,24 +192,22 @@ object LocationApiClient : ApiBaseClient() {
         return location
     }
 
-    fun getPositionsFromServerForID(context: Context, startTime: Date, endTime: Date): ArrayList<Location>{
+    fun getPositionsFromServerForID(context: Context, startTime: Date, endTime: Date, onErrorCallback: ((error: VolleyError) -> Unit)): ArrayList<Location>{
         val requestQueue = getRequestQueue(context) ?: return ArrayList()
         val responseFuture = RequestFuture.newFuture<JSONArray>()
         val requestUrl = Uri.parse(getUserEndpoint()).buildUpon()
                 .appendQueryParameter("start", startTime.toString())
                 .appendQueryParameter("end", endTime.toString())
                 .build().toString()
-        val request = JsonArrayRequest(requestUrl, responseFuture, Response.ErrorListener { Log.e(
-            TAG, it.message ?: "getPositionsFromServerForID request failed") })
+        val request = JsonArrayRequest(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) })
         requestQueue.add(request)
         return parseGeoJSONForOneID(responseFuture.get().toString())
     }
 
-    fun getPositionsFromServer(context: Context): HashMap<Int, ArrayList<Location>>{
+    fun getPositionsFromServer(context: Context, onErrorCallback: ((error: VolleyError) -> Unit)): HashMap<Int, ArrayList<Location>>{
         val requestQueue = getRequestQueue(context) ?: return HashMap()
         val responseFuture = RequestFuture.newFuture<JSONArray>()
-        val request = JsonArrayRequest(getEndpoint(), responseFuture, Response.ErrorListener { Log.e(
-            TAG, it.message ?: "getPositionsFromServer request failed") })
+        val request = JsonArrayRequest(getEndpoint(), responseFuture, Response.ErrorListener { onErrorCallback(it) })
         requestQueue.add(request)
         return parseGeoJSONForMultipleID(responseFuture.get().toString())
     }

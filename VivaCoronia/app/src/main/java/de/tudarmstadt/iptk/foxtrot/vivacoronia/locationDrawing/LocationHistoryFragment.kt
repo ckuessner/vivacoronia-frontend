@@ -31,7 +31,6 @@ import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 import org.threeten.bp.ZoneOffset
 import java.util.*
-import java.util.concurrent.ExecutionException
 import kotlin.collections.ArrayList
 import kotlin.math.*
 
@@ -68,7 +67,7 @@ class LocationHistoryFragment : Fragment() {
 
         val selectionStart = Date(LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000)
         val selectionEnd = Date(LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000 + dayInMillis)
-        fetchData(selectionStart, selectionEnd)
+        getGeoJSONFromServer(selectionStart, selectionEnd)
 
         binding.progressHorizontal.max = 100
         binding.datePickerBtn.setOnClickListener {
@@ -78,13 +77,13 @@ class LocationHistoryFragment : Fragment() {
             val start = Date(picker.selection?.first!!)
             val end = Date(picker.selection?.second!! + dayInMillis)
             googleMap.clear()
-            fetchData(start, end)
+            getGeoJSONFromServer(start, end)
         }
 
         binding.reset.setOnClickListener {
             googleMap.clear()
             val startOfDay = LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000
-            fetchData(Date(startOfDay), Date(startOfDay + dayInMillis))
+            getGeoJSONFromServer(Date(startOfDay), Date(startOfDay + dayInMillis))
         }
 
         viewModel.locationHistory.observe(
@@ -95,31 +94,6 @@ class LocationHistoryFragment : Fragment() {
                     googleMap
                 )
             })
-    }
-
-    /**
-     * @param start: start date to filter with
-     * @param end: end date to filter with
-     * gets filtered location data from server with locations only between start
-     * and end, also handles exceptions for failed requests
-     */
-    private fun fetchData(start: Date, end: Date) {
-        try {
-            getGeoJSONFromServer(start, end)
-        } catch (exception: ExecutionException) {
-            binding.progressHorizontal.visibility = View.GONE
-            if (exception.cause is VolleyError && requireActivity().hasWindowFocus())
-                requireActivity().runOnUiThread {
-                    Toast.makeText(
-                        requireActivity(),
-                        "Failed to connect to server",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            else {
-                Log.e(TAG, "Error while getting location data from server", exception)
-            }
-        }
     }
 
     override fun onCreateView(
@@ -151,11 +125,24 @@ class LocationHistoryFragment : Fragment() {
         binding.progressHorizontal.isIndeterminate = true
         GlobalScope.launch {
             val response: ArrayList<Location> =
-                LocationApiClient.getPositionsFromServerForID(requireContext(), start, end)
+                LocationApiClient.getPositionsFromServerForID(requireContext(), start, end, ::onFetchErrorCallback)
 
             requireActivity().runOnUiThread {
                 viewModel.locationHistory.value = response
             }
+        }
+    }
+
+    private fun onFetchErrorCallback(exception: VolleyError) {
+        binding.progressHorizontal.visibility = View.GONE
+        if (requireActivity().hasWindowFocus())
+                Toast.makeText(
+                    requireActivity(),
+                    "Failed to connect to server",
+                    Toast.LENGTH_LONG
+                ).show()
+        else {
+            Log.e(TAG, "Error while fetching location data from server", exception)
         }
     }
 
