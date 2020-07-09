@@ -174,8 +174,8 @@ class LocationHistoryFragment : Fragment() {
                     mMap.addCircle(circleOptions)
                 } else {
                     for (currentCoordinateIndex in 0..currentCoordinateSubList.size - 2) {
-                        val left = coordinates[currentCoordinateIndex].getLatLong()
-                        val right = coordinates[currentCoordinateIndex + 1].getLatLong()
+                        val left = currentCoordinateSubList[currentCoordinateIndex].getLatLong()
+                        val right = currentCoordinateSubList[currentCoordinateIndex + 1].getLatLong()
                         mMap.addPolyline(
                             PolylineOptions().add(left, right).color(colors[currentColorIndex])
                         )
