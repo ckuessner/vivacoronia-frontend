@@ -1,5 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.spreadMap
 
+import android.app.AlertDialog
+import android.graphics.Color
 import android.location.Location
 import androidx.fragment.app.Fragment
 
@@ -18,6 +20,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
@@ -31,6 +34,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.preprocessedCoordinatesForDrawing
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlin.math.ln
 
 class SpreadMapFragment : Fragment() {
 
@@ -52,6 +56,7 @@ class SpreadMapFragment : Fragment() {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
+        binding.progressHorizontal.visibility = View.GONE
         //TODO: set initial call location if deemed useful
         //getGeoJSONMapFromServer(LatLng(49.87167, 8.65027), 2000)
         viewModel.spreadMapData.observe(
@@ -63,8 +68,25 @@ class SpreadMapFragment : Fragment() {
                 )
             })
         googleMap.setOnMapLongClickListener { latLng ->
-            googleMap.clear()
-            getGeoJSONMapFromServer(latLng, binding.seekbar.progress)
+            val builder = AlertDialog.Builder(context)
+            builder.setCancelable(true)
+            builder.setTitle("Spreadmap Center Point")
+            builder.setMessage("Select this center point?")
+            builder.setPositiveButton("Confirm"){ _, _ ->
+                googleMap.clear()
+                googleMap.addCircle(
+                    CircleOptions().center(latLng).radius(binding.seekbar.progress.toDouble())
+                        .strokeColor(
+                            Color.BLACK
+                        )
+                )
+                getGeoJSONMapFromServer(latLng, binding.seekbar.progress)
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, getZoomLevel(binding.seekbar.progress)))
+            }
+            builder.setNegativeButton(android.R.string.cancel){ _, _ ->
+            }
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
         }
         binding.distanceText.text = getString(R.string.filter_radius_distance_text, binding.seekbar.progress)
         binding.seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
@@ -117,6 +139,11 @@ class SpreadMapFragment : Fragment() {
                 viewModel.spreadMapData.value = response
             }
         }
+    }
+
+    private fun getZoomLevel(radius: Int): Float {
+        val scale: Double = radius / 500.0
+        return (15 - ln(scale) / ln(2.0)).toFloat()
     }
 
     private fun onFetchErrorCallback(exception: VolleyError) {
@@ -176,7 +203,6 @@ class SpreadMapFragment : Fragment() {
                 mMap.addMarker(
                     MarkerOptions().position(endMarkerLocation).title("End for ID: $key")
                 )
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(endMarkerLocation, 15f))
             }
             binding.progressHorizontal.visibility = View.GONE
         }
