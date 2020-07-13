@@ -27,13 +27,16 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <Button
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/add"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:elevation="0dp"
+            android:src="@drawable/ic_add"
+            app:elevation="2dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:text="Click Mich"/>
+            app:fabCustomSize="75dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

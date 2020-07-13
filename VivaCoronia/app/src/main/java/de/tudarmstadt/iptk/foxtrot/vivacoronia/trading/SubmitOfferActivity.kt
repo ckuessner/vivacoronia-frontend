@@ -14,7 +14,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 private const val ARG_OFFER = "offer"
 
 
-class AddOfferActivity : AppCompatActivity() {
+class SubmitOfferActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_submit_offer)
@@ -24,6 +24,7 @@ class AddOfferActivity : AppCompatActivity() {
         val submitButton = findViewById<Button>(R.id.submit_offer)
         if (passedOffer != null) {
             submitButton.text = resources.getString(R.string.save)
+            title = resources.getString(R.string.edit_offer)
         }
 
         val offer = passedOffer ?: Offer()
@@ -33,13 +34,26 @@ class AddOfferActivity : AppCompatActivity() {
             finish()
         }
 
-        supportFragmentManager.beginTransaction().replace(R.id.offer_detail_container, fragment).addToBackStack(null).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.offer_detail_container, fragment).commit()
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            finish()
+        } else {
+            supportFragmentManager.popBackStack()
+        }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     companion object {
         @JvmStatic
         fun start(context: Context, offer: Offer?) {
-            val intent = Intent(context, AddOfferActivity::class.java)
+            val intent = Intent(context, SubmitOfferActivity::class.java)
             if (offer != null)
                 intent.putExtra(ARG_OFFER, offer)
             startActivity(context, intent, null)
@@ -47,7 +61,5 @@ class AddOfferActivity : AppCompatActivity() {
             bundle.putParcelable(ARG_OFFER, offer)
             startActivity(context, Intent(context, AddOfferActivity::class.java), bundle)*/
         }
-
-        var categories = listOf<Category>()
     }
 }

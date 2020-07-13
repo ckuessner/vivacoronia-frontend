@@ -1,6 +1,5 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TableLayout

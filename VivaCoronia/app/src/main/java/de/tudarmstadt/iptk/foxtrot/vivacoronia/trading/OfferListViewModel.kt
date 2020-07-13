@@ -3,6 +3,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Category
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import java.lang.IllegalArgumentException
 import java.text.NumberFormat
@@ -30,24 +31,41 @@ class OfferListViewModel : ViewModel() {
     }
 
     fun remove(id: String) {
-        val value = this.offers.value ?: mutableListOf()
-        val newValue = value.toMutableList()
-        newValue.removeIf { offer -> offer.offer.id == id }
-        offers.value = newValue // Set to a copy of value in order to notify observers
+        val oldList = this.offers.value ?: mutableListOf()
+        val newList = oldList.toMutableList()
+        val index = newList.indexOfFirst { it.offer.id == id }
+        if (index != -1)
+            newList.removeAt(index)
+        offers.value = newList // Set to a copy of value in order to notify observers
     }
 }
 
 class OfferViewModel(var offer: Offer) : ViewModel() {
     object CurrencyFormatter {
-        private val currencyFormatter: NumberFormat = NumberFormat.getCurrencyInstance()
+        // replacing "space" (\u0020) with "non-breaking space"(\u00A0), important to be able to parse!
+        private val currencyFormatter: NumberFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY)
 
         init {
             currencyFormatter.maximumFractionDigits = 2
-            currencyFormatter.currency = Currency.getInstance("EUR")
         }
 
         fun format(amount: Double): String {
-            return currencyFormatter.format(amount)
+            return currencyFormatter.format(amount).trim()
+        }
+
+        fun formatWithoutCurrency(amount: Double): String {
+            return if (amount == 0.0) "" else currencyFormatter.format(amount).replace("\u00A0€", "")
+        }
+
+        fun parse(amount: String): Double {
+            return currencyFormatter.parse(amount.trim())!!.toDouble()
+        }
+
+        fun parseWithoutCurrency(amount: String): Double {
+            if(amount == "") return 0.0
+            @Suppress("NAME_SHADOWING")
+            val amount = amount.replace("\u0020", "\u00A0").replace(".", ",").trim() + "\u00A0€"
+            return currencyFormatter.parse(amount)!!.toDouble()
         }
     }
 
@@ -55,19 +73,45 @@ class OfferViewModel(var offer: Offer) : ViewModel() {
     val isExpanded: Boolean
         get() = rotation != 0L
 
-    val productName: String
+    var productName: String
         get() = offer.productName
-    val price: String
+        set(value){
+            offer.productName = value
+        }
+
+    var rawPrice: String
+        get() {
+            return CurrencyFormatter.formatWithoutCurrency(offer.priceTotal)
+        }
+        set(value) {
+            offer.priceTotal = CurrencyFormatter.parseWithoutCurrency(value)
+        }
+
+    var priceWithCurrency: String
         get() {
             return CurrencyFormatter.format(offer.priceTotal)
         }
-    val details: String
-        get() = offer.details
-    val amount: String
-        get() = offer.amount.toString()
+        set(value) {
+            offer.priceTotal = CurrencyFormatter.parse(value)
+        }
 
-    val category: String
-        get() = offer.category
+    var details: String
+        get() = offer.details
+        set(value){
+            offer.details = value
+        }
+
+    var amount: String
+        get() = if (offer.amount == 0) "" else offer.amount.toString()
+        set(value){
+            offer.amount = if (value == "") 0 else value.toInt()
+        }
+
+    var category: String
+        get() = offer.category.toString()
+        set(value){
+            offer.category = Category.getCategoryByName(value)
+        }
 }
 
 class OfferViewModelFactory(private val offer: Offer): ViewModelProvider.Factory {
