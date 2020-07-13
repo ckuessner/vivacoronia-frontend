@@ -149,4 +149,13 @@ object GoogleMapFunctions  {
         val radius = 6371
         return outerFormula * radius
     }
+
+    /**
+     * @param radius: radius of the circle to be seen on the map
+     * @return zoom level to be used for the google map to make the circle fit the screen
+     */
+    fun getZoomLevelForCircle(radius: Int): Float {
+        val scale: Double = radius / 500.0
+        return (15 - ln(scale) / ln(2.0)).toFloat()
+    }
 }

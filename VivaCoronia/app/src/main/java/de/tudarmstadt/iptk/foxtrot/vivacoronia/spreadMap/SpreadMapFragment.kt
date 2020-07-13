@@ -31,6 +31,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.generateColors
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.getColorArray
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.getLatLong
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.getZoomLevelForCircle
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.preprocessedCoordinatesForDrawing
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -45,6 +46,8 @@ class SpreadMapFragment : Fragment() {
     private val distanceThreshold: Float = 0.1F
     //Polyline speed threshold in kilometers per hour
     private val speedThreshold: Float = 1F
+
+    private var currentCenter: LatLng? = null
 
     private val callback = OnMapReadyCallback { googleMap ->
         /**
@@ -68,30 +71,69 @@ class SpreadMapFragment : Fragment() {
                 )
             })
         googleMap.setOnMapLongClickListener { latLng ->
-            val builder = AlertDialog.Builder(context)
+            /*val builder = AlertDialog.Builder(context)
             builder.setCancelable(true)
             builder.setTitle("Spreadmap Center Point")
             builder.setMessage("Select this center point?")
             builder.setPositiveButton("Confirm"){ _, _ ->
+                currentCenter = latLng
                 googleMap.clear()
                 googleMap.addCircle(
-                    CircleOptions().center(latLng).radius(binding.seekbar.progress.toDouble())
+                    CircleOptions().center(currentCenter).radius(binding.seekbar.progress.toDouble())
                         .strokeColor(
                             Color.BLACK
                         )
                 )
-                getGeoJSONMapFromServer(latLng, binding.seekbar.progress)
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, getZoomLevel(binding.seekbar.progress)))
+                getGeoJSONMapFromServer(currentCenter!!, binding.seekbar.progress)
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentCenter, getZoomLevelForCircle(binding.seekbar.progress)))
             }
             builder.setNegativeButton(android.R.string.cancel){ _, _ ->
             }
             val dialog: AlertDialog = builder.create()
-            dialog.show()
+            dialog.show()*/
+
+            currentCenter = latLng
+            googleMap.clear()
+            googleMap.addCircle(
+                CircleOptions().center(currentCenter).radius(binding.seekbar.progress.toDouble())
+                    .strokeColor(
+                        Color.BLACK
+                    )
+            )
+            getGeoJSONMapFromServer(currentCenter!!, binding.seekbar.progress)
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentCenter, getZoomLevelForCircle(binding.seekbar.progress)))
         }
         binding.distanceText.text = getString(R.string.filter_radius_distance_text, binding.seekbar.progress)
         binding.seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 binding.distanceText.text = getString(R.string.filter_radius_distance_text, progress)
+                if(currentCenter != null) {
+                    val builder = AlertDialog.Builder(context)
+                    builder.setCancelable(true)
+                    builder.setTitle("Spreadmap")
+                    builder.setMessage("Apply the new radius for the current center?")
+                    builder.setPositiveButton("Confirm") { _, _ ->
+                        googleMap.clear()
+                        googleMap.addCircle(
+                            CircleOptions().center(currentCenter)
+                                .radius(binding.seekbar.progress.toDouble())
+                                .strokeColor(
+                                    Color.BLACK
+                                )
+                        )
+                        getGeoJSONMapFromServer(currentCenter!!, binding.seekbar.progress)
+                        googleMap.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                currentCenter,
+                                getZoomLevelForCircle(binding.seekbar.progress)
+                            )
+                        )
+                    }
+                    builder.setNegativeButton(android.R.string.cancel) { _, _ ->
+                    }
+                    val dialog: AlertDialog = builder.create()
+                    dialog.show()
+                }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -141,11 +183,6 @@ class SpreadMapFragment : Fragment() {
         }
     }
 
-    private fun getZoomLevel(radius: Int): Float {
-        val scale: Double = radius / 500.0
-        return (15 - ln(scale) / ln(2.0)).toFloat()
-    }
-
     private fun onFetchErrorCallback(exception: VolleyError) {
         binding.progressHorizontal.visibility = View.GONE
         if (requireActivity().hasWindowFocus())
@@ -159,6 +196,11 @@ class SpreadMapFragment : Fragment() {
         }
     }
 
+    /**
+     * @param coordinatesMap: given map of userIDs as keys and location lists as values
+     * @param mMap: given map to draw on
+     * draws the routes for every given userID in the KeyValue-Map on the GoogleMap with randomized colors
+     */
     private fun drawCoordinatesFromMap(coordinatesMap: MutableMap<Int, List<Location>>, mMap: GoogleMap){
         if(coordinatesMap.isEmpty()){
             binding.progressHorizontal.visibility = View.GONE
@@ -208,6 +250,11 @@ class SpreadMapFragment : Fragment() {
         }
     }
 
+    /**
+     * @param coordinatesMap: KeyValue-Map with userIDs as keys and location lists as values
+     * @return KeyValue-Map with userIDs as keys and lists of location lists as values with each sublist representing a
+     * part of the route not connected to the other parts
+     */
     private fun getPreprocessedCoordinateMap(coordinatesMap: MutableMap<Int, List<Location>>): Map<Int, List<List<Location>>>{
         val returnMap: MutableMap<Int, List<List<Location>>> = mutableMapOf()
         for ((id,coordinates) in coordinatesMap){
