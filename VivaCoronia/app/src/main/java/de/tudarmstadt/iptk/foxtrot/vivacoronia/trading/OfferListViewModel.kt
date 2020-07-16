@@ -3,7 +3,6 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Category
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import java.lang.IllegalArgumentException
 import java.text.NumberFormat
@@ -73,10 +72,10 @@ class OfferViewModel(var offer: Offer) : ViewModel() {
     val isExpanded: Boolean
         get() = rotation != 0L
 
-    var productName: String
-        get() = offer.productName
+    var product: String
+        get() = offer.product
         set(value){
-            offer.productName = value
+            offer.product = value
         }
 
     var rawPrice: String
@@ -107,10 +106,10 @@ class OfferViewModel(var offer: Offer) : ViewModel() {
             offer.amount = if (value == "") 0 else value.toInt()
         }
 
-    var category: String
-        get() = offer.category.toString()
+    var productCategory: String
+        get() = offer.productCategory
         set(value){
-            offer.category = Category.getCategoryByName(value)
+            offer.productCategory = value
         }
 }
 

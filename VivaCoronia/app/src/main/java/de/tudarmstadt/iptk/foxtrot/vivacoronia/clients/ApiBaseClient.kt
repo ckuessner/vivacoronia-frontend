@@ -3,6 +3,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -28,6 +29,12 @@ abstract class ApiBaseClient {
 
     fun getUserId(): Int {
         return Constants().USER_ID
+    }
+
+    fun joinPaths(basePath: String, vararg paths: String): String {
+        val builder = Uri.parse(basePath).buildUpon()
+        paths.forEach { builder.appendPath(it) }
+        return builder.build().toString()
     }
 
     private fun checkInternetPermissions(context: Context): Boolean {

@@ -28,7 +28,7 @@
                 android:inputType="text"
                 android:padding="5dp"
                 android:singleLine="true"
-                android:text="@={offer.productName}"
+                android:text="@={offer.product}"
                 android:textSize="24sp" />
         </com.google.android.material.textfield.TextInputLayout>
 

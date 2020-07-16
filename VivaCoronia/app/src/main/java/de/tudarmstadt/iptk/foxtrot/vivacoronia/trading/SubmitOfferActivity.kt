@@ -5,11 +5,13 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.TradingApiClient
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Category
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 private const val ARG_OFFER = "offer"
 
@@ -30,8 +32,24 @@ class SubmitOfferActivity : AppCompatActivity() {
         val offer = passedOffer ?: Offer()
         val fragment = OfferDetailFragment.newInstance(offer)
         submitButton.setOnClickListener {
-            TradingApiClient.putOffer(fragment.getOffer())
-            finish()
+            submitButton.isEnabled = false
+            GlobalScope.launch {
+                try {
+                    val result = TradingApiClient.putOffer(fragment.getOffer(), this@SubmitOfferActivity)
+                    if (result != null)
+                        runOnUiThread { finish() }
+                    else
+                        runOnUiThread {
+                            Toast.makeText(this@SubmitOfferActivity,"Something went wrong. Please check your input and try again.", Toast.LENGTH_SHORT).show()
+                            submitButton.isEnabled = true
+                        }
+                } catch (e: Exception) {
+                    runOnUiThread {
+                        Toast.makeText(this@SubmitOfferActivity, "Oops, something went wrong. Please check your input and internet connection.", Toast.LENGTH_SHORT).show()
+                        submitButton.isEnabled = true
+                    }
+                }
+            }
         }
 
         supportFragmentManager.beginTransaction().replace(R.id.offer_detail_container, fragment).commit()

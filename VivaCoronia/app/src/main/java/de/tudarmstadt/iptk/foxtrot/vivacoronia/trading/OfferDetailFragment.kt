@@ -11,9 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentOfferDetailBinding
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Category
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Category.Companion.categories
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer.Companion.categories
 
 private const val ARG_OFFER = "offer"
 
@@ -36,20 +35,23 @@ class OfferDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_offer_detail, container, false)
-        if (this::viewModel.isInitialized) {
-            binding.offer = viewModel
-            binding.categoryInputSpinner.setSelection(categories.indexOfFirst { it.name == viewModel.category })
-        }
 
-        binding.categoryInputSpinner.adapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, categories)
+        val spinnerAdapter =  ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, categories)
+        binding.categoryInputSpinner.adapter = spinnerAdapter
         binding.categoryInputSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                viewModel.offer.category = parent?.getItemAtPosition(position) as Category
+                viewModel.offer.productCategory = parent?.getItemAtPosition(position) as String
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
             }
         }
+
+        if (this::viewModel.isInitialized) {
+            binding.offer = viewModel
+            binding.categoryInputSpinner.setSelection(spinnerAdapter.getPosition(viewModel.productCategory))
+        }
+
         return binding.root
     }
 

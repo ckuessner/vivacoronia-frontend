@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.view.setMargins
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -49,13 +49,10 @@ class OffersFragment : Fragment() {
         binding.offersList.adapter = adapter
         viewModel.offers.observe(viewLifecycleOwner, Observer { it?.let { adapter.submitList(it) } })
 
-        binding.offersListSwipeRefresh.setOnRefreshListener {
-            GlobalScope.launch {
-                fetchMyOffers()
-                binding.offersListSwipeRefresh.isRefreshing = false
-            }
-        }
+        binding.offersListSwipeRefresh.setOnRefreshListener { GlobalScope.launch { fetchMyOffers() } }
 
+        binding.offersListSwipeRefresh.isRefreshing = true
+        GlobalScope.launch { fetchCategories() }
         GlobalScope.launch { fetchMyOffers() }
 
         binding.add.setOnClickListener { SubmitOfferActivity.start(requireContext(), null) }
@@ -63,16 +60,22 @@ class OffersFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.offersListSwipeRefresh.isRefreshing
+        GlobalScope.launch { fetchMyOffers() }
+    }
+
     private fun deleteOfferCallback(id: String) {
         val dialogBuilder = activity?.let {
             val builder = AlertDialog.Builder(it)
             builder.apply {
                 setCancelable(true)
-                setPositiveButton(R.string.yes) {_, _ ->
-                    val deleted = TradingApiClient.deleteOffer(id)
-                    if (deleted)
-                        viewModel.remove(id)
-                    // TODO better fetch again and reset whole list. Does not change efficiency because only differences matter
+                setPositiveButton(R.string.yes) { _, _ ->
+                    binding.offersListSwipeRefresh.isRefreshing = true
+                    GlobalScope.launch {
+                        performDelete(id)
+                    }
                 }
                 setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
                 setTitle(R.string.delete_offer_title)
@@ -83,6 +86,24 @@ class OffersFragment : Fragment() {
         val dialog = dialogBuilder.create()
         dialog.show()
         styleDeleteDialog(dialog) // TODO löschen wenn styling auch ohne so funktioniert wie bei Timo
+    }
+
+    private fun performDelete(id: String) {
+        try {
+            val deleted = TradingApiClient.deleteOffer(id, requireContext())
+            if (deleted)
+                fetchMyOffers()
+            /*requireActivity().runOnUiThread {
+                                    viewModel.remove(id)
+                                }*/
+            // TODO what's the better option? refetch needs more data/computation, removing theoretically result in an inconsistent state
+        } catch (e: Exception) {
+            Log.e(TAG, "Unable to delete offer with id \"$id\"", e)
+            requireActivity().runOnUiThread {
+                Toast.makeText(requireContext(), "Unable to delete offer", Toast.LENGTH_SHORT).show()
+            }
+        }
+        binding.offersListSwipeRefresh.isRefreshing = false
     }
 
     private fun styleDeleteDialog(dialog: AlertDialog) {
@@ -107,9 +128,23 @@ class OffersFragment : Fragment() {
         SubmitOfferActivity.start(requireContext(), offer)
     }
 
+    private fun fetchCategories() {
+        try {
+            Offer.categories = TradingApiClient.getAllCategories(requireContext()).toMutableList()
+        } catch (e: Exception) {
+            AlertDialog.Builder(requireContext())
+                .setMessage("Please make sure you have a working Internet connection and try again.")
+                .setTitle("No Internet")
+                .setCancelable(false)
+                .setPositiveButton("OK") { _, _ ->
+                    requireActivity().runOnUiThread { parentFragmentManager.popBackStack() }
+                }
+        }
+    }
+
     private fun fetchMyOffers() {
         try {
-            val offers = TradingApiClient.getMyOffers()
+            val offers = TradingApiClient.getMyOffers(requireContext())
             requireActivity().runOnUiThread { viewModel.setOffers(offers) }
         } catch (exception: ExecutionException) {
             if (exception.cause is VolleyError && requireActivity().hasWindowFocus())
@@ -120,5 +155,6 @@ class OffersFragment : Fragment() {
                 Log.e(TAG, "Error while fetching or parsing myOffers", exception)
             }
         }
+        binding.offersListSwipeRefresh.isRefreshing = false
     }
 }

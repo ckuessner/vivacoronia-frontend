@@ -37,7 +37,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.9"
                 android:singleLine="true"
-                android:text="@{offer.productName}"
+                android:text="@{offer.product}"
                 android:textSize="24sp" />
 
             <TextView
@@ -92,7 +92,7 @@
                         android:layout_height="match_parent"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
-                        android:text="@{offer.productName}"
+                        android:text="@{offer.product}"
                         android:textAlignment="viewEnd"
                         android:textSize="14sp" />
                 </TableRow>
@@ -154,7 +154,7 @@
                         android:layout_height="wrap_content"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
-                        android:text="@{offer.category}"
+                        android:text="@{offer.productCategory}"
                         android:textAlignment="viewEnd"
                         android:textSize="14sp" />
                 </TableRow>
