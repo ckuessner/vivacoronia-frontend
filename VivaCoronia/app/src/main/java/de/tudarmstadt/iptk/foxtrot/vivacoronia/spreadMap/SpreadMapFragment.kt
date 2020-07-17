@@ -1,6 +1,8 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.spreadMap
 
+import android.Manifest
 import android.app.AlertDialog
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
 import androidx.fragment.app.Fragment
@@ -12,9 +14,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.android.volley.VolleyError
+import com.beust.klaxon.JsonObject
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 
 import com.google.android.gms.maps.GoogleMap
@@ -25,6 +30,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.ContactApiClient
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.InfectionApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.LocationApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentSpreadMapBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.createCircleOptions
@@ -35,6 +42,11 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.preprocessedCoordinatesForDrawing
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.json.JSONObject
+import org.threeten.bp.Instant
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
+import java.util.concurrent.ExecutionException
 import kotlin.math.ln
 
 class SpreadMapFragment : Fragment() {
@@ -67,9 +79,12 @@ class SpreadMapFragment : Fragment() {
             androidx.lifecycle.Observer {
                 drawCoordinatesFromMap(
                     it,
+                    viewModel.contactData.value,
                     googleMap
                 )
             })
+        val testLocation = LatLng(49.87167, 8.65027)
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(testLocation, 15F))
         googleMap.setOnMapLongClickListener { latLng ->
             /*val builder = AlertDialog.Builder(context)
             builder.setCancelable(true)
@@ -174,10 +189,11 @@ class SpreadMapFragment : Fragment() {
         binding.progressHorizontal.visibility = View.VISIBLE
         binding.progressHorizontal.isIndeterminate = true
         GlobalScope.launch {
+            val contacts = ContactApiClient.getContactsFromServer(requireContext(), ::onFetchErrorCallback)
             val response: MutableMap<Int, List<Location>> =
                 LocationApiClient.getPositionsFromServer(requireContext(), location, distance, ::onFetchErrorCallback)
-
             requireActivity().runOnUiThread {
+                viewModel.contactData.value = contacts
                 viewModel.spreadMapData.value = response
             }
         }
@@ -201,7 +217,7 @@ class SpreadMapFragment : Fragment() {
      * @param mMap: given map to draw on
      * draws the routes for every given userID in the KeyValue-Map on the GoogleMap with randomized colors
      */
-    private fun drawCoordinatesFromMap(coordinatesMap: MutableMap<Int, List<Location>>, mMap: GoogleMap){
+    private fun drawCoordinatesFromMap(coordinatesMap: MutableMap<Int, List<Location>>, contacts: MutableMap<Int, Pair<Boolean, ZonedDateTime>>?, mMap: GoogleMap){
         if(coordinatesMap.isEmpty()){
             binding.progressHorizontal.visibility = View.GONE
         }
@@ -214,12 +230,29 @@ class SpreadMapFragment : Fragment() {
             val idColors = generateColors(processedMap.size)
             var currentIdColor = 0
             for((key, processedList) in processedMap){
+                var filterForContact: Boolean? = null
+                var filterTimestamp: Long? = null
+                var contactForKeyExists = false
+                if(contacts != null && contacts.containsKey(key)){
+                    contactForKeyExists = true
+                    filterForContact = contacts[key]!!.first
+                    filterTimestamp = contacts[key]!!.second.toInstant().toEpochMilli()
+                }
                 val colors = getColorArray(processedList.flatten().size, idColors[currentIdColor][0], idColors[currentIdColor][1])
                 currentIdColor++
                 var currentColorIndex = 0
                 for (processedSubList in processedList) {
                     if (processedSubList.size == 1) {
-                        val currentColor = colors[currentColorIndex]
+                        var currentColor = colors[currentColorIndex]
+                        if(contactForKeyExists && filterTimestamp != null){
+                            val locationTime = processedSubList[0].time
+                            if(filterForContact!! && filterTimestamp < locationTime){
+                                currentColor = Color.RED
+                            }
+                            if(!filterForContact){
+                                currentColor = Color.RED
+                            }
+                        }
                         currentColorIndex++
                         val circleOptions = createCircleOptions(
                             processedSubList[0].getLatLong(),
@@ -230,8 +263,18 @@ class SpreadMapFragment : Fragment() {
                         for (currentCoordinateIndex in 0..processedSubList.size - 2) {
                             val left = processedSubList[currentCoordinateIndex].getLatLong()
                             val right = processedSubList[currentCoordinateIndex + 1].getLatLong()
+                            var currentColor = colors[currentColorIndex]
+                            if(contactForKeyExists && filterTimestamp != null){
+                                val locationTime = processedSubList[currentCoordinateIndex + 1].time
+                                if(filterForContact!! && filterTimestamp < locationTime){
+                                    currentColor = Color.RED
+                                }
+                                if(!filterForContact){
+                                    currentColor = Color.RED
+                                }
+                            }
                             mMap.addPolyline(
-                                PolylineOptions().add(left, right).color(colors[currentColorIndex])
+                                PolylineOptions().add(left, right).color(currentColor)
                             )
                             currentColorIndex++
                         }
