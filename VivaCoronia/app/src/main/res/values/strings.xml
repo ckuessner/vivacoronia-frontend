@@ -59,4 +59,5 @@
     <string name="EUR">€</string>
     <string name="yes_offer_sold">Yes, I sold it</string>
     <string name="title_activity_location_picker">Pick a Location</string>
+    <string name="use_location">Use selected location</string>
 </resources>

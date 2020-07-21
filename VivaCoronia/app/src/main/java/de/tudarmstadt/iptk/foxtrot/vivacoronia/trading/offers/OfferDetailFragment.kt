@@ -1,4 +1,4 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers
 
 import android.app.Activity
 import android.content.Intent
@@ -11,8 +11,6 @@ import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentOfferDetailBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer

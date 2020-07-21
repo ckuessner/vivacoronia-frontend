@@ -18,7 +18,7 @@
         tools:layout="@layout/fragment_achievements" />
     <fragment
         android:id="@+id/tradingOverviewFragment"
-        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.OffersFragment"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OffersFragment"
         android:label="Trading"
         tools:layout="@layout/fragment_trading_overview" />
     <fragment

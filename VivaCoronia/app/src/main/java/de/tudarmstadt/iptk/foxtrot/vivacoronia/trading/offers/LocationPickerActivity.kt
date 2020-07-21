@@ -1,4 +1,4 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers
 
 import android.annotation.SuppressLint
 import android.app.Activity

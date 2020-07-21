@@ -21,7 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".trading.SubmitOfferActivity"
+        <activity android:name=".trading.offers.SubmitOfferActivity"
             android:label="@string/add_offer"
             android:parentActivityName=".mainActivity.MainActivity">
 
@@ -43,7 +43,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".trading.LocationPickerActivity"
+            android:name=".trading.offers.LocationPickerActivity"
             android:label="@string/title_activity_location_picker" />
         <service
             android:name=".locationTracking.LocationTrackingService"
