@@ -18,6 +18,7 @@ class Constants {
 
     val LOCATION_ACCESS_PERMISSION_REQUEST_CODE = 56    // requests the permission to use location data from the user
     val LOCATION_ACCESS_SETTINGS_REQUEST_CODE = 57      // requests access to gps, wifi, cellular network to access location data from the user
+    val COARSE_LOCATION_ACCESS_PERMISSION_REQUEST_CODE = 58
 
     val USER_ID = 1234
 

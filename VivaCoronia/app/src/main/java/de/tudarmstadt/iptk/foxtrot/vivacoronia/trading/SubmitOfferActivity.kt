@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 
 private const val ARG_OFFER = "offer"
 
-
 class SubmitOfferActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +30,7 @@ class SubmitOfferActivity : AppCompatActivity() {
 
         val offer = passedOffer ?: Offer()
         val fragment = OfferDetailFragment.newInstance(offer)
+
         submitButton.setOnClickListener {
             submitButton.isEnabled = false
             GlobalScope.launch {
@@ -75,9 +75,6 @@ class SubmitOfferActivity : AppCompatActivity() {
             if (offer != null)
                 intent.putExtra(ARG_OFFER, offer)
             startActivity(context, intent, null)
-            /*val bundle = Bundle()
-            bundle.putParcelable(ARG_OFFER, offer)
-            startActivity(context, Intent(context, AddOfferActivity::class.java), bundle)*/
         }
     }
 }

@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 
 class PermissionHandler {
 
@@ -25,16 +27,9 @@ class PermissionHandler {
          * returns True if Location access granted, False if not
          */
         fun checkLocationPermissions(context: Context) : Boolean {
-            // check wheter location permission was granted
+            // check whether location permission was granted
             // since fine location is more accurate than coarse, coarse is included in fine
-            val fineLocationPermitted = ActivityCompat.
-            checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
-                    PackageManager.PERMISSION_GRANTED
-            // check permission
-            return fineLocationPermitted
+            return ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
         }
     }
-
-
-
 }

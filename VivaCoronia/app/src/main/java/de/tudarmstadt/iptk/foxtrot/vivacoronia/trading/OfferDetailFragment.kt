@@ -1,5 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,14 +11,27 @@ import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentOfferDetailBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer.Companion.categories
 
 private const val ARG_OFFER = "offer"
+private const val LOCATION_PICKER_REQUEST = 1
 
 class OfferDetailFragment : Fragment() {
+    companion object {
+        @JvmStatic
+        fun newInstance(offer: Offer) =
+            OfferDetailFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(ARG_OFFER, offer)
+                }
+            }
+    }
+
     private lateinit var binding: FragmentOfferDetailBinding
     private lateinit var viewModel: OfferViewModel
     private lateinit var viewModelFactory: OfferViewModelFactory
@@ -52,6 +67,8 @@ class OfferDetailFragment : Fragment() {
             binding.categoryInputSpinner.setSelection(spinnerAdapter.getPosition(viewModel.productCategory))
         }
 
+        binding.locationPickerButton.setOnClickListener { onSelectLocation() }
+
         return binding.root
     }
 
@@ -59,13 +76,16 @@ class OfferDetailFragment : Fragment() {
         return viewModel.offer
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(offer: Offer) =
-            OfferDetailFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(ARG_OFFER, offer)
-                }
-            }
+    private fun onSelectLocation() {
+        val intent = LocationPickerActivity.getStartIntent(requireActivity(), viewModel.offer.location)
+        startActivityForResult(intent, LOCATION_PICKER_REQUEST)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == LOCATION_PICKER_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+            val latLngResult = LocationPickerActivity.getLatLngResult(data) ?: return
+            viewModel.offer.location = latLngResult
+        }
     }
 }

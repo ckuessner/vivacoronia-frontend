@@ -7,8 +7,8 @@ import com.android.volley.*
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.RequestFuture
-import com.android.volley.toolbox.StringRequest
 import com.beust.klaxon.*
+import com.google.android.gms.maps.model.LatLng
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import org.json.JSONArray
 import org.json.JSONObject
@@ -18,7 +18,7 @@ object TradingApiClient : ApiBaseClient() {
     private val offerConverter : Klaxon = Klaxon()
 
     init {
-        offerConverter.converter(LocationConverter)
+        offerConverter.converter(LatLngConverter)
     }
 
     private fun getEndpoint(): String{
@@ -92,21 +92,21 @@ object TradingApiClient : ApiBaseClient() {
     }
 }
 
-object LocationConverter : Converter {
-    override fun canConvert(cls: Class<*>) = cls == Location::class.java
+object LatLngConverter : Converter {
+    override fun canConvert(cls: Class<*>) = cls == LatLng::class.java
 
     override fun fromJson(jv: JsonValue): Any? {
         if (jv.obj == null || jv.obj!!["coordinates"] !is JsonArray<*>)
             throw KlaxonException("Couldn't parse location: $jv")
         val locationJson = jv.obj!!["coordinates"] as JsonArray<*>
-        val location = Location("")
-        location.longitude = (locationJson[0] as Number).toDouble()
-        location.latitude = (locationJson[1] as Number).toDouble()
-        return location
+        return LatLng(
+            (locationJson[1] as Number).toDouble(),
+            (locationJson[0] as Number).toDouble()
+        )
     }
 
     override fun toJson(value: Any): String {
-        if (value !is Location)
+        if (value !is LatLng)
             throw KlaxonException("Cannot convert class ${value::class.java} with LocationConverter")
         return """ { "coordinates": [ ${value.longitude}, ${value.latitude} ], "type": "Point" } """
     }

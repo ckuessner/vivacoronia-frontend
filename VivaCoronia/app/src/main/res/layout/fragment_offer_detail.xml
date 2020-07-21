@@ -46,23 +46,42 @@
             android:prompt="@string/category"
             android:spinnerMode="dialog" />
 
-        <com.google.android.material.textfield.TextInputLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp">
+            android:layout_marginBottom="30dp"
+            android:orientation="horizontal"
+            android:weightSum="1">
 
-            <EditText
-                android:id="@+id/amount_input"
-                android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/amount"
-                android:importantForAutofill="no"
-                android:inputType="number"
+                android:layout_weight="0.7"
+                android:layout_marginEnd="15dp">
+
+                <EditText
+                    android:id="@+id/amount_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/amount"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:padding="5dp"
+                    android:singleLine="true"
+                    android:text="@={offer.amount}"
+                    android:textSize="24sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/location_picker_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:src="@drawable/ic_location"
+                android:layout_gravity="center"
                 android:padding="5dp"
-                android:singleLine="true"
-                android:text="@={offer.amount}"
-                android:textSize="24sp" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:contentDescription="@string/title_activity_location_picker" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -80,10 +99,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:digits="0123456789,"
                     android:hint="@string/price"
                     android:importantForAutofill="no"
                     android:inputType="number"
-                    android:digits="0123456789,"
                     android:padding="5dp"
                     android:singleLine="true"
                     android:text="@={offer.rawPrice}"

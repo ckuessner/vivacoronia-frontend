@@ -199,6 +199,7 @@ class MainActivity : AppCompatActivity() {
      * handles permission requests
      */
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Log.i(TAG, "onRequestPermissionResult")
         when (requestCode) {
             // handle location permission requests

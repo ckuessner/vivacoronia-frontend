@@ -28,15 +28,6 @@ class OfferListViewModel : ViewModel() {
         })
         offers.value = value
     }
-
-    fun remove(id: String) {
-        val oldList = this.offers.value ?: mutableListOf()
-        val newList = oldList.toMutableList()
-        val index = newList.indexOfFirst { it.offer.id == id }
-        if (index != -1)
-            newList.removeAt(index)
-        offers.value = newList // Set to a copy of value in order to notify observers
-    }
 }
 
 class OfferViewModel(var offer: Offer) : ViewModel() {

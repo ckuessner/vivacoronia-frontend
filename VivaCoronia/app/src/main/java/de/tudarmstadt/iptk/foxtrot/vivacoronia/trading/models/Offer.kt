@@ -1,16 +1,16 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models
 
-import android.location.Location
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.maps.model.LatLng
 import java.util.*
 
 class Offer(
     var product: String,
     var amount: Int,
     var priceTotal: Double,
-    var location: Location,
+    var location: LatLng,
     var details: String,
     var id: String,
     var productCategory: String
@@ -19,13 +19,13 @@ class Offer(
         parcel.readString()!!,
         parcel.readInt(),
         parcel.readDouble(),
-        parcel.readParcelable(Location::class.java.classLoader)!!,
+        parcel.readParcelable(LatLng::class.java.classLoader)!!,
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!
     )
 
-    constructor() : this("", 0, 0.0, Location(""), "", "", if (!categories.value.isNullOrEmpty()) categories.value!![0] else "")
+    constructor() : this("", 0, 0.0, LatLng(0.0, 0.0), "", "", if (!categories.value.isNullOrEmpty()) categories.value!![0] else "")
 
     override fun equals(other: Any?): Boolean {
         if (this === other)

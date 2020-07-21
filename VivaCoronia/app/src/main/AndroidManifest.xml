@@ -41,6 +41,10 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".trading.LocationPickerActivity"
+            android:label="@string/title_activity_location_picker" />
         <service
             android:name=".locationTracking.LocationTrackingService"
             android:description="@string/location_service_description_manifest"
