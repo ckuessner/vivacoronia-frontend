@@ -1,6 +1,5 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus
 
-import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -9,12 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.android.volley.VolleyError
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.InfectionApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentInfectionStatusBinding
@@ -24,7 +23,6 @@ import org.json.JSONObject
 import java.util.concurrent.ExecutionException
 
 private const val TAG = "InfectionStatusFragment"
-private const val ZXING_CAMERA_PERMISSION = 1
 
 class InfectionStatusFragment : Fragment() {
     private lateinit var binding: FragmentInfectionStatusBinding
@@ -48,10 +46,8 @@ class InfectionStatusFragment : Fragment() {
         loadCurrentInfectionStatus()
 
         binding.updateInfectionFab.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
-                ActivityCompat.requestPermissions(requireActivity(), Array(1) { Manifest.permission.CAMERA },
-                    ZXING_CAMERA_PERMISSION
-                )
+            if (!PermissionHandler.checkCameraPermissions(requireActivity()))
+                PermissionHandler.requestCameraPermissions(this)
             else {
                 val intent = Intent(requireActivity(), ScanQrCodeActivity::class.java).apply {}
                 startActivity(intent)
@@ -81,7 +77,7 @@ class InfectionStatusFragment : Fragment() {
         try {
             return InfectionApiClient.getInfectionStatus(requireActivity())
         } catch (exception: ExecutionException) {
-            if (exception.cause is VolleyError && requireActivity().hasWindowFocus())
+            if (exception.cause is VolleyError && (exception.cause as VolleyError).networkResponse.statusCode != 404 && requireActivity().hasWindowFocus())
                 requireActivity().runOnUiThread {
                     Toast.makeText(requireActivity(), R.string.server_connection_failed, Toast.LENGTH_LONG).show()
                 }
@@ -95,11 +91,12 @@ class InfectionStatusFragment : Fragment() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            ZXING_CAMERA_PERMISSION ->
+            Constants().CAMERA_PERMISSION_REQUEST_CODE ->
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     val intent = Intent(requireActivity(), ScanQrCodeActivity::class.java).apply {}
                     startActivity(intent)
                 } else {
+                    // TODO Toast is not showing properly (at all)
                     Toast.makeText(requireActivity(), "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show()
                 }
         }

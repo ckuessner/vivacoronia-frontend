@@ -20,6 +20,8 @@ class Constants {
     val LOCATION_ACCESS_SETTINGS_REQUEST_CODE = 57      // requests access to gps, wifi, cellular network to access location data from the user
     val COARSE_LOCATION_ACCESS_PERMISSION_REQUEST_CODE = 58
 
+    val CAMERA_PERMISSION_REQUEST_CODE = 59
+
     val USER_ID = 1234
 
     // local ip if you use an emulator, localhost if you use an external android device with port forwarding

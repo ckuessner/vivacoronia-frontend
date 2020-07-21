@@ -152,6 +152,9 @@ class OffersFragment : Fragment() {
             if (!Offer.categories.value.isNullOrEmpty())
                 return
             requireActivity().runOnUiThread {
+                if(!requireView().hasFocus())
+                    return@runOnUiThread
+
                 activity?.let {
                     val dialog = AlertDialog.Builder(it)
                         .setMessage("Please make sure you have a working Internet connection and try again.")

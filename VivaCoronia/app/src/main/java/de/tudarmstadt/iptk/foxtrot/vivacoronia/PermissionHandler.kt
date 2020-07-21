@@ -31,5 +31,16 @@ class PermissionHandler {
             // since fine location is more accurate than coarse, coarse is included in fine
             return ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
         }
+
+        fun checkCameraPermissions(context: Context): Boolean {
+            return ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+        }
+
+        fun requestCameraPermissions(fragment: Fragment) {
+            fragment.requestPermissions(
+                arrayOf(Manifest.permission.CAMERA),
+                Constants().CAMERA_PERMISSION_REQUEST_CODE
+            )
+        }
     }
 }
