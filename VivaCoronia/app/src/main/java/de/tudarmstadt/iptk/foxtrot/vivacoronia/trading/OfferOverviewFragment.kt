@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.view.setMargins
@@ -49,11 +50,18 @@ class OffersFragment : Fragment() {
         binding.offersList.adapter = adapter
         viewModel.offers.observe(viewLifecycleOwner, Observer { it?.let { adapter.submitList(it) } })
 
-        binding.offersListSwipeRefresh.setOnRefreshListener { GlobalScope.launch { fetchMyOffers() } }
+        Offer.categories.observe(viewLifecycleOwner, Observer {
+            if(it.isNotEmpty())
+                binding.add.isEnabled = true
+        })
+        binding.add.isEnabled = !Offer.categories.value.isNullOrEmpty() // Only allow adding offers if we fetched + received categories
 
-        binding.offersListSwipeRefresh.isRefreshing = true
+        binding.offersListSwipeRefresh.setOnRefreshListener {
+            GlobalScope.launch { fetchMyOffers() }
+            GlobalScope.launch { fetchCategories() }
+        }
+
         GlobalScope.launch { fetchCategories() }
-        GlobalScope.launch { fetchMyOffers() }
 
         binding.add.setOnClickListener { SubmitOfferActivity.start(requireContext(), null) }
 
@@ -62,35 +70,44 @@ class OffersFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        binding.offersListSwipeRefresh.isRefreshing
-        GlobalScope.launch { fetchMyOffers() }
+        binding.offersListSwipeRefresh.post {
+            binding.offersListSwipeRefresh.isRefreshing = true
+            GlobalScope.launch { fetchMyOffers() }
+        }
     }
 
     private fun deleteOfferCallback(id: String) {
-        val dialogBuilder = activity?.let {
-            val builder = AlertDialog.Builder(it)
-            builder.apply {
-                setCancelable(true)
-                setPositiveButton(R.string.yes) { _, _ ->
+        val dialog = activity?.let {
+            AlertDialog.Builder(it)
+                .setCancelable(true)
+                .setPositiveButton(R.string.yes) { _, _ ->
                     binding.offersListSwipeRefresh.isRefreshing = true
                     GlobalScope.launch {
-                        performDelete(id)
+                        performDelete(id, false)
                     }
                 }
-                setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
-                setTitle(R.string.delete_offer_title)
-                setMessage(R.string.confirm_delete_message)
-            }
-        }
-            ?: return
-        val dialog = dialogBuilder.create()
-        dialog.show()
-        styleDeleteDialog(dialog) // TODO löschen wenn styling auch ohne so funktioniert wie bei Timo
+                .setNegativeButton(R.string.yes_offer_sold) { _, _ ->
+                    binding.offersListSwipeRefresh.isRefreshing = true
+                    GlobalScope.launch {
+                        performDelete(id, true)
+                    }
+                }
+                .setNeutralButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
+                .setTitle(R.string.delete_offer_title)
+                .setMessage(R.string.confirm_delete_message)
+                .show()
+        }?: return
+
+        styleDialogButtons(listOf(
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE),
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE),
+            dialog.getButton(AlertDialog.BUTTON_NEUTRAL)
+        )) // TODO löschen wenn styling auch ohne so funktioniert wie bei Timo
     }
 
-    private fun performDelete(id: String) {
+    private fun performDelete(id: String, sold: Boolean) {
         try {
-            val deleted = TradingApiClient.deleteOffer(id, requireContext())
+            val deleted = TradingApiClient.deleteOffer(id, sold, requireContext())
             if (deleted)
                 fetchMyOffers()
             /*requireActivity().runOnUiThread {
@@ -106,17 +123,13 @@ class OffersFragment : Fragment() {
         binding.offersListSwipeRefresh.isRefreshing = false
     }
 
-    private fun styleDeleteDialog(dialog: AlertDialog) {
+    private fun styleDialogButtons(buttons: List<Button>) {
         val params = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
         params.setMargins(5)
 
-        val buttons = listOf(
-            dialog.getButton(AlertDialog.BUTTON_NEGATIVE),
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-        )
         for (button in buttons) {
             button.setTextColor(Color.BLACK)
             button.setBackgroundColor(Color.LTGRAY)
@@ -130,15 +143,25 @@ class OffersFragment : Fragment() {
 
     private fun fetchCategories() {
         try {
-            Offer.categories = TradingApiClient.getAllCategories(requireContext()).toMutableList()
+            val categories = TradingApiClient.getAllCategories(requireContext()).toMutableList()
+            requireActivity().runOnUiThread {
+                Offer.categories.value = categories
+            }
         } catch (e: Exception) {
-            AlertDialog.Builder(requireContext())
-                .setMessage("Please make sure you have a working Internet connection and try again.")
-                .setTitle("No Internet")
-                .setCancelable(false)
-                .setPositiveButton("OK") { _, _ ->
-                    requireActivity().runOnUiThread { parentFragmentManager.popBackStack() }
+            // Don't care if we already have categories
+            if (!Offer.categories.value.isNullOrEmpty())
+                return
+            requireActivity().runOnUiThread {
+                activity?.let {
+                    val dialog = AlertDialog.Builder(it)
+                        .setMessage("Please make sure you have a working Internet connection and try again.")
+                        .setTitle("No Internet")
+                        .setCancelable(false)
+                        .setPositiveButton("OK") { dialog, _ -> dialog.dismiss()}
+                        .show()
+                    styleDialogButtons(listOf(dialog.getButton(AlertDialog.BUTTON_POSITIVE))) // TODO löschen wenn styling auch ohne so funktioniert wie bei Timo
                 }
+            }
         }
     }
 

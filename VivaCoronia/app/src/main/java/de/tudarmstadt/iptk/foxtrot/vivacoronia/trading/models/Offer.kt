@@ -3,6 +3,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models
 import android.location.Location
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.lifecycle.MutableLiveData
 import java.util.*
 
 class Offer(
@@ -24,7 +25,7 @@ class Offer(
         parcel.readString()!!
     )
 
-    constructor() : this("", 0, 0.0, Location(""), "", "", if (categories.isNotEmpty()) categories[0] else "")
+    constructor() : this("", 0, 0.0, Location(""), "", "", if (!categories.value.isNullOrEmpty()) categories.value!![0] else "")
 
     override fun equals(other: Any?): Boolean {
         if (this === other)
@@ -58,7 +59,7 @@ class Offer(
     }
 
     companion object {
-        var categories = mutableListOf<String>()
+        var categories = MutableLiveData<MutableList<String>>()
 
         @Suppress("unused") // The creator is necessary to implement Parcelable
         @JvmField val CREATOR = object : Parcelable.Creator<Offer> {

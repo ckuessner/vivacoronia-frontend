@@ -12,6 +12,7 @@ import com.beust.klaxon.*
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import org.json.JSONArray
 import org.json.JSONObject
+import org.threeten.bp.OffsetDateTime
 
 object TradingApiClient : ApiBaseClient() {
     private val offerConverter : Klaxon = Klaxon()
@@ -59,14 +60,20 @@ object TradingApiClient : ApiBaseClient() {
         return result?.toMutableList() ?: mutableListOf()
     }
 
-    fun deleteOffer(id: String, context: Context): Boolean {
+    fun deleteOffer(id: String, sold: Boolean, context: Context): Boolean {
         val queue = getRequestQueue(context) ?: return false
         val url = joinPaths(getOffersEndpoint(), id)
-        val future = RequestFuture.newFuture<String>()
-        val request = StringRequest(Request.Method.DELETE, url, future, future)
-        queue.add(request)
+        val deactivatedAt = OffsetDateTime.now()
+        val body = JSONObject()
+        body.put("sold", sold)
+        body.put("deactivatedAt", deactivatedAt)
+        val future = RequestFuture.newFuture<JSONObject>()
+        val request = JsonObjectRequest(Request.Method.PATCH, url, body, future, future)
 
-        return future.get().isEmpty()
+        queue.add(request)
+        val result = future.get()
+        return result.has("deactivatedAt")
+                && OffsetDateTime.parse(result["deactivatedAt"].toString()).isEqual(deactivatedAt)
     }
 
     fun putOffer(offer: Offer, context: Context): Offer? {
@@ -77,7 +84,7 @@ object TradingApiClient : ApiBaseClient() {
         val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
         val future = RequestFuture.newFuture<JSONObject>()
 
-        val method = if (offer.id.isEmpty()) Request.Method.POST else Request.Method.PUT // if id is not set, this is a new offer and should be posted
+        val method = if (offer.id.isEmpty()) Request.Method.POST else Request.Method.PATCH // if id is not set, this is a new offer and should be posted
         val request = JsonObjectRequest(method, url, jsonObject, future, future)
         queue.add(request)
         val result = future.get()

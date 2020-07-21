@@ -57,4 +57,5 @@
     <string name="confirm_delete_message">Do you really want to delete this offer?</string>
     <string name="delete_offer_title">Delete offer</string>
     <string name="EUR">€</string>
+    <string name="yes_offer_sold">Yes, I sold it</string>
 </resources>
