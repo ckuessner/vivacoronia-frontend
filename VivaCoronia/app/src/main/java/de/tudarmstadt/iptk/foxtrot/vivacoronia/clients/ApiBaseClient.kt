@@ -29,6 +29,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.LoginActivity
 import com.android.volley.Response.Listener;
+import com.android.volley.toolbox.JsonArrayRequest
 
 
 abstract class ApiBaseClient {
@@ -94,7 +95,6 @@ abstract class ApiBaseClient {
         private var jsonObj : JSONObject? = null
         private var jsonArr : JSONArray? = null
         private val jwt : String
-        private val noBodyNeeded : Boolean
         constructor(method: Int,
                     url: String,
                     req: Response.Listener<String>,
@@ -102,12 +102,8 @@ abstract class ApiBaseClient {
             this.jsonArr = jsonArr
             this.jsonObj = jsonObj
             this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.JWT, null) as String
-            this.noBodyNeeded = false
         }
-        constructor(url: String, listener: Listener<String>, error: Response.ErrorListener? = null, ctx: Context) : super(url, listener, error){
-            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.JWT, null) as String
-            this.noBodyNeeded = true
-        }
+
         inner class JWTRequestException : java.lang.Exception("You didn't input a jsonObject or a jsonArray")
 
         override fun getHeaders(): MutableMap<String, String> {
@@ -120,20 +116,27 @@ abstract class ApiBaseClient {
             return when {
                 jsonArr != null -> jsonArr.toString().toByteArray(Charsets.UTF_8)
                 jsonObj != null -> jsonObj.toString().toByteArray(Charsets.UTF_8)
-                //TODO: not sure if sending empty body is a good idea?
-                noBodyNeeded -> byteArrayOf()
                 else -> throw JWTRequestException()
             }
         }
     }
 
+    protected class JSONArrayJWTRequest(url: String, list : Response.Listener<JSONArray>, error: Response.ErrorListener? = null, val ctx: Context) : JsonArrayRequest(url, list, ErrorJWTCheck(ctx, error)) {
+        override fun getHeaders(): MutableMap<String, String> {
+            val jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString("jwt", null) as String
+            val params = HashMap<String,String>()
+            params["jwt"] = jwt as String
+            return params
+        }
+    }
+
     /*
     this class catches 401 authentication error and tries to create a new jwt for access by logging in
-    afterwards it
+
      */
     private class ErrorJWTCheck(val ctx : Context, val errorSuper : Response.ErrorListener?) : Response.ErrorListener {
         override fun onErrorResponse(error: VolleyError?) {
-            if (error != null) {
+            if (error?.networkResponse != null) {
                 if(error.networkResponse.statusCode == 401){
                     val intent = Intent(ctx, LoginActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

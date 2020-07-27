@@ -200,7 +200,7 @@ object LocationApiClient : ApiBaseClient() {
                 .appendQueryParameter("start", startTime.toString())
                 .appendQueryParameter("end", endTime.toString())
                 .build().toString()
-        val request = JsonArrayRequest(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) })
+        val request = JSONArrayJWTRequest(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) }, context)
         requestQueue.add(request)
         return parseGeoJSONForOneID(responseFuture.get().toString())
     }
@@ -213,7 +213,7 @@ object LocationApiClient : ApiBaseClient() {
             .appendQueryParameter("longitude", location.longitude.toString())
             .appendQueryParameter("distance", distance.toString())
             .build().toString()
-        val request = JsonArrayRequest(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) })
+        val request = JSONArrayJWTRequest(getEndpoint(), responseFuture, Response.ErrorListener { onErrorCallback(it) }, context)
         requestQueue.add(request)
         return parseGeoJSONForMultipleID(responseFuture.get().toString())
     }
