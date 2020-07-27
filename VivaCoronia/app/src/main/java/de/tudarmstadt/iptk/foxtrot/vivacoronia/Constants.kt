@@ -2,6 +2,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
 object Constants {
 
+    data class DataPoint(val x: Double, val y: Double, val time: String)
     // Location Upload stuff
     val LOCATION_UPLOAD_INTERVAL = 10000.toLong() // for reallife use could be higher
     val LOCATION_UPLOAD_REQUEST_CODE = 12
@@ -21,7 +22,9 @@ object Constants {
 
     val CAMERA_PERMISSION_REQUEST_CODE = 59
 
-    val USER_ID = 1234
+    val USER_ID = "userID"
+    val CLIENT = "client_settings"
+    val JWT = "jwt"
 
     // infected stuff
     val INFECTED_NOTIFICATION_CHANNEL_ID = "infected_channel"
@@ -29,6 +32,9 @@ object Constants {
     val SERVER_WEBSOCKET_URL = BuildConfig.WEBSOCKET_SERVER
     val SERVER_BASE_URL = BuildConfig.API_SERVER
 
+    // local ip if you use an emulator, localhost if you use an external android device with port forwarding
+    // otherwise this constant will contain the base url to the server api
+    val SERVER_BASE_URL_LOCAL = "http://192.168.2.105:3000"
 
     val DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS"
 }

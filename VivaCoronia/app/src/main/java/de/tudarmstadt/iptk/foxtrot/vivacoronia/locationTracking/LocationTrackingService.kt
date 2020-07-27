@@ -64,7 +64,7 @@ class LocationTrackingService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // inform user that tracking is now active
-        Toast.makeText(context, getString(R.string.location_service_toast_started), Toast.LENGTH_SHORT).show()
+        //Toast.makeText(context, getString(R.string.location_service_toast_started), Toast.LENGTH_SHORT).show()
 
         try {
             // location get requested with an delay of min 30sec and if the locations differ 15m

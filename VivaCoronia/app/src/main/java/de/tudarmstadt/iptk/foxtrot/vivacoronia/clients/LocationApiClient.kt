@@ -25,15 +25,17 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
+
 object LocationApiClient : ApiBaseClient() {
     private const val TAG = "LocationClient"
 
-    private fun getUserEndpoint(): String {
-        return "${getEndpoint()}${getUserId()}"
-    }
 
-    private fun getEndpoint(): String{
+    private fun getEndpoint(): String {
         return "${getBaseUrl()}/locations/"
+    }
+    private fun getUserEndpoint(ctx : Context): String {
+        val userID = getUserId(ctx)
+        return "${getBaseUrl()}/locations/$userID"
     }
 
     /**
@@ -51,30 +53,29 @@ object LocationApiClient : ApiBaseClient() {
             )
 
         // build a single request
-        val url = getUserEndpoint()
 
-        val jsonStringRequest =
-            JSONArrayRequest(
-                Request.Method.POST, url, locationJSONArray,
-                Response.Listener { response ->
-                    Log.i(
-                        TAG,
-                        "server response: $response"
-                    )
-                    GlobalScope.launch {
-                        // since upload was successful, delete the entries from the db
-                        val db = AppDatabase.getDatabase(context)
-                        db.coronaDao().deleteLocations(locations)
-                    }
-                },
-                Response.ErrorListener { error ->
-                    error.printStackTrace()
-                    Log.e(
-                        TAG,
-                        "upload failed: $error"
-                    )
-                }
+        val url = getUserEndpoint(context)
+
+        val jsonStringRequest = StringRequestJWT(Request.Method.POST, url, Response.Listener { response ->
+            Log.i(
+                TAG,
+                "server response: $response"
             )
+            GlobalScope.launch {
+                // since upload was successful, delete the entries from the db
+                val db = AppDatabase.getDatabase(context)
+                db.coronaDao().deleteLocations(locations)
+            }
+        },
+            Response.ErrorListener { error ->
+                error.printStackTrace()
+                Log.e(
+                    TAG,
+                    "upload failed: $error"
+                )
+            },context, locationJSONArray)
+
+
 
         // Add the upload request to the request queue
         Log.i(TAG, "uploading to $url: $locationJSONArray")
@@ -195,7 +196,7 @@ object LocationApiClient : ApiBaseClient() {
     fun getPositionsFromServerForID(context: Context, startTime: Date, endTime: Date, onErrorCallback: ((error: VolleyError) -> Unit)): List<Location>{
         val requestQueue = getRequestQueue(context) ?: return ArrayList()
         val responseFuture = RequestFuture.newFuture<JSONArray>()
-        val requestUrl = Uri.parse(getUserEndpoint()).buildUpon()
+        val requestUrl = Uri.parse(getUserEndpoint(context)).buildUpon()
                 .appendQueryParameter("start", startTime.toString())
                 .appendQueryParameter("end", endTime.toString())
                 .build().toString()
@@ -236,16 +237,5 @@ object LocationApiClient : ApiBaseClient() {
                         )
                 )
         })
-    }
-
-    private class JSONArrayRequest(
-        method: Int,
-        url: String,
-        val jsonArray: JSONArray,
-        req: Response.Listener<String>,
-        error: Response.ErrorListener
-    ) : StringRequest(method, url, req, error) {
-        override fun getBodyContentType(): String = "application/json; charset=utf-8"
-        override fun getBody(): ByteArray = jsonArray.toString().toByteArray(Charsets.UTF_8)
     }
 }

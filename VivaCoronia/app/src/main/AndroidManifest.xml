@@ -41,7 +41,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
         <activity
             android:name=".trading.offers.LocationPickerActivity"
             android:label="@string/title_activity_location_picker" />
@@ -50,6 +49,11 @@
             android:name=".pushNotificaitons.WebSocketService"
             android:enabled="true"
             android:exported="false" />
+        <activity android:name=".authentication.LoginActivity">
+            <intent-filter>
+            <action android:name="loginApplication.intent.action.Launch" />
+            </intent-filter>
+        </activity>
         <service
             android:name=".locationTracking.LocationTrackingService"
             android:description="@string/location_service_description_manifest"
@@ -72,8 +76,13 @@
         <activity android:name=".mainActivity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".RegisterActivity">
+            <intent-filter>
+                <action android:name="registerApplication.intent.action.Launch" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity

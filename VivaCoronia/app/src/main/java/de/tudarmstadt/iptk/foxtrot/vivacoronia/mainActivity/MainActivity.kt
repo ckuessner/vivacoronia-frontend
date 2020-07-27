@@ -25,6 +25,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.createBackground
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.requestLocationService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.WebSocketService
+import kotlin.reflect.jvm.internal.impl.load.java.Constant
 
 class MainActivity : AppCompatActivity() {
     private var TAG = "MainActivity"

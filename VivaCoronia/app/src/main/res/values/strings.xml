@@ -70,4 +70,23 @@
     <string name="title_activity_location_picker">Pick a Location</string>
     <string name="use_location">Use selected location</string>
     <string name="filter_radius_distance_text">\u0020%dm\u0020</string>
+    <!-- Register process -->
+    <string name="register">Register</string>
+    <string name="tag_reg">Join our big corona community to save the world</string>
+    <string name="password">Password</string>
+    <string name="re_type_password">Re-type Password</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <!-- Login process -->
+    <string name="login_failed">"Login failed"</string>
+    <string name="login_info">"Login to keep tracking</string>
+    <string name="login_pw">"Enter your password"</string>
+    <string name="login_pwRe">"Reenter your password"</string>
+    <string name="authBtn">"Login"</string>
 </resources>
