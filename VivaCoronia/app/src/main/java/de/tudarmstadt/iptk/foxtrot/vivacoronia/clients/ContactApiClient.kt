@@ -1,6 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
 import android.content.Context
+import android.net.Uri
 import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonArrayRequest
@@ -14,10 +15,13 @@ object ContactApiClient : ApiBaseClient() {
         return "${getBaseUrl()}/contacts/"
     }
 
-    fun getContactsFromServer(context: Context, onErrorCallback: ((error: VolleyError) -> Unit)): MutableMap<Int, Pair<Boolean, ZonedDateTime>>{
+    fun getContactsForIDsFromServer(ids: List<Int>, context: Context, onErrorCallback: ((error: VolleyError) -> Unit)): MutableMap<Int, Pair<Boolean, ZonedDateTime>>{
         val requestQueue = ContactApiClient.getRequestQueue(context) ?: return HashMap()
         val responseFuture = RequestFuture.newFuture<JSONArray>()
-        val request = JsonArrayRequest(getEndpoint(), responseFuture, Response.ErrorListener { onErrorCallback(it) })
+        val requestUrl = Uri.parse(getEndpoint()).buildUpon()
+            .appendQueryParameter("ids", ids.joinToString())
+            .build().toString()
+        val request = JsonArrayRequest(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) })
         requestQueue.add(request)
         val test = responseFuture.get().toString()
         return parseContacts(test)

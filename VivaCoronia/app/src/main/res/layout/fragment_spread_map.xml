@@ -40,7 +40,7 @@
         <SeekBar
             android:id="@+id/seekbar"
             android:layout_width="match_parent"
-            android:max="5000"
+            android:max="50000"
             android:progress="400"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"

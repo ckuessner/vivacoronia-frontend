@@ -1,8 +1,6 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.spreadMap
 
-import android.Manifest
 import android.app.AlertDialog
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
 import androidx.fragment.app.Fragment
@@ -14,12 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.android.volley.VolleyError
-import com.beust.klaxon.JsonObject
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 
 import com.google.android.gms.maps.GoogleMap
@@ -31,7 +26,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.ContactApiClient
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.InfectionApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.LocationApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentSpreadMapBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.createCircleOptions
@@ -42,12 +36,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.preprocessedCoordinatesForDrawing
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.json.JSONObject
-import org.threeten.bp.Instant
-import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
-import java.util.concurrent.ExecutionException
-import kotlin.math.ln
 
 class SpreadMapFragment : Fragment() {
 
@@ -74,14 +63,20 @@ class SpreadMapFragment : Fragment() {
         binding.progressHorizontal.visibility = View.GONE
         //TODO: set initial call location if deemed useful
         //getGeoJSONMapFromServer(LatLng(49.87167, 8.65027), 2000)
-        viewModel.spreadMapData.observe(
+        viewModel.contactData.observe(
             this,
             androidx.lifecycle.Observer {
                 drawCoordinatesFromMap(
+                    viewModel.spreadMapData.value!!,
                     it,
-                    viewModel.contactData.value,
                     googleMap
                 )
+            }
+        )
+        viewModel.spreadMapData.observe(
+            this,
+            androidx.lifecycle.Observer {
+                getContactsForIDs()
             })
         val testLocation = LatLng(49.87167, 8.65027)
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(testLocation, 15F))
@@ -189,12 +184,23 @@ class SpreadMapFragment : Fragment() {
         binding.progressHorizontal.visibility = View.VISIBLE
         binding.progressHorizontal.isIndeterminate = true
         GlobalScope.launch {
-            val contacts = ContactApiClient.getContactsFromServer(requireContext(), ::onFetchErrorCallback)
             val response: MutableMap<Int, List<Location>> =
                 LocationApiClient.getPositionsFromServer(requireContext(), location, distance, ::onFetchErrorCallback)
+
             requireActivity().runOnUiThread {
-                viewModel.contactData.value = contacts
                 viewModel.spreadMapData.value = response
+            }
+        }
+    }
+
+    private fun getContactsForIDs(){
+        GlobalScope.launch {
+            val ids = viewModel.spreadMapData.value!!.keys.toList()
+            val response: MutableMap<Int, Pair<Boolean, ZonedDateTime>> =
+                ContactApiClient.getContactsForIDsFromServer(ids, requireContext(), ::onFetchErrorCallback)
+
+            requireActivity().runOnUiThread {
+                viewModel.contactData.value = response
             }
         }
     }
