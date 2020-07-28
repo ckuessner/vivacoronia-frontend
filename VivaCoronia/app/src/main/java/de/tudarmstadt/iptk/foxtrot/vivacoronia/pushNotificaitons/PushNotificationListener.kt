@@ -9,6 +9,7 @@ import okhttp3.WebSocketListener
 class PushNotificationListener : WebSocketListener(){
     private val TAG = "PushListener"
 
+    //gets set in the init method of websocketservice
     lateinit var socketService : WebSocketService
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -20,7 +21,7 @@ class PushNotificationListener : WebSocketListener(){
     override fun onMessage(webSocket: WebSocket, text: String) {
         super.onMessage(webSocket, text)
         // tell service to make a notification
-        if(text == "you are infected") {
+        if(text == "you had contact with an infected person") {
             socketService.makeNotification()
         }
         Log.i(TAG, "received " + text)

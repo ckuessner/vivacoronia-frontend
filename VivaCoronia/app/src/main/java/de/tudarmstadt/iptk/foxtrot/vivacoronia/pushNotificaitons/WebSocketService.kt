@@ -34,8 +34,8 @@ class WebSocketService : Service() {
     }
 
     //==============================================================================================
-    // methods for websockets
-    fun initWebSocket(){
+    // methods for web sockets
+    private fun initWebSocket(){
         Log.i(TAG, "init Web Socket")
         val (sslContext, trustManager) = getDevSSLContext(this)
         client = OkHttpClient.Builder().sslSocketFactory(sslContext.socketFactory, trustManager as X509TrustManager).build()
@@ -83,10 +83,6 @@ class WebSocketService : Service() {
             notify(Constants.INFECTED_NOTIFICATION_ID,
                 InfectedNotificationHelper.getInfectedNotification(applicationContext))
         }
-    }
-
-    fun closeClient(){
-        client.dispatcher.executorService.shutdown()
     }
 
     override fun onBind(intent: Intent): IBinder? {
