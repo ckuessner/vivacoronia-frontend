@@ -77,10 +77,11 @@ class InfectionStatusFragment : Fragment() {
         try {
             return InfectionApiClient.getInfectionStatus(requireActivity())
         } catch (exception: ExecutionException) {
-            if (exception.cause is VolleyError && (exception.cause as VolleyError).networkResponse.statusCode != 404 && requireActivity().hasWindowFocus())
-                requireActivity().runOnUiThread {
-                    Toast.makeText(requireActivity(), R.string.server_connection_failed, Toast.LENGTH_LONG).show()
-                }
+            if (exception.cause is VolleyError && requireActivity().hasWindowFocus())
+                if (((exception.cause as VolleyError).networkResponse?.statusCode ?: -1) != 404) // if 404, no user data found => no error
+                    requireActivity().runOnUiThread {
+                        Toast.makeText(requireActivity(), R.string.server_connection_failed, Toast.LENGTH_LONG).show()
+                    }
             else {
                 Log.e(TAG, "Error while fetching or parsing current infection status", exception)
             }

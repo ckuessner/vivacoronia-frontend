@@ -151,20 +151,19 @@ class OffersFragment : Fragment() {
             // Don't care if we already have categories
             if (!Offer.categories.value.isNullOrEmpty())
                 return
-            requireActivity().runOnUiThread {
-                if(!requireView().hasFocus())
-                    return@runOnUiThread
 
-                activity?.let {
-                    val dialog = AlertDialog.Builder(it)
-                        .setMessage("Please make sure you have a working Internet connection and try again.")
-                        .setTitle("No Internet")
-                        .setCancelable(false)
-                        .setPositiveButton("OK") { dialog, _ -> dialog.dismiss()}
-                        .show()
-                    styleDialogButtons(listOf(dialog.getButton(AlertDialog.BUTTON_POSITIVE))) // TODO löschen wenn styling auch ohne so funktioniert wie bei Timo
+            if (requireActivity().hasWindowFocus())
+                requireActivity().runOnUiThread {
+                    activity?.let {
+                        val dialog = AlertDialog.Builder(it)
+                            .setMessage("Please make sure you have a working Internet connection and try again.")
+                            .setTitle("No Internet")
+                            .setCancelable(false)
+                            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss()}
+                            .show()
+                        styleDialogButtons(listOf(dialog.getButton(AlertDialog.BUTTON_POSITIVE))) // TODO löschen wenn styling auch ohne so funktioniert wie bei Timo
+                    }
                 }
-            }
         }
     }
 
@@ -181,6 +180,6 @@ class OffersFragment : Fragment() {
                 Log.e(TAG, "Error while fetching or parsing myOffers", exception)
             }
         }
-        binding.offersListSwipeRefresh.isRefreshing = false
+        requireActivity().runOnUiThread { binding.offersListSwipeRefresh.isRefreshing = false }
     }
 }
