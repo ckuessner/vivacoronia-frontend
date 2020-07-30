@@ -16,7 +16,7 @@ import androidx.core.app.NotificationCompat
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.*
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.DBLocation
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.NotificationHelper
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.NotificationHelper
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -79,7 +79,7 @@ class LocationTrackingService : Service() {
             Log.e(TAG, "SecurityException")
         }
 
-        return START_NOT_STICKY
+        return START_STICKY
     }
 
     override fun onDestroy() {

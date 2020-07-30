@@ -49,8 +49,7 @@
         <service
             android:name=".pushNotificaitons.WebSocketService"
             android:enabled="true"
-            android:exported="false"/>
-
+            android:exported="false" />
         <service
             android:name=".locationTracking.LocationTrackingService"
             android:description="@string/location_service_description_manifest"
@@ -60,7 +59,10 @@
         <service
             android:name=".periodicLocationUpload.UploadService"
             android:exported="false" />
-
+        <service
+            android:name=".pushNotificaitons.WebSocketReconnectService"
+            android:enabled="true"
+            android:exported="false" />
 
         <receiver android:name=".periodicLocationUpload.AlarmBroadcastReceiver">
             <intent-filter>

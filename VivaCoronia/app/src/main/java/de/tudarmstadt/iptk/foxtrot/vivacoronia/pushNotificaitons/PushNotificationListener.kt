@@ -19,7 +19,6 @@ class PushNotificationListener : WebSocketListener(){
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
-        super.onMessage(webSocket, text)
         // tell service to make a notification
         if(text == "you had contact with an infected person") {
             socketService.makeNotification()
@@ -27,16 +26,14 @@ class PushNotificationListener : WebSocketListener(){
         Log.i(TAG, "received " + text)
     }
 
-    override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-        super.onClosing(webSocket, code, reason)
-        Log.i(TAG, "closing connection")
+    override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+        socketService.reconnect()
     }
 
-    // TODO maybe reconnect if server is down
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-        super.onFailure(webSocket, t, response)
         Log.e(TAG, "websocket failure: " + response.toString())
         Log.e(TAG, "websocket failure " + t.cause.toString())
+        socketService.reconnect()
     }
 
 }

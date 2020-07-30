@@ -1,5 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -10,13 +12,11 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.NotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.getDevSSLContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.net.ssl.X509TrustManager
 
 class WebSocketService : Service() {
@@ -29,21 +29,23 @@ class WebSocketService : Service() {
 
         initWebSocket()
 
-        return super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
     //==============================================================================================
     // methods for web sockets
-    private fun initWebSocket(){
+    // for okhttp see license
+    fun initWebSocket(){
         Log.i(TAG, "init Web Socket")
         val (sslContext, trustManager) = getDevSSLContext(this)
         client = OkHttpClient.Builder().sslSocketFactory(sslContext.socketFactory, trustManager as X509TrustManager).build()
         val listener = PushNotificationListener()
         listener.socketService = this
 
-        val request = Request.Builder().url(Constants.SERVER_WEBSOCKET_URL).addHeader("userID", Constants.USER_ID.toString()).build()  // addHeader("userID", Constants.USER_ID.toString()).
+        val request = Request.Builder().url(Constants.SERVER_WEBSOCKET_URL).addHeader("userID", Constants.USER_ID.toString()).build()
 
         val wss = client.newWebSocket(request, listener)
+        wss.send("Ping")
         Log.i(TAG, wss.toString())
     }
 
@@ -64,6 +66,20 @@ class WebSocketService : Service() {
                 )
             )
         }
+    }
+
+    fun reconnect() {
+        // alarmmanager because this shall also be triggered if the app is not running but the
+        // connection to the websocket is lost
+        val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+        val intent = Intent(this, WebSocketReconnectService::class.java)
+        val pendingIntent = PendingIntent.getService(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        if (pendingIntent != null) {
+            // try to reconnect in 10 seconds, but dont wakeup device if asleep
+            alarmManager?.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime()+10000, pendingIntent)
+        }
+        stopSelf()
     }
 
     override fun onBind(intent: Intent): IBinder? {

@@ -24,7 +24,6 @@ object Constants {
     val USER_ID = 1234
 
     // infected stuff
-    val INFECTED_NOTIFICATION_ID = 66
     val INFECTED_NOTIFICATION_CHANNEL_ID = "infected_channel"
 
 

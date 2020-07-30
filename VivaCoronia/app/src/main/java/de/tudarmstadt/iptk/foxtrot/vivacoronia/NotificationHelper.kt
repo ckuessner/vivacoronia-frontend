@@ -1,4 +1,4 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons
+package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
 import android.app.Notification
 import android.app.NotificationChannel

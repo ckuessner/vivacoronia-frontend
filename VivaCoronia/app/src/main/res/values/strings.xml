@@ -6,7 +6,7 @@
     <string name="main_activity_toast_location_permission_denied">Location access permission denied! Please enable it in the app settings to get warnings about infections.</string>
 
     <!-- location tracking service -->
-    <string name="location_service_channel_name">LocationTrackingChannel</string>
+    <string name="location_service_channel_name">Location Tracking Channel</string>
     <string name="location_service_channel_description">Shows the user that tracking is active</string>
     <string name="location_service_channel_title">Corona Tracking active</string>
 
@@ -32,7 +32,7 @@
     <string name="invalid_qr_code">Invalid QR-Code</string>
 
     <!-- infected notification -->
-    <string name="infected_notification_channel_name">InfectedNotificationChannel</string>
+    <string name="infected_notification_channel_name">Infected Notification Channel</string>
     <string name="infected_notification_channel_description">This channel warns you of possible infections.</string>
     <string name="infected_notification_channel_title">You may be infected.</string>
     <string name="infected_notification_channel_text">You had contact with a corona infected person. Please visit a corona test center and provide the test result in the app.</string>
