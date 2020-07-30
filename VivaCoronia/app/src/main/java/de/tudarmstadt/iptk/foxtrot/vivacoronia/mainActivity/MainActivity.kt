@@ -1,6 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity
 
 import android.Manifest
+import android.app.NotificationManager
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
@@ -27,6 +28,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationNotifica
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.LocationTrackingService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.InfectedNotificationHelper
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.NotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.WebSocketService
 
 class MainActivity : AppCompatActivity() {
@@ -42,10 +44,19 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         // notification channel should be created as soon as possible when the application starts
-        LocationNotificationHelper.createLocationNotificationChannel(this)
-        InfectedNotificationHelper.createInfectedNotificationChannel(this)
+        NotificationHelper.createNotificationChannel(this,
+            getString(R.string.location_service_channel_name),
+            getString(R.string.location_service_channel_description),
+            NotificationManager.IMPORTANCE_DEFAULT,
+            Constants.LOCATION_NOTIFICATION_CHANNEL_ID
+        )
+        NotificationHelper.createNotificationChannel(this,
+            getString(R.string.infected_notification_channel_name),
+            getString(R.string.infected_notification_channel_description),
+            NotificationManager.IMPORTANCE_HIGH,
+            Constants.INFECTED_NOTIFICATION_CHANNEL_ID
+            )
 
         // setup upload alarm
         setupUploadAlarm(applicationContext)

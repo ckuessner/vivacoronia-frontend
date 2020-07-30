@@ -3,21 +3,20 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.IBinder
+import android.os.SystemClock
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.getDevSSLContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.BufferedInputStream
-import java.io.InputStream
-import java.security.KeyStore
-import java.security.cert.CertificateFactory
-import java.security.cert.X509Certificate
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
-import javax.net.ssl.TrustManagerFactory
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.net.ssl.X509TrustManager
 
 class WebSocketService : Service() {
@@ -49,39 +48,21 @@ class WebSocketService : Service() {
     }
 
 
-    private fun getDevSSLContext(context: Context): Pair<SSLContext, TrustManager> {
-        // Load developer certificate
-        val cf: CertificateFactory = CertificateFactory.getInstance("X.509")
-        val caInput: InputStream =
-            BufferedInputStream(context.resources.openRawResource(R.raw.dev_der_crt))
-        val ca: X509Certificate = caInput.use {
-            cf.generateCertificate(it) as X509Certificate
-        }
-
-        // Create a KeyStore containing our trusted CAs
-        val keyStoreType = KeyStore.getDefaultType()
-        val keyStore = KeyStore.getInstance(keyStoreType).apply {
-            load(null, null)
-            setCertificateEntry("ca", ca)
-        }
-
-        // Create a TrustManager that trusts the CAs inputStream our KeyStore
-        val tmfAlgorithm: String = TrustManagerFactory.getDefaultAlgorithm()
-        val tmf: TrustManagerFactory = TrustManagerFactory.getInstance(tmfAlgorithm).apply {
-            init(keyStore)
-        }
-
-        // Create an SSLContext that uses our TrustManager
-        return Pair(SSLContext.getInstance("TLS").apply {
-            init(null, tmf.trustManagers, null)
-        }, tmf.trustManagers[0])
-    }
-
     // make notification
     fun makeNotification(){
         with(NotificationManagerCompat.from(this)){
-            notify(Constants.INFECTED_NOTIFICATION_ID,
-                InfectedNotificationHelper.getInfectedNotification(applicationContext))
+            notify(
+                SystemClock.elapsedRealtime().hashCode(), //we want a unique id so that notifications for different contacts overwrite each other
+                NotificationHelper.getNotification(
+                    applicationContext,
+                    Constants.INFECTED_NOTIFICATION_CHANNEL_ID,
+                    R.drawable.ic_corona,
+                    getString(R.string.infected_notification_channel_title),
+                    getString(R.string.infected_notification_channel_text),
+                    NotificationCompat.PRIORITY_HIGH,
+                    Color.RED
+                )
+            )
         }
     }
 

@@ -25,7 +25,6 @@ class PushNotificationListener : WebSocketListener(){
             socketService.makeNotification()
         }
         Log.i(TAG, "received " + text)
-        this.onClosing(webSocket, 100, "fun")
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {

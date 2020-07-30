@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -11,9 +12,11 @@ import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.*
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.DBLocation
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.NotificationHelper
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -24,9 +27,9 @@ class LocationTrackingService : Service() {
     private val TAG = "LocationTrackingService"
 
     lateinit var context: Context
-    lateinit var locManager: LocationManager
-    lateinit var locListener: LocationListener
-    lateinit var notification: Notification
+    private lateinit var locManager: LocationManager
+    private lateinit var locListener: LocationListener
+    private lateinit var notification: Notification
 
     // TODO type should be changed according to the Rest api
     lateinit var db: AppDatabase
@@ -34,7 +37,15 @@ class LocationTrackingService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.i(TAG, "startet location tracking service")
-        notification = LocationNotificationHelper.getLocationNotification(this)
+        notification = NotificationHelper.getNotification(
+            this,
+            Constants.LOCATION_NOTIFICATION_CHANNEL_ID,
+            R.drawable.ic_corona,
+            getString(R.string.location_service_channel_title),
+            "",
+            NotificationCompat.PRIORITY_DEFAULT,
+            Color.RED
+        )
         // has to be called at least 5 sec after services starts
         startForeground(Constants.LOCATION_NOTIFICATION_ID, notification)
 
