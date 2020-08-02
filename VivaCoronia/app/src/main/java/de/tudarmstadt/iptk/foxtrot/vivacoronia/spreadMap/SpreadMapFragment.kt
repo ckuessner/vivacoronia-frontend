@@ -1,8 +1,11 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.spreadMap
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.graphics.Color
 import android.location.Location
+import android.location.LocationManager
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
@@ -24,6 +27,7 @@ import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.ContactApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.LocationApiClient
@@ -78,8 +82,16 @@ class SpreadMapFragment : Fragment() {
             androidx.lifecycle.Observer {
                 getContactsForIDs()
             })
-        val testLocation = LatLng(49.87167, 8.65027)
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(testLocation, 15F))
+        var startLocation = LatLng(0.0, 0.0)
+        if (PermissionHandler.checkLocationPermissions(requireActivity())) {
+            val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            @SuppressLint("MissingPermission") // Check is in PermissionHandler
+            val currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            if (currentLocation != null)
+                startLocation = LatLng(currentLocation.latitude, currentLocation.longitude)
+        }
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startLocation, 15F))
         googleMap.setOnMapLongClickListener { latLng ->
             /*val builder = AlertDialog.Builder(context)
             builder.setCancelable(true)
