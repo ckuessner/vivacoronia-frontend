@@ -55,17 +55,6 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-
-        // setup upload alarm
-        setupUploadAlarm(applicationContext)
-
-        //start websocket to listen for push notifications
-        val websocketIntent = Intent(this, WebSocketService::class.java)
-        startService(websocketIntent)
-
-        // tracking in onResume startet
-        de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.checkPermissionsAndStartTracking(this, true)
-
         // setup navigation
         val navController = findNavController(R.id.nav_fragment)
         navController.setGraph(R.navigation.nav_graph)
@@ -108,6 +97,19 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // setup upload alarm
+        setupUploadAlarm(applicationContext)
+
+        //start websocket to listen for push notifications
+        val websocketIntent = Intent(this, WebSocketService::class.java)
+        startService(websocketIntent)
+
+        // start tracking
+        de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.checkPermissionsAndStartTracking(this, true)
     }
 
     //==============================================================================================

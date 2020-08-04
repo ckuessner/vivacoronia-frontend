@@ -44,9 +44,7 @@ class WebSocketService : Service() {
 
         val request = Request.Builder().url(Constants.SERVER_WEBSOCKET_URL).addHeader("userID", Constants.USER_ID.toString()).build()
 
-        val wss = client.newWebSocket(request, listener)
-        wss.send("Ping")
-        Log.i(TAG, wss.toString())
+        client.newWebSocket(request, listener)
     }
 
 
