@@ -69,6 +69,13 @@
     <string name="yes_offer_sold">Yes, I sold it</string>
     <string name="title_activity_location_picker">Pick a Location</string>
     <string name="use_location">Use selected location</string>
+    <string name="product_search_view_hint">Enter Product Name</string>
+    <string name="menu_item_search">Search Offers</string>
+    <string name="location">Location</string>
+    <string name="view_on_map">View on map</string>
+    <string name="map">Map</string>
+    <string name="list">List</string>
+
     <string name="filter_radius_distance_text">\u0020%dm\u0020</string>
     <!-- Register process -->
     <string name="register">Register</string>

@@ -9,6 +9,7 @@ import com.android.volley.toolbox.RequestFuture
 import com.beust.klaxon.*
 import com.google.android.gms.maps.model.LatLng
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import org.json.JSONArray
 import org.json.JSONObject
 import org.threeten.bp.OffsetDateTime
@@ -43,10 +44,16 @@ object TradingApiClient : ApiBaseClient() {
     }
 
     fun getMyOffers(context: Context): MutableList<Offer> {
+        val query = ProductSearchQuery()
+        query.userId = TradingApiClient.getUserId()
+        return getOffers(context, query)
+    }
+
+    fun getOffers(context: Context, query: ProductSearchQuery): MutableList<Offer> {
         val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
         val url = Uri.parse(getOffersEndpoint())
             .buildUpon()
-            .appendQueryParameter("userId", getUserId(context).toString())
+            .encodedQuery(query.toString())
             .build()
             .toString()
 
