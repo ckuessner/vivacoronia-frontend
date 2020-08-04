@@ -3,6 +3,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.lifecycle.MutableLiveData
+import com.beust.klaxon.Json
 import com.google.android.gms.maps.model.LatLng
 import java.util.*
 
@@ -12,7 +13,7 @@ class Offer(
     var priceTotal: Double,
     var location: LatLng,
     var details: String,
-    var id: String,
+    @Json(name="_id") var id: String,
     var productCategory: String
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
@@ -38,10 +39,11 @@ class Offer(
                 && other.details == details
                 && other.id == id
                 && other.productCategory == productCategory
+                && other.product == product
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(amount, priceTotal, location, details, id, productCategory)
+        return Objects.hash(amount, priceTotal, location, details, id, productCategory, product)
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
