@@ -68,8 +68,9 @@ class WebSocketService : Service() {
         }
     }
 
+
     fun reconnect() {
-        // alarmmanager because this shall also be triggered if the app is not running but the
+    /*    // alarmmanager because this shall also be triggered if the app is not running but the
         // connection to the websocket is lost
         val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         val intent = Intent(this, WebSocketReconnectService::class.java)
@@ -77,9 +78,28 @@ class WebSocketService : Service() {
 
         if (pendingIntent != null) {
             // try to reconnect in 10 seconds, but dont wakeup device if asleep
+            Log.i("WebSocketService", "start pending websocket service start")
             alarmManager?.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime()+10000, pendingIntent)
-        }
+        } */
+        tryStartWebSocketService(this)
+
         stopSelf()
+    }
+
+    companion object{
+        fun tryStartWebSocketService(context: Context){
+            // alarmmanager because this shall also be triggered if the app is not running but the
+            // connection to the websocket is lost
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+            val intent = Intent(context, WebSocketReconnectService::class.java)
+            val pendingIntent = PendingIntent.getService(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+            if (pendingIntent != null) {
+                // try to reconnect in 10 seconds, but dont wakeup device if asleep
+                Log.i("WebSocketService", "start pending websocket service start")
+                alarmManager?.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime()+10000, pendingIntent)
+            }
+        }
     }
 
     override fun onBind(intent: Intent): IBinder? {

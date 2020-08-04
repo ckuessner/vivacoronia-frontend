@@ -21,7 +21,7 @@ fun setupUploadAlarm(context: Context){
     // set the upload interval
     if (upload != null){
 
-        alarmManager?.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), Constants.LOCATION_UPLOAD_INTERVAL, upload)
+        alarmManager?.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+Constants.LOCATION_UPLOAD_INTERVAL, Constants.LOCATION_UPLOAD_INTERVAL, upload)
         Log.i("setupUploadAlarm", "upload service registerd")
     }
     else {

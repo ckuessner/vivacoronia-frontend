@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         startService(websocketIntent)
 
         // tracking in onResume startet
-        checkPermissionsAndStartTracking()
+        de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.checkPermissionsAndStartTracking(this, true)
 
         // setup navigation
         val navController = findNavController(R.id.nav_fragment)
