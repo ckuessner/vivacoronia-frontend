@@ -56,6 +56,8 @@
     <string name="cancel">Cancel</string>
     <string name="confirm_delete_message">Do you really want to delete this offer?</string>
     <string name="delete_offer_title">Delete offer</string>
+    <string name="input_error">Something went wrong. Please check your input and try again.</string>
+    <string name="unknown_error">"Oops, something went wrong. Please check your input and internet connection."</string>
     <string name="EUR">€</string>
     <string name="yes_offer_sold">Yes, I sold it</string>
     <string name="title_activity_location_picker">Pick a Location</string>

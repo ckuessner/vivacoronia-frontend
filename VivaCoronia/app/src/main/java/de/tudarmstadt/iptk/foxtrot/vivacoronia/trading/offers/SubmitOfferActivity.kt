@@ -40,12 +40,12 @@ class SubmitOfferActivity : AppCompatActivity() {
                         runOnUiThread { finish() }
                     else
                         runOnUiThread {
-                            Toast.makeText(this@SubmitOfferActivity,"Something went wrong. Please check your input and try again.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@SubmitOfferActivity, R.string.input_error, Toast.LENGTH_SHORT).show()
                             submitButton.isEnabled = true
                         }
                 } catch (e: Exception) {
                     runOnUiThread {
-                        Toast.makeText(this@SubmitOfferActivity, "Oops, something went wrong. Please check your input and internet connection.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@SubmitOfferActivity, R.string.unknown_error, Toast.LENGTH_SHORT).show()
                         submitButton.isEnabled = true
                     }
                 }

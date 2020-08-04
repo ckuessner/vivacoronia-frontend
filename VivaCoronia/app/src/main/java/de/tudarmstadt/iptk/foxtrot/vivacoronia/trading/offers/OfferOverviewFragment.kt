@@ -110,10 +110,6 @@ class OffersFragment : Fragment() {
             val deleted = TradingApiClient.deleteOffer(id, sold, requireContext())
             if (deleted)
                 fetchMyOffers()
-            /*requireActivity().runOnUiThread {
-                                    viewModel.remove(id)
-                                }*/
-            // TODO what's the better option? refetch needs more data/computation, removing theoretically result in an inconsistent state
         } catch (e: Exception) {
             Log.e(TAG, "Unable to delete offer with id \"$id\"", e)
             requireActivity().runOnUiThread {
