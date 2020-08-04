@@ -12,6 +12,7 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 
 private val TAG = "LocationStarter"
 
@@ -40,7 +41,7 @@ fun checkPermissionsAndStartTracking(context: Context, fromMainActivity: Boolean
         }
         else {
             Log.i(TAG, "could not start at init, because permissions where not granted -> User has to start app")
-            Toast.makeText(context, "Please open the app and enable Location access.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.location_service_fail_after_boot_message), Toast.LENGTH_LONG).show()
         }
     }
 }
@@ -48,7 +49,7 @@ fun checkPermissionsAndStartTracking(context: Context, fromMainActivity: Boolean
 /**
  * creates a request to determine which services (gps, wifi, cellular) have to be enabled
  */
-private fun createBackgroundLocationRequest(): LocationRequest? {
+fun createBackgroundLocationRequest(): LocationRequest? {
     // code (with a few changes) from https://developer.android.com/training/location/change-location-settings see apache 2.0 licence
     return LocationRequest.create()?.apply {
         interval = Constants.LOCATION_TRACKING_REQUEST_INTERVAL
@@ -59,7 +60,7 @@ private fun createBackgroundLocationRequest(): LocationRequest? {
 /**
  * requests the services specified by the locationrequest
  */
-private fun requestLocationService(context: Context, locationRequest: LocationRequest?, fromMainActivity: Boolean) {
+fun requestLocationService(context: Context, locationRequest: LocationRequest?, fromMainActivity: Boolean) {
     // code (with a few changes) from https://developer.android.com/training/location/change-location-settings see apache 2.0 licence
     val builder = LocationSettingsRequest.Builder()
         .addLocationRequest(locationRequest!!)
@@ -99,7 +100,7 @@ private fun requestLocationService(context: Context, locationRequest: LocationRe
     }
     else {
         task.addOnFailureListener { _ ->
-            Toast.makeText(context, "Please open App to enable tracking", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.location_service_fail_after_boot_message), Toast.LENGTH_LONG).show()
         }
     }
 }

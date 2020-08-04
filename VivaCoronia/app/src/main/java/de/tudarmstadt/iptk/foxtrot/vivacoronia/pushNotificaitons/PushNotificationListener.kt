@@ -31,8 +31,8 @@ class PushNotificationListener : WebSocketListener(){
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-        Log.e(TAG, "websocket failure: " + response.toString())
         Log.e(TAG, "websocket failure " + t.cause.toString())
+        Log.i(TAG, socketService.toString())
         socketService.reconnect()
     }
 
