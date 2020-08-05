@@ -116,7 +116,7 @@ class OffersFragment : Fragment() {
                 Toast.makeText(requireContext(), "Unable to delete offer", Toast.LENGTH_SHORT).show()
             }
         }
-        binding.offersListSwipeRefresh.isRefreshing = false
+        requireActivity().runOnUiThread { binding.offersListSwipeRefresh.isRefreshing = false }
     }
 
     private fun styleDialogButtons(buttons: List<Button>) {
