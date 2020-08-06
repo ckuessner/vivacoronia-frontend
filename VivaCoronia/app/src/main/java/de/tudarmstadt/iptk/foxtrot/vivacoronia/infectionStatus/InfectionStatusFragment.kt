@@ -92,7 +92,7 @@ class InfectionStatusFragment : Fragment() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            Constants().CAMERA_PERMISSION_REQUEST_CODE ->
+            Constants.CAMERA_PERMISSION_REQUEST_CODE ->
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     val intent = Intent(requireActivity(), ScanQrCodeActivity::class.java).apply {}
                     startActivity(intent)

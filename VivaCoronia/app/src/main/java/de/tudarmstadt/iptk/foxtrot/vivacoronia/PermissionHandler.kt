@@ -39,7 +39,7 @@ class PermissionHandler {
         fun requestCameraPermissions(fragment: Fragment) {
             fragment.requestPermissions(
                 arrayOf(Manifest.permission.CAMERA),
-                Constants().CAMERA_PERMISSION_REQUEST_CODE
+                Constants.CAMERA_PERMISSION_REQUEST_CODE
             )
         }
     }
