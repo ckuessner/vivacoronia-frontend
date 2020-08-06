@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentOfferDetailBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer.Companion.categories
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct.Companion.categories
 
 private const val ARG_OFFER = "offer"
 private const val LOCATION_PICKER_REQUEST = 1

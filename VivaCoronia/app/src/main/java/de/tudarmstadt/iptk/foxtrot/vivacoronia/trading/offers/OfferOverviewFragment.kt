@@ -17,6 +17,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.TradingApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentOfferOverviewBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutionException
@@ -46,11 +47,11 @@ class OffersFragment : Fragment() {
         binding.offersList.adapter = adapter
         viewModel.offers.observe(viewLifecycleOwner, Observer { it?.let { adapter.submitList(it) } })
 
-        Offer.categories.observe(viewLifecycleOwner, Observer {
+        BaseProduct.categories.observe(viewLifecycleOwner, Observer {
             if (it.isNotEmpty())
                 binding.add.isEnabled = true
         })
-        binding.add.isEnabled = !Offer.categories.value.isNullOrEmpty() // Only allow adding offers if we fetched + received categories
+        binding.add.isEnabled = !BaseProduct.categories.value.isNullOrEmpty() // Only allow adding offers if we fetched + received categories
 
         binding.offersListSwipeRefresh.setOnRefreshListener {
             GlobalScope.launch { fetchMyOffers() }

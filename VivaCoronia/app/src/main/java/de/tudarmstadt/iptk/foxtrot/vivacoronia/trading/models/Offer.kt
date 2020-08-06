@@ -2,23 +2,21 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models
 
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.lifecycle.MutableLiveData
 import com.beust.klaxon.Json
 import com.google.android.gms.maps.model.LatLng
 import java.util.*
 
 class Offer(
-    var product: String,
-    var amount: Int,
+    override var product: String,
+    override var amount: Int,
     var price: Double,
-    var location: LatLng,
+    override var location: LatLng,
     var details: String,
     @Json(name = "_id") var id: String,
-    var productCategory: String,
+    override var productCategory: String,
     var distanceToUser: Double,
     var phoneNumber: String
-) : Parcelable {
-
+) : BaseProduct(product, productCategory, location, id), Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readInt(),
@@ -76,8 +74,6 @@ class Offer(
     }
 
     companion object {
-        var categories = MutableLiveData<MutableList<String>>()
-
         @Suppress("unused") // The creator is necessary to implement Parcelable
         @JvmField
         val CREATOR = object : Parcelable.Creator<Offer> {

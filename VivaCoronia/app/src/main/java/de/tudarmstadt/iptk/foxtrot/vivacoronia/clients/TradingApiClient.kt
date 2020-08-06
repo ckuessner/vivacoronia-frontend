@@ -6,6 +6,7 @@ import com.android.volley.*
 import com.android.volley.toolbox.RequestFuture
 import com.beust.klaxon.*
 import com.google.android.gms.maps.model.LatLng
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Need
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import org.json.JSONArray
@@ -13,10 +14,11 @@ import org.json.JSONObject
 import org.threeten.bp.OffsetDateTime
 
 object TradingApiClient : ApiBaseClient() {
-    private val offerConverter : Klaxon = Klaxon()
+    private val TAG = "TradingApiClient"
+    private val productConverter : Klaxon = Klaxon()
 
     init {
-        offerConverter.converter(LatLngConverter)
+        productConverter.converter(LatLngConverter)
     }
 
     private fun getEndpoint(): String{
@@ -25,6 +27,10 @@ object TradingApiClient : ApiBaseClient() {
 
     private fun getOffersEndpoint(): String {
         return joinPaths(getEndpoint(), "offers")
+    }
+
+    private fun getNeedsEndpoint(): String {
+        return joinPaths(getEndpoint(), "needs")
     }
 
     fun getAllCategories(context: Context): List<String> {
@@ -60,11 +66,47 @@ object TradingApiClient : ApiBaseClient() {
         queue.add(request)
         val futureResult = future.get().toString()
 
-        val result = offerConverter.parseArray<Offer>(futureResult)
+        val result = productConverter.parseArray<Offer>(futureResult)
         return result?.toMutableList() ?: mutableListOf()
     }
 
+    fun getMyNeeds(context: Context): MutableList<Need> {
+        val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
+        val url = Uri.parse(getNeedsEndpoint())
+            .buildUpon()
+            .appendQueryParameter("userId", getUserId(context).toString())
+            .build()
+            .toString()
+
+        val future = RequestFuture.newFuture<JSONArray>()
+        val request = JsonArrayJWT(Request.Method.GET, url, null, future, future)
+        queue.add(request)
+        val futureResult = future.get().toString()
+
+        val result = productConverter.parseArray<Need>(futureResult)
+        return result?.toMutableList() ?: mutableListOf()
+    }
+
+
+
     fun deleteOffer(id: String, sold: Boolean, context: Context): Boolean {
+        return delete(id, sold, null, context)
+    }
+
+    fun deleteNeed(id: String, fulfilled: Boolean, context: Context): Boolean {
+        return delete(id, null, fulfilled, context)
+    }
+
+    private fun delete(id: String, sold: Boolean?, fulfilled: Boolean?, context: Context): Boolean {
+        var endpoint = ""
+        if (fulfilled == null){
+            endpoint = getOffersEndpoint()
+        }
+        else if(sold == null){
+            endpoint = getNeedsEndpoint()
+        }
+        if (endpoint == "") return false
+
         val queue = getRequestQueue(context) ?: return false
         val url = joinPaths(getOffersEndpoint(), id)
         val deactivatedAt = OffsetDateTime.now()
@@ -81,7 +123,33 @@ object TradingApiClient : ApiBaseClient() {
     }
 
     fun putOffer(offer: Offer, context: Context): Offer? {
-        val jsonString = offerConverter.toJsonString(offer)
+        val r = put(offer, null, context)
+        Log.i(TAG, "res1: " + r.toString())
+       // Log.i(TAG, "res: " + (r as Offer?).toString())
+        return r as Offer?
+    }
+
+    fun putNeed(need: Need, context: Context): Need?{
+        return put(null, need, context) as Need?
+    }
+
+    private fun put(offer: Offer?, need: Need?, context: Context) : BaseProduct?{
+        var endpoint = ""
+        var jsonString = ""
+        var product: BaseProduct? = null
+        if (need == null) {
+            endpoint = getOffersEndpoint()
+            jsonString = productConverter.toJsonString(offer)
+            product = offer
+        }
+        else if(offer == null) {
+            endpoint = getNeedsEndpoint()
+            jsonString = productConverter.toJsonString(need)
+            product = need
+        }
+        Log.i(TAG, "put: " + endpoint)
+        if (endpoint == "") return null
+
         val jsonObject = JSONObject(jsonString)
         jsonObject.put("userId", getUserId(context)) // TODO should be done/verified @ server
         val url = joinPaths(getOffersEndpoint(), offer.id)
@@ -92,7 +160,12 @@ object TradingApiClient : ApiBaseClient() {
         val request = JsonObjectJWT(method, url, jsonObject, future, future, context)
         queue.add(request)
         val result = future.get()
-        return offerConverter.parse(result.toString())
+        if (need == null) {
+            val res = productConverter.parse(result.toString()) as Offer?
+            return res
+        }
+        else if (offer == null) return productConverter.parse(result.toString()) as Need?
+        else return null
     }
 }
 

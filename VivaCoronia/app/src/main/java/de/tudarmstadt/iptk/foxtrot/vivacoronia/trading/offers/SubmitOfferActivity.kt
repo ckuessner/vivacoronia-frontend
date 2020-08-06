@@ -37,6 +37,7 @@ class SubmitOfferActivity : AppCompatActivity() {
             GlobalScope.launch {
                 try {
                     val result = TradingApiClient.putOffer(fragment.getOffer(), this@SubmitOfferActivity)
+                    Log.i("SubmitOfferActivity", result.toString())
                     if (result != null)
                         runOnUiThread { finish() }
                     else
