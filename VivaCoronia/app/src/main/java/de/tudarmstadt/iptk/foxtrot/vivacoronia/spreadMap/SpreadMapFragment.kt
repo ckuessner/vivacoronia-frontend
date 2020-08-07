@@ -129,6 +129,14 @@ class SpreadMapFragment : Fragment() {
         binding.seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 binding.distanceText.text = getString(R.string.filter_radius_distance_text, progress)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                Log.d("user", "user started dragging")
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                binding.distanceText.text = getString(R.string.filter_radius_distance_text, seekBar!!.progress)
                 if(currentCenter != null) {
                     val builder = AlertDialog.Builder(context)
                     builder.setCancelable(true)
@@ -156,14 +164,6 @@ class SpreadMapFragment : Fragment() {
                     val dialog: AlertDialog = builder.create()
                     dialog.show()
                 }
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                Log.d("user", "user started dragging")
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                Log.d("user", "user stopped dragging")
             }
 
         })
