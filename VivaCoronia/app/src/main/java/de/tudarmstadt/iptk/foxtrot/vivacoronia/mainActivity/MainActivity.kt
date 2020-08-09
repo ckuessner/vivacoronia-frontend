@@ -5,11 +5,11 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -18,12 +18,12 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.NotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.createBackgroundLocationRequest
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.requestLocationService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.NotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.WebSocketService
 
 class MainActivity : AppCompatActivity() {
@@ -31,23 +31,25 @@ class MainActivity : AppCompatActivity() {
     // TODO check wheter google play services has the right version
     // TODO add licencing for location api
 
-    private lateinit var appBarConfiguration : AppBarConfiguration
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
-    private lateinit var navView : NavigationView
+    private lateinit var navView: NavigationView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // notification channel should be created as soon as possible when the application starts
-        if (Build.VERSION.SDK_INT >= 24){ // importance needs api 24
-            NotificationHelper.createNotificationChannel(this,
+        if (Build.VERSION.SDK_INT >= 24) { // importance needs api 24
+            NotificationHelper.createNotificationChannel(
+                this,
                 getString(R.string.location_service_channel_name),
                 getString(R.string.location_service_channel_description),
                 NotificationManager.IMPORTANCE_DEFAULT,
                 Constants.LOCATION_NOTIFICATION_CHANNEL_ID
             )
-            NotificationHelper.createNotificationChannel(this,
+            NotificationHelper.createNotificationChannel(
+                this,
                 getString(R.string.infected_notification_channel_name),
                 getString(R.string.infected_notification_channel_description),
                 NotificationManager.IMPORTANCE_HIGH,
@@ -60,11 +62,15 @@ class MainActivity : AppCompatActivity() {
         navController.setGraph(R.navigation.nav_graph)
 
         // the location history view, trading view and achievements view are all root views
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.locationHistoryFragment,
-            R.id.tradingOverviewFragment,
-            R.id.achievementsFragment,
-            R.id.infectionStatusFragment),
-            findViewById(R.id.drawer_layout))
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.locationHistoryFragment,
+                R.id.tradingOverviewFragment,
+                R.id.achievementsFragment,
+                R.id.infectionStatusFragment
+            ),
+            findViewById<DrawerLayout>(R.id.drawer_layout)
+        )
 
 
         // setup default toolbar with navcontroller
@@ -78,7 +84,7 @@ class MainActivity : AppCompatActivity() {
 
         // add actions for drawer menu item here
         navView.setNavigationItemSelectedListener { item ->
-            when(item.itemId){
+            when (item.itemId) {
                 R.id.menu_item_location_history -> {
                     navController.navigate(R.id.locationHistoryFragment)
                 }
@@ -109,7 +115,10 @@ class MainActivity : AppCompatActivity() {
         startService(websocketIntent)
 
         // start tracking
-        de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.checkPermissionsAndStartTracking(this, true)
+        de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.checkPermissionsAndStartTracking(
+            this,
+            true
+        )
     }
 
     //==============================================================================================
@@ -122,18 +131,17 @@ class MainActivity : AppCompatActivity() {
     // needed to close the drawer with a click on the drawer icon
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (item != null) {
-            when(item.itemId){
+            return when (item.itemId) {
                 // the drawer button is pressed so close the drawer
                 android.R.id.home -> {
                     if (findViewById<DrawerLayout>(R.id.drawer_layout).isDrawerOpen(navView)) {
                         findViewById<DrawerLayout>(R.id.drawer_layout).closeDrawer(navView)
-                    }
-                    else {
+                    } else {
                         findViewById<DrawerLayout>(R.id.drawer_layout).openDrawer(navView)
                     }
-                    return true
+                    true
                 }
-                else -> return false
+                else -> false
             }
         }
         return false
@@ -142,7 +150,11 @@ class MainActivity : AppCompatActivity() {
     /**
      * handles permission requests
      */
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Log.i(TAG, "onRequestPermissionResult")
         when (requestCode) {
@@ -154,12 +166,20 @@ class MainActivity : AppCompatActivity() {
 
                     // not called after "Deny and dont ask again"
                     if (Build.VERSION.SDK_INT >= 23 && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                        Toast.makeText(this, getText(R.string.main_activity_toast_permission_rationale), Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this,
+                            getText(R.string.main_activity_toast_permission_rationale),
+                            Toast.LENGTH_LONG
+                        ).show()
                         PermissionHandler.requestLocationPermissions(
                             this
                         )
                     }
-                    Toast.makeText(this, getText(R.string.main_activity_toast_location_permission_denied), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this,
+                        getText(R.string.main_activity_toast_location_permission_denied),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
                 // permission was granted so start foreground service
                 else {

@@ -11,6 +11,7 @@ import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.BuildConfig
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.NotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
@@ -37,8 +38,14 @@ class WebSocketService : Service() {
     // for okhttp see license
     fun initWebSocket(){
         Log.i(TAG, "init Web Socket")
-        val (sslContext, trustManager) = getDevSSLContext(this)
-        client = OkHttpClient.Builder().sslSocketFactory(sslContext.socketFactory, trustManager as X509TrustManager).build()
+        if (BuildConfig.DEBUG) {
+            val (sslContext, trustManager) = getDevSSLContext(this)
+            client = OkHttpClient.Builder()
+                .sslSocketFactory(sslContext.socketFactory, trustManager as X509TrustManager)
+                .build()
+        } else {
+            client = OkHttpClient()
+        }
         val listener = PushNotificationListener()
         listener.socketService = this
 

@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.HurlStack
 import com.android.volley.toolbox.Volley
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.BuildConfig
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.getDevSSLContext
@@ -48,19 +49,23 @@ abstract class ApiBaseClient {
             return null
         }
 
-        return try {
-            val sslContext =
-                getDevSSLContext(
-                    context
-                ).first
-            // To use the dev certificate, provide HurlStack with SSLSocketFactory from custom context
-            Volley.newRequestQueue(
-                context,
-                HurlStack(null, sslContext.socketFactory)
-            )
-        } catch (e: Exception) {
-            Log.e(_tag, "could not load dev cert: $e")
-            Volley.newRequestQueue(context)
+        if (BuildConfig.DEBUG) {
+            return try {
+                val sslContext =
+                    getDevSSLContext(
+                        context
+                    ).first
+                // To use the dev certificate, provide HurlStack with SSLSocketFactory from custom context
+                Volley.newRequestQueue(
+                    context,
+                    HurlStack(null, sslContext.socketFactory)
+                )
+            } catch (e: Exception) {
+                Log.e(_tag, "could not load dev cert: $e")
+                Volley.newRequestQueue(context)
+            }
+        } else {
+            return Volley.newRequestQueue(context)
         }
     }
 }
