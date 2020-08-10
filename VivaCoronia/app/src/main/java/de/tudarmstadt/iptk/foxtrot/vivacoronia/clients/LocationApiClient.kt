@@ -176,8 +176,7 @@ object LocationApiClient : ApiBaseClient() {
                     .toInstant().toEpochMilli()
         }
         val latlong = coordinates[currentCoordinateIndex] as JsonArray<*>
-        val location = createLocation(latlong, coordinateTime)
-        return location
+        return createLocation(latlong, coordinateTime)
     }
 
     private fun createLocation(

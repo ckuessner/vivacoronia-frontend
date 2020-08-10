@@ -27,18 +27,12 @@ object ContactApiClient : ApiBaseClient() {
         return parseContacts(test)
     }
 
-    data class Contact(
-        val userID: Int,
-        val infectedUserID: Int
-    )
-
     private fun parseContacts(contacts: String): MutableMap<Int, Pair<Boolean, ZonedDateTime>>{
         val parser: Parser = Parser.default()
         val parsed: JsonArray<*> = parser.parse(StringBuilder(contacts)) as JsonArray<*>
         val returnMap = mutableMapOf<Int, Pair<Boolean, ZonedDateTime>>()
         for(obj in parsed){
             val newInfectedUser = (obj as JsonObject)["userId"] as Int
-            //val newInfectTimeStamp = (obj)
             val oldInfectedUser = obj["infectedUserId"] as Int
             val locationRecord = obj["locationRecord"] as JsonObject
             val timestampString = locationRecord["time"] as String

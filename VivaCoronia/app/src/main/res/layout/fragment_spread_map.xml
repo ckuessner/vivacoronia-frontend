@@ -35,12 +35,12 @@
             android:layout_height="wrap_content"
             android:id="@+id/distanceText"
             android:layout_marginStart="10dp"
-            android:background="#000"
+            android:background="#3495eb"
             android:textColor="#FFF"/>
         <SeekBar
             android:id="@+id/seekbar"
             android:layout_width="match_parent"
-            android:max="50000"
+            android:max="20000"
             android:progress="400"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"

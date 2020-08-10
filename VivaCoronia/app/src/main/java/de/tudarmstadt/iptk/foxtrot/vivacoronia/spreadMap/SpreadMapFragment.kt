@@ -9,6 +9,7 @@ import android.location.LocationManager
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -93,42 +94,38 @@ class SpreadMapFragment : Fragment() {
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startLocation, 15F))
         googleMap.setOnMapLongClickListener { latLng ->
-            /*val builder = AlertDialog.Builder(context)
-            builder.setCancelable(true)
-            builder.setTitle("Spreadmap Center Point")
-            builder.setMessage("Select this center point?")
-            builder.setPositiveButton("Confirm"){ _, _ ->
-                currentCenter = latLng
-                googleMap.clear()
-                googleMap.addCircle(
-                    CircleOptions().center(currentCenter).radius(binding.seekbar.progress.toDouble())
-                        .strokeColor(
-                            Color.BLACK
-                        )
-                )
-                getGeoJSONMapFromServer(currentCenter!!, binding.seekbar.progress)
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentCenter, getZoomLevelForCircle(binding.seekbar.progress)))
-            }
-            builder.setNegativeButton(android.R.string.cancel){ _, _ ->
-            }
-            val dialog: AlertDialog = builder.create()
-            dialog.show()*/
-
             currentCenter = latLng
             googleMap.clear()
             googleMap.addCircle(
-                CircleOptions().center(currentCenter).radius(binding.seekbar.progress.toDouble())
+                CircleOptions()
+                    .center(currentCenter)
+                    .radius(binding.seekbar.progress.toDouble())
                     .strokeColor(
                         Color.BLACK
                     )
+                    .strokeWidth(3F)
             )
             getGeoJSONMapFromServer(currentCenter!!, binding.seekbar.progress)
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentCenter, getZoomLevelForCircle(binding.seekbar.progress)))
         }
         binding.distanceText.text = getString(R.string.filter_radius_distance_text, binding.seekbar.progress)
+        val displayMetrics = DisplayMetrics()
+        requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val screenWidth = displayMetrics.widthPixels
         binding.seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 binding.distanceText.text = getString(R.string.filter_radius_distance_text, progress)
+                if(fromUser){
+                    val width = seekBar!!.width - seekBar.paddingLeft - seekBar.paddingRight
+                    var thumbPos = width * (seekBar.progress / (seekBar.max.toFloat()))
+                    if((thumbPos + binding.distanceText.width + 20) > screenWidth && thumbPos > binding.distanceText.x){
+                        thumbPos = binding.distanceText.x
+                    }
+                    if(thumbPos - 20 < 0 && thumbPos < binding.distanceText.x){
+                        thumbPos = binding.distanceText.x
+                    }
+                    binding.distanceText.x = thumbPos
+                }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -150,6 +147,7 @@ class SpreadMapFragment : Fragment() {
                                 .strokeColor(
                                     Color.BLACK
                                 )
+                                .strokeWidth(3F)
                         )
                         getGeoJSONMapFromServer(currentCenter!!, binding.seekbar.progress)
                         googleMap.moveCamera(
@@ -242,7 +240,7 @@ class SpreadMapFragment : Fragment() {
         else{
             val processedMap = getPreprocessedCoordinateMap(coordinatesMap)
             var elementCount = 0
-            for((key,list) in coordinatesMap) {
+            for((_,list) in coordinatesMap) {
                 elementCount += list.size
             }
             val idColors = generateColors(processedMap.size)
