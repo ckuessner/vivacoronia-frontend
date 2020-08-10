@@ -67,8 +67,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.locationHistoryFragment,
                 R.id.tradingOverviewFragment,
                 R.id.achievementsFragment,
-            R.id.infectionStatusFragment,
-            R.id.spreadMapFragment),
+                R.id.infectionStatusFragment,
+                R.id.spreadMapFragment
+            ),
             findViewById<DrawerLayout>(R.id.drawer_layout)
         )
 
