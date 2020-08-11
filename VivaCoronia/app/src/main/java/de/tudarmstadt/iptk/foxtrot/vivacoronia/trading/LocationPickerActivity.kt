@@ -1,4 +1,4 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading
 
 import android.app.Activity
 import android.content.Intent

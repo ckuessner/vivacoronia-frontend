@@ -135,3 +135,12 @@ class OfferViewModelFactory(private val offer: Offer): ViewModelProvider.Factory
         throw IllegalArgumentException("Unknown OfferViewModel class")
     }
 }
+
+class NeedViewModelFactory(private val need: Need): ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(NeedViewModel::class.java)) {
+            return NeedViewModel(need) as T
+        }
+        throw IllegalArgumentException("Unknown NeedViewModel class")
+    }
+}

@@ -1,7 +1,5 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.needs
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,50 +7,36 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.maps.model.LatLng
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentOfferDetailBinding
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.OfferViewModel
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.OfferViewModelFactory
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentNeedDetailBinding
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.NeedViewModel
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.NeedViewModelFactory
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.ProductDetailFragment
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Need
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct.Companion.categories
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OfferDetailFragment
 
-private const val ARG_OFFER = "offer"
+class NeedDetailFragment : ProductDetailFragment<NeedViewModel>() {
 
-class OfferDetailFragment : ProductDetailFragment<OfferViewModel>() {
-    companion object {
-        @JvmStatic
-        fun newInstance(offer: Offer) =
-            OfferDetailFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(ARG_OFFER, offer)
-                }
-            }
-    }
-
-    private lateinit var binding: FragmentOfferDetailBinding
-    private lateinit var viewModelFactory: OfferViewModelFactory
+    private lateinit var binding: FragmentNeedDetailBinding
+    private lateinit var viewModelFactory: NeedViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            val offer: Offer = it.getParcelable(ARG_OFFER)!!
-            viewModelFactory =
-                OfferViewModelFactory(
-                    offer
-                )
-            viewModel = ViewModelProvider(this, viewModelFactory).get(OfferViewModel::class.java)
-        }
+        // TODO get current location
+        viewModelFactory = NeedViewModelFactory(Need("", "", LatLng(0.0, 0.0), ""))
+        viewModel = ViewModelProvider(this, viewModelFactory).get(NeedViewModel::class.java)
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_offer_detail, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_need_detail, container, false)
 
         val spinnerAdapter =  ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, BaseProduct.categories.value!!)
         binding.categoryInputSpinner.adapter = spinnerAdapter
@@ -66,11 +50,12 @@ class OfferDetailFragment : ProductDetailFragment<OfferViewModel>() {
         }
 
         if (isInitialized()) {
-            binding.offer = viewModel
+            binding.need = viewModel
             binding.categoryInputSpinner.setSelection(spinnerAdapter.getPosition(viewModel.productCategory))
         }
 
         binding.locationPickerButton.setOnClickListener { onSelectLocation() }
+
 
         return binding.root
     }

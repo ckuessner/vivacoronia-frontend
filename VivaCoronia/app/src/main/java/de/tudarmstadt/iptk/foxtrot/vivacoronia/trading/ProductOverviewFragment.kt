@@ -54,9 +54,10 @@ class ProductOverviewFragment : Fragment() {
         }
 
         binding.add.setOnClickListener {
-            SubmitOfferActivity.start(
+            SubmitProductActivity.start(
                 requireContext(),
-                null
+                null,
+                showOffers
             )
         }
 
@@ -110,40 +111,48 @@ class ProductOverviewFragment : Fragment() {
                 .setPositiveButton(R.string.yes) { _, _ ->
                     binding.productListSwipeRefresh.isRefreshing = true
                     GlobalScope.launch {
-                        performDelete(id, false)
+                        performDelete(id, false, false)
                     }
                 }
-                .setNegativeButton(R.string.yes_offer_sold) { _, _ ->
+                .setNegativeButton(if (showOffers) R.string.yes_offer_sold else R.string.yes_need_fulfilled) { _, _ ->
                     binding.productListSwipeRefresh.isRefreshing = true
                     GlobalScope.launch {
-                        performDelete(id, true)
+                        performDelete(id, true, true)
                     }
                 }
                 .setNeutralButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
-                .setTitle(R.string.delete_offer_title)
-                .setMessage(R.string.confirm_delete_message)
+                .setTitle(if (showOffers) R.string.delete_offer_title else R.string.delete_need_title)
+                .setMessage(if (showOffers) R.string.confirm_delete_message_offer else R.string.confirm_delete_message_need)
                 .show()
         } ?: return
     }
 
-    private fun performDelete(id: String, sold: Boolean) {
+    private fun performDelete(id: String, sold: Boolean, fulfilled: Boolean) {
         try {
-            val deleted = TradingApiClient.deleteOffer(id, sold, requireContext())
-            if (deleted)
-                fetchMyOffers()
+            if (showOffers) {
+                val deleted = TradingApiClient.deleteOffer(id, sold, requireContext())
+                if (deleted)
+                    fetchMyOffers()
+            }
+            else {
+                val deleted = TradingApiClient.deleteNeed(id, fulfilled, requireContext())
+                if (deleted)
+                    fetchMyNeeds()
+            }
         } catch (e: Exception) {
-            Log.e(TAG, "Unable to delete offer with id \"$id\"", e)
+            Log.e(TAG, "Unable to delete offer or need with id \"$id\"", e)
             activity?.runOnUiThread {
-                Toast.makeText(requireContext(), "Unable to delete offer", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), if (showOffers) "Unable to delete offer" else "Unable to delete need", Toast.LENGTH_SHORT).show()
             }
         }
         activity?.runOnUiThread { binding.offersListSwipeRefresh.isRefreshing = false }
     }
 
     private fun editOfferCallback(offer: Offer){
-        SubmitOfferActivity.start(
+        SubmitProductActivity.start(
             requireContext(),
-            offer
+            offer,
+            true // needs cant be edited
         )
     }
 

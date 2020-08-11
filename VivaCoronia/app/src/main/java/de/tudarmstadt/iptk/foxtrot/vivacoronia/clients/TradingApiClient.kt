@@ -138,11 +138,13 @@ object TradingApiClient : ApiBaseClient() {
             endpoint = getOffersEndpoint()
             jsonString = productConverter.toJsonString(offer)
             product = offer
+            Log.i(TAG, "offer: " + jsonString)
         }
         else if(offer == null) {
             endpoint = getNeedsEndpoint()
             jsonString = productConverter.toJsonString(need)
             product = need
+            Log.i(TAG, "need: " + jsonString)
         }
         Log.i(TAG, "put: " + endpoint)
         if (endpoint == "") return null
