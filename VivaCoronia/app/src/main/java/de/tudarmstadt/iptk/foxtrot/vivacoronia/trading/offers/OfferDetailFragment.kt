@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentOfferDetailBinding
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.OfferViewModel
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.OfferViewModelFactory
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct.Companion.categories
 
@@ -38,7 +40,10 @@ class OfferDetailFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             val offer: Offer = it.getParcelable(ARG_OFFER)!!
-            viewModelFactory = OfferViewModelFactory(offer)
+            viewModelFactory =
+                OfferViewModelFactory(
+                    offer
+                )
             viewModel = ViewModelProvider(this, viewModelFactory).get(OfferViewModel::class.java)
         }
     }

@@ -12,6 +12,16 @@
         android:title="@string/menu_item_infection_update" />
 
     <item
+        android:id="@+id/menu_item_product_needs"
+        android:icon="@drawable/ic_trading"
+        android:title="@string/menu_item_product_needs"/>
+
+    <item
+        android:id="@+id/menu_item_product_offers"
+        android:title="@string/menu_item_product_offers"
+        android:icon="@drawable/ic_trading"/>
+
+    <item
         android:id="@+id/menu_item_trading"
         android:icon="@drawable/ic_trading"
         android:title="@string/menu_item_trading" />

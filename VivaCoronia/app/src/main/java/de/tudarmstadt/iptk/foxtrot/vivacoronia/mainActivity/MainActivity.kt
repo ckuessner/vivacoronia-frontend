@@ -75,6 +75,7 @@ class MainActivity : AppCompatActivity() {
             setOf(
                 R.id.locationHistoryFragment,
                 R.id.tradingFragmentNav,
+                R.id.needsAndOffersFragment,
                 R.id.achievementsFragment,
                 R.id.infectionStatusFragment,
                 R.id.spreadMapFragment,
@@ -102,6 +103,17 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.menu_item_trading -> {
                     navController.navigate(R.id.tradingFragmentNav)
+                R.id.menu_item_product_needs -> {
+                    val extra = Bundle()
+                    extra.putBoolean("offers", false)
+                    extra.putString("title", getString(R.string.menu_item_product_needs))
+                    navController.navigate(R.id.needsAndOffersFragment, extra)
+                }
+                R.id.menu_item_product_offers -> {
+                    val extra = Bundle()
+                    extra.putBoolean("offers", true)
+                    extra.putString("title", getString(R.string.menu_item_product_offers))
+                    navController.navigate(R.id.needsAndOffersFragment, extra)
                 }
                 R.id.menu_item_achievements -> {
                     navController.navigate(R.id.achievementsFragment)

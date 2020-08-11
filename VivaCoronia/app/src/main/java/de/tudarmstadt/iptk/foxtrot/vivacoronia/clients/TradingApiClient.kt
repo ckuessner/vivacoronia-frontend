@@ -99,10 +99,10 @@ object TradingApiClient : ApiBaseClient() {
 
     private fun delete(id: String, sold: Boolean?, fulfilled: Boolean?, context: Context): Boolean {
         var endpoint = ""
-        if (fulfilled == null){
+        if (fulfilled == null){ // only needs can be fulfilled
             endpoint = getOffersEndpoint()
         }
-        else if(sold == null){
+        else if(sold == null){ // only offers can be sold
             endpoint = getNeedsEndpoint()
         }
         if (endpoint == "") return false
@@ -123,10 +123,7 @@ object TradingApiClient : ApiBaseClient() {
     }
 
     fun putOffer(offer: Offer, context: Context): Offer? {
-        val r = put(offer, null, context)
-        Log.i(TAG, "res1: " + r.toString())
-       // Log.i(TAG, "res: " + (r as Offer?).toString())
-        return r as Offer?
+        return put(offer, null, context) as Offer?
     }
 
     fun putNeed(need: Need, context: Context): Need?{

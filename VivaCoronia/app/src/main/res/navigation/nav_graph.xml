@@ -16,6 +16,14 @@
         android:label="Achievements"
         tools:layout="@layout/fragment_achievements" />
     <fragment
+        android:id="@+id/needsAndOffersFragment"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.ProductOverviewFragment"
+        android:label="{title}">
+        <argument
+            android:name="title"
+            app:argType="string" />
+    </fragment>
+    <fragment
         android:id="@+id/tradingFragmentNav"
         android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.TradingFragmentNav"
         android:label="Trading"

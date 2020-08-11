@@ -44,7 +44,8 @@
     <!-- bottom navigation menu -->
     <string name="menu_item_location_history">History</string>
     <string name="menu_item_infection_update">Infection Status</string>
-    <string name="menu_item_trading">Trading</string>
+    <string name="menu_item_product_offers">Product Offers</string>
+    <string name="menu_item_product_needs">Product Needs</string>
     <string name="menu_item_achievements">Achievements</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

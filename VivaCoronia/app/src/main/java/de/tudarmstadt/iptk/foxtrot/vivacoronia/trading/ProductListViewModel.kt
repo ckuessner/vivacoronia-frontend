@@ -1,15 +1,19 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Need
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import java.lang.IllegalArgumentException
 import java.text.NumberFormat
 import java.util.*
 
-class OfferListViewModel : ViewModel() {
+open class ProductListViewModel : ViewModel() {
     val offers = MutableLiveData<MutableList<OfferViewModel>>()
+    val needs = MutableLiveData<MutableList<NeedViewModel>>()
+
 
     fun setOffers(list: List<Offer>) {
         offers.value = MutableList(list.size) { index ->
@@ -18,9 +22,44 @@ class OfferListViewModel : ViewModel() {
             )
         }
     }
+
+    fun setNeeds(list: List<Need>) {
+        needs.value = MutableList(list.size) { index ->
+            NeedViewModel(list[index])
+        }
+    }
+
+    fun addOffer(list: List<Offer>) {
+        val value = this.offers.value ?: mutableListOf()
+        value.addAll(List(list.size) { index ->
+            OfferViewModel(
+                list[index]
+            )
+        })
+        offers.value = value
+    }
 }
 
-class OfferViewModel(var offer: Offer) : ViewModel() {
+open class ProductViewModel(var baseProduct: BaseProduct) : ViewModel(){
+
+    var product: String
+        get() = baseProduct.product
+        set(value){
+            baseProduct.product = value
+        }
+
+    var productCategory: String
+        get() = baseProduct.productCategory
+        set(value){
+            baseProduct.productCategory = value
+        }
+
+}
+
+class NeedViewModel(var need: Need) : ProductViewModel(need as BaseProduct)
+
+
+class OfferViewModel(var offer: Offer) : ProductViewModel(offer as BaseProduct) {
     object CurrencyFormatter {
         // replacing "space" (\u0020) with "non-breaking space"(\u00A0), important to be able to parse!
         private val currencyFormatter: NumberFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY)
@@ -53,12 +92,6 @@ class OfferViewModel(var offer: Offer) : ViewModel() {
     val isExpanded: Boolean
         get() = rotation != 0L
 
-    var product: String
-        get() = offer.product
-        set(value){
-            offer.product = value
-        }
-
     var rawPrice: String
         get() {
             return CurrencyFormatter.formatWithoutCurrency(offer.price)
@@ -85,12 +118,6 @@ class OfferViewModel(var offer: Offer) : ViewModel() {
         get() = if (offer.amount == 0) "" else offer.amount.toString()
         set(value){
             offer.amount = if (value == "") 0 else value.toInt()
-        }
-
-    var productCategory: String
-        get() = offer.productCategory
-        set(value){
-            offer.productCategory = value
         }
 
     var phoneNumber: String
