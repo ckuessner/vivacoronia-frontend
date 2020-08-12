@@ -19,11 +19,8 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.android.volley.VolleyError
-import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.*
 
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -65,6 +62,7 @@ class SpreadMapFragment : Fragment() {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
+        googleMap.uiSettings.isMapToolbarEnabled = false
         binding.progressHorizontal.visibility = View.GONE
         //TODO: set initial call location if deemed useful
         //getGeoJSONMapFromServer(LatLng(49.87167, 8.65027), 2000)
@@ -83,30 +81,20 @@ class SpreadMapFragment : Fragment() {
             androidx.lifecycle.Observer {
                 getContactsForIDs()
             })
-        var startLocation = LatLng(0.0, 0.0)
+        currentCenter = LatLng(0.0, 0.0)
         if (PermissionHandler.checkLocationPermissions(requireActivity())) {
             val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
             @SuppressLint("MissingPermission") // Check is in PermissionHandler
             val currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
             if (currentLocation != null)
-                startLocation = LatLng(currentLocation.latitude, currentLocation.longitude)
+                currentCenter = LatLng(currentLocation.latitude, currentLocation.longitude)
         }
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startLocation, 15F))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentCenter, 15F))
+        drawAroundCenter(googleMap)
         googleMap.setOnMapLongClickListener { latLng ->
             currentCenter = latLng
-            googleMap.clear()
-            googleMap.addCircle(
-                CircleOptions()
-                    .center(currentCenter)
-                    .radius(binding.seekbar.progress.toDouble())
-                    .strokeColor(
-                        Color.BLACK
-                    )
-                    .strokeWidth(3F)
-            )
-            getGeoJSONMapFromServer(currentCenter!!, binding.seekbar.progress)
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentCenter, getZoomLevelForCircle(binding.seekbar.progress)))
+            drawAroundCenter(googleMap)
         }
         binding.distanceText.text = getString(R.string.filter_radius_distance_text, binding.seekbar.progress)
         val displayMetrics = DisplayMetrics()
@@ -115,6 +103,10 @@ class SpreadMapFragment : Fragment() {
         binding.seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 binding.distanceText.text = getString(R.string.filter_radius_distance_text, progress)
+                val minRadius = 100
+                if(progress < minRadius){
+                    seekBar!!.progress = minRadius
+                }
                 if(fromUser){
                     val width = seekBar!!.width - seekBar.paddingLeft - seekBar.paddingRight
                     var thumbPos = width * (seekBar.progress / (seekBar.max.toFloat()))
@@ -135,27 +127,12 @@ class SpreadMapFragment : Fragment() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 binding.distanceText.text = getString(R.string.filter_radius_distance_text, seekBar!!.progress)
                 if(currentCenter != null) {
-                    val builder = AlertDialog.Builder(context)
+                    val builder = AlertDialog.Builder(context, R.style.AlterDialogTheme)
                     builder.setCancelable(true)
                     builder.setTitle("Spreadmap")
                     builder.setMessage("Apply the new radius for the current center?")
                     builder.setPositiveButton("Confirm") { _, _ ->
-                        googleMap.clear()
-                        googleMap.addCircle(
-                            CircleOptions().center(currentCenter)
-                                .radius(binding.seekbar.progress.toDouble())
-                                .strokeColor(
-                                    Color.BLACK
-                                )
-                                .strokeWidth(3F)
-                        )
-                        getGeoJSONMapFromServer(currentCenter!!, binding.seekbar.progress)
-                        googleMap.moveCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                currentCenter,
-                                getZoomLevelForCircle(binding.seekbar.progress)
-                            )
-                        )
+                        drawAroundCenter(googleMap)
                     }
                     builder.setNegativeButton(android.R.string.cancel) { _, _ ->
                     }
@@ -165,6 +142,26 @@ class SpreadMapFragment : Fragment() {
             }
 
         })
+    }
+
+    private fun drawAroundCenter(googleMap: GoogleMap) {
+        googleMap.clear()
+        googleMap.addCircle(
+            CircleOptions()
+                .center(currentCenter)
+                .radius(binding.seekbar.progress.toDouble())
+                .strokeColor(
+                    Color.BLACK
+                )
+                .strokeWidth(3F)
+        )
+        getGeoJSONMapFromServer(currentCenter!!, binding.seekbar.progress)
+        googleMap.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                currentCenter,
+                getZoomLevelForCircle(binding.seekbar.progress)
+            )
+        )
     }
 
     override fun onCreateView(
