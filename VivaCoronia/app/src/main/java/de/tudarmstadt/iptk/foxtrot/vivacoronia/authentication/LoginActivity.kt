@@ -19,19 +19,18 @@ class LoginActivity : AppCompatActivity() {
 
 
     private fun setLoginLogic(ctx: Context){
-        val loginBtn = findViewById<Button>(R.id.authButton)
+        val loginUser = findViewById<Button>(R.id.authButton)
         val passwordTextView = findViewById<TextView>(R.id.login_pw)
         val passwordReTextView = findViewById<TextView>(R.id.login_pwRe)
 
-        loginBtn.setOnClickListener{
+        loginUser.setOnClickListener{
             val canContinue = TextViewUtils.checkMatchingPasswords(passwordTextView, passwordReTextView)
             if(canContinue){
                 val pw = passwordTextView.text.toString()
                 val userID = ctx.getSharedPreferences(Constants().CLIENT, Context.MODE_PRIVATE).getString(Constants().USER_ID, null) as String
-                AuthenticationCommunicator.makeNewJWT(ctx, userID, pw)
+                AuthenticationCommunicator.makeNewJWT(ctx, pw, userID)
                 finish()
             }
         }
-
     }
 }

@@ -76,11 +76,14 @@ class AuthenticationCommunicator {
 
         // this method creates a new JWT
         // and saves it in the preferences
-        fun makeNewJWT(ctx: Context, userID: String, password: String?){
+        fun makeNewJWT(ctx: Context, password: String?, userID: String? = null){
             val queue = Volley.newRequestQueue(ctx)
             val baseUrl = Constants().SERVER_BASE_URL
-            val url = "$baseUrl/userJWT/$userID/"
-
+            var url = ""
+            if (userID != null)
+                url = "$baseUrl/userJWT/$userID/"
+            else
+                url = "$baseUrl/adminJWT/"
             val jsonPW = JSONObject()
             jsonPW.put("password", password)
             val responseFuture : RequestFuture<JSONObject> = RequestFuture.newFuture()
