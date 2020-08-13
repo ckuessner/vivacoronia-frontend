@@ -66,7 +66,11 @@ class LocationHistoryFragment : Fragment() {
         if (PermissionHandler.checkLocationPermissions(requireActivity())) {
             val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
             @SuppressLint("MissingPermission") // Check is in PermissionHandler
-            val currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            var currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            @SuppressLint("MissingPermission")
+            if(currentLocation == null){
+                currentLocation = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER)
+            }
             if (currentLocation != null)
                 startLocation = LatLng(currentLocation.latitude, currentLocation.longitude)
         }

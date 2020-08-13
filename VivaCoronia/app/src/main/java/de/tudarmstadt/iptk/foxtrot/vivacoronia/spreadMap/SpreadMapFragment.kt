@@ -85,7 +85,11 @@ class SpreadMapFragment : Fragment() {
         if (PermissionHandler.checkLocationPermissions(requireActivity())) {
             val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
             @SuppressLint("MissingPermission") // Check is in PermissionHandler
-            val currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            var currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            @SuppressLint("MissingPermission")
+            if(currentLocation == null){
+                currentLocation = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER)
+            }
             if (currentLocation != null)
                 currentCenter = LatLng(currentLocation.latitude, currentLocation.longitude)
         }
@@ -200,6 +204,10 @@ class SpreadMapFragment : Fragment() {
         }
     }
 
+    /**
+     * after locations for spreadmap are retrieved from server, all contacts for all IDs
+     * in the locations get requested from server
+     */
     private fun getContactsForIDs(){
         GlobalScope.launch {
             val ids = viewModel.spreadMapData.value!!.keys.toList()
