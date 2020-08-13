@@ -56,6 +56,21 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback, SeekBar.
 
         val confirmButton = findViewById<Button>(R.id.confirm_button)
         confirmButton.setOnClickListener { finishAndReturnSelection() }
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            finish()
+        } else {
+            supportFragmentManager.popBackStack()
+        }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     private fun finishAndReturnSelection() {

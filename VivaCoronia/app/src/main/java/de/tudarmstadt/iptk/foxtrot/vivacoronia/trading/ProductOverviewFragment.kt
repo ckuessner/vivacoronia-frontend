@@ -24,7 +24,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutionException
 
-private const val TAG = "OfferOverviewFragment"
+private const val TAG = "ProductOverviewFragment"
 
 class ProductOverviewFragment : Fragment() {
     private lateinit var binding: FragmentOfferOverviewBinding

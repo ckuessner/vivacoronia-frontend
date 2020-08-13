@@ -18,6 +18,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 private const val ARG_OFFER = "offer"
+private const val ARG_SHOW_OFFER = "showOffer"
 
 class SubmitProductActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +26,7 @@ class SubmitProductActivity : AppCompatActivity() {
         setContentView(R.layout.activity_submit_offer)
 
         val passedOffer: Offer? = intent.getParcelableExtra(ARG_OFFER)
-        val showOffer = intent.getBooleanExtra("offer", true)
+        val showOffer = intent.getBooleanExtra(ARG_SHOW_OFFER, true)
 
         val submitButton = findViewById<Button>(R.id.submit_offer)
         if (!showOffer) {
@@ -39,7 +40,7 @@ class SubmitProductActivity : AppCompatActivity() {
 
         val offer = passedOffer ?: Offer()
 
-        var fragment: ProductDetailFragment<ProductViewModel>
+        val fragment: ProductDetailFragment<ProductViewModel>
         fragment = if (showOffer) OfferDetailFragment.newInstance(
             offer
         ) as ProductDetailFragment<ProductViewModel>
@@ -49,7 +50,7 @@ class SubmitProductActivity : AppCompatActivity() {
             submitButton.isEnabled = false
             GlobalScope.launch {
                 try {
-                    var result: BaseProduct? = null
+                    val result: BaseProduct?
                     if (showOffer) {
                         result = TradingApiClient.putOffer(fragment.getProduct() as Offer, this@SubmitProductActivity)
                     }
@@ -96,7 +97,7 @@ class SubmitProductActivity : AppCompatActivity() {
             val intent = Intent(context, SubmitProductActivity::class.java)
             if (offer != null)
                 intent.putExtra(ARG_OFFER, offer)
-                intent.putExtra("offer", showOffer)
+                intent.putExtra(ARG_SHOW_OFFER, showOffer)
             startActivity(context, intent, null)
         }
     }

@@ -28,16 +28,6 @@ open class ProductListViewModel : ViewModel() {
             NeedViewModel(list[index])
         }
     }
-
-    fun addOffer(list: List<Offer>) {
-        val value = this.offers.value ?: mutableListOf()
-        value.addAll(List(list.size) { index ->
-            OfferViewModel(
-                list[index]
-            )
-        })
-        offers.value = value
-    }
 }
 
 open class ProductViewModel(var baseProduct: BaseProduct) : ViewModel(){
