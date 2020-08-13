@@ -81,8 +81,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.spreadMapFragment,
                 R.id.statusCheckFragment
             ),
-            findViewById<DrawerLayout>(R.id.drawer_layout)
-        )
+            findViewById<DrawerLayout>(R.id.drawer_layout))
 
         // setup default toolbar with navcontroller
         // changes need to made here if a custom toolbar shall be used
