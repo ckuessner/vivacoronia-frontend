@@ -28,13 +28,17 @@ object GoogleMapFunctions  {
         return circleOptions
     }
 
-    fun generateColors(amount: Int): List<List<Int>>{
-        val colors = ArrayList<ArrayList<Int>>()
+    /**
+     * @param amount: amount of color pairs to be generated
+     * @return generates an given amount of color pairs, used as start and end colors in a color fade
+     */
+    fun generateColors(amount: Int): List<Pair<Int, Int>>{
+        val colors = ArrayList<Pair<Int, Int>>()
         for(i in 0 until amount){
             val rnd = Random()
             val color1 = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
             val color2 = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
-            colors.add(arrayListOf(color1, color2))
+            colors.add(Pair(color1, color2))
         }
         return colors
     }

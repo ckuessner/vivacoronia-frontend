@@ -16,15 +16,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.core.graphics.ColorUtils
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.android.volley.VolleyError
 import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.*
 
-import com.google.android.gms.maps.model.CircleOptions
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.ContactApiClient
@@ -49,7 +47,7 @@ class SpreadMapFragment : Fragment() {
     private val distanceThreshold: Float = 0.1F
     //Polyline speed threshold in kilometers per hour
     private val speedThreshold: Float = 1F
-
+    //current center for circle drawing
     private var currentCenter: LatLng? = null
 
     private val callback = OnMapReadyCallback { googleMap ->
@@ -64,8 +62,14 @@ class SpreadMapFragment : Fragment() {
          */
         googleMap.uiSettings.isMapToolbarEnabled = false
         binding.progressHorizontal.visibility = View.GONE
-        //TODO: set initial call location if deemed useful
-        //getGeoJSONMapFromServer(LatLng(49.87167, 8.65027), 2000)
+        //change in location data for spreadmap calls request for contact data
+        viewModel.spreadMapData.observe(
+            this,
+            androidx.lifecycle.Observer {
+                getContactsForIDs()
+            })
+
+        //change in contact data for spreadmap calls drawing of location data
         viewModel.contactData.observe(
             this,
             androidx.lifecycle.Observer {
@@ -76,11 +80,7 @@ class SpreadMapFragment : Fragment() {
                 )
             }
         )
-        viewModel.spreadMapData.observe(
-            this,
-            androidx.lifecycle.Observer {
-                getContactsForIDs()
-            })
+
         currentCenter = LatLng(0.0, 0.0)
         if (PermissionHandler.checkLocationPermissions(requireActivity())) {
             val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -95,15 +95,17 @@ class SpreadMapFragment : Fragment() {
         }
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentCenter, 15F))
-        drawAroundCenter(googleMap)
+        drawCircle(googleMap)
         googleMap.setOnMapLongClickListener { latLng ->
             currentCenter = latLng
-            drawAroundCenter(googleMap)
+            drawCircle(googleMap)
         }
+
         binding.distanceText.text = getString(R.string.filter_radius_distance_text, binding.seekbar.progress)
         val displayMetrics = DisplayMetrics()
         requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
         val screenWidth = displayMetrics.widthPixels
+
         binding.seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 binding.distanceText.text = getString(R.string.filter_radius_distance_text, progress)
@@ -112,6 +114,7 @@ class SpreadMapFragment : Fragment() {
                     seekBar!!.progress = minRadius
                 }
                 if(fromUser){
+                    //logic to calculate text position to follow seekbar slider
                     val width = seekBar!!.width - seekBar.paddingLeft - seekBar.paddingRight
                     var thumbPos = width * (seekBar.progress / (seekBar.max.toFloat()))
                     if((thumbPos + binding.distanceText.width + 20) > screenWidth && thumbPos > binding.distanceText.x){
@@ -125,7 +128,7 @@ class SpreadMapFragment : Fragment() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                Log.d("user", "user started dragging")
+                //Log.d("user", "user started dragging")
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
@@ -136,7 +139,7 @@ class SpreadMapFragment : Fragment() {
                     builder.setTitle("Spreadmap")
                     builder.setMessage("Apply the new radius for the current center?")
                     builder.setPositiveButton("Confirm") { _, _ ->
-                        drawAroundCenter(googleMap)
+                        drawCircle(googleMap)
                     }
                     builder.setNegativeButton(android.R.string.cancel) { _, _ ->
                     }
@@ -146,26 +149,6 @@ class SpreadMapFragment : Fragment() {
             }
 
         })
-    }
-
-    private fun drawAroundCenter(googleMap: GoogleMap) {
-        googleMap.clear()
-        googleMap.addCircle(
-            CircleOptions()
-                .center(currentCenter)
-                .radius(binding.seekbar.progress.toDouble())
-                .strokeColor(
-                    Color.BLACK
-                )
-                .strokeWidth(3F)
-        )
-        getGeoJSONMapFromServer(currentCenter!!, binding.seekbar.progress)
-        googleMap.moveCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                currentCenter,
-                getZoomLevelForCircle(binding.seekbar.progress)
-            )
-        )
     }
 
     override fun onCreateView(
@@ -243,71 +226,62 @@ class SpreadMapFragment : Fragment() {
             binding.progressHorizontal.visibility = View.GONE
         }
         else{
-            val processedMap = getPreprocessedCoordinateMap(coordinatesMap)
-            var elementCount = 0
-            for((_,list) in coordinatesMap) {
-                elementCount += list.size
-            }
-            val idColors = generateColors(processedMap.size)
-            var currentIdColor = 0
-            for((key, processedList) in processedMap){
-                var filterForContact: Boolean? = null
-                var filterTimestamp: Long? = null
-                var contactForKeyExists = false
-                if(contacts != null && contacts.containsKey(key)){
-                    contactForKeyExists = true
-                    filterForContact = contacts[key]!!.first
-                    filterTimestamp = contacts[key]!!.second.toInstant().toEpochMilli()
-                }
-                val colors = getColorArray(processedList.flatten().size, idColors[currentIdColor][0], idColors[currentIdColor][1])
-                currentIdColor++
-                var currentColorIndex = 0
+            val processedLocationMap = getPreprocessedCoordinateMap(coordinatesMap)
+            val totalLocationCount = coordinatesMap.flatMap { it.value }.count()
+            val colorPairsForIDs = generateColors(processedLocationMap.size)
+            var currentColorPairForID = 0
+            for((key, processedList) in processedLocationMap){
+                //check if current ID has had a contact and when it was the infected, get timestamp of infection to filter with
+                val recolorAfterTimestamp: Boolean = if(contacts != null && contacts.containsKey(key)) contacts[key]!!.first else false
+                val timestampForRecoloring: Long? = if(contacts != null && contacts.containsKey(key)) contacts[key]!!.second.toInstant().toEpochMilli() else null
+                val hasIDHadContact = contacts != null && contacts.containsKey(key)
+                val colorFadeForID = getColorArray(processedList.flatten().size, colorPairsForIDs[currentColorPairForID].first, colorPairsForIDs[currentColorPairForID].second)  //create color fade for this IDs locations
+                currentColorPairForID++ //counter for current color pair for each ID
+                var currentColorInFadeIndex = 0 //counter for current color in color fade for this ID
                 for (processedSubList in processedList) {
-                    if (processedSubList.size == 1) {
-                        var currentColor = colors[currentColorIndex]
-                        if(contactForKeyExists && filterTimestamp != null){
+                    if (processedSubList.size == 1) { //create circle for single, unconnected location
+                        var currentColor = colorFadeForID[currentColorInFadeIndex]
+                        if(hasIDHadContact && timestampForRecoloring != null){
                             val locationTime = processedSubList[0].time
-                            if(filterForContact!! && filterTimestamp < locationTime){
-                                currentColor = Color.RED
-                            }
-                            if(!filterForContact){
+                            if(!recolorAfterTimestamp || timestampForRecoloring < locationTime){  //change color to red if location was recorded after a contact
                                 currentColor = Color.RED
                             }
                         }
-                        currentColorIndex++
-                        val circleOptions = createCircleOptions(
+                        currentColorInFadeIndex++
+                        val circleForSingleLocation = createCircleOptions(
                             processedSubList[0].getLatLong(),
                             currentColor
                         )
-                        mMap.addCircle(circleOptions)
-                    } else {
+                        mMap.addCircle(circleForSingleLocation)
+                    } else { //create polyline for multiple, connected locations
                         for (currentCoordinateIndex in 0..processedSubList.size - 2) {
-                            val left = processedSubList[currentCoordinateIndex].getLatLong()
-                            val right = processedSubList[currentCoordinateIndex + 1].getLatLong()
-                            var currentColor = colors[currentColorIndex]
-                            if(contactForKeyExists && filterTimestamp != null){
+                            val polylineStart = processedSubList[currentCoordinateIndex].getLatLong()
+                            val polylineEnd = processedSubList[currentCoordinateIndex + 1].getLatLong()
+                            var currentColor = colorFadeForID[currentColorInFadeIndex]
+                            if(hasIDHadContact && timestampForRecoloring != null){
                                 val locationTime = processedSubList[currentCoordinateIndex + 1].time
-                                if(filterForContact!! && filterTimestamp < locationTime){
-                                    currentColor = Color.RED
-                                }
-                                if(!filterForContact){
+                                if(!recolorAfterTimestamp || timestampForRecoloring < locationTime){  //change color to red if location was recorded after a  contact
                                     currentColor = Color.RED
                                 }
                             }
                             mMap.addPolyline(
-                                PolylineOptions().add(left, right).color(currentColor)
+                                PolylineOptions().add(polylineStart, polylineEnd).color(currentColor)
                             )
-                            currentColorIndex++
+                            currentColorInFadeIndex++
                         }
                     }
                 }
                 val startMarkerLocation = processedList.first().first().getLatLong()
                 val endMarkerLocation = processedList.last().last().getLatLong()
+                val startColor = FloatArray(3)
+                ColorUtils.colorToHSL(colorFadeForID[0], startColor)
+                val endColor = FloatArray(3)
+                ColorUtils.colorToHSL(colorFadeForID[colorFadeForID.lastIndex], endColor)
                 mMap.addMarker(
-                    MarkerOptions().position(startMarkerLocation).title("Start for ID: $key")
+                    MarkerOptions().position(startMarkerLocation).title("Start for ID: $key").icon(BitmapDescriptorFactory.defaultMarker(startColor[0]))
                 )
                 mMap.addMarker(
-                    MarkerOptions().position(endMarkerLocation).title("End for ID: $key")
+                    MarkerOptions().position(endMarkerLocation).title("End for ID: $key").icon(BitmapDescriptorFactory.defaultMarker(endColor[0]))
                 )
             }
             binding.progressHorizontal.visibility = View.GONE
@@ -325,5 +299,29 @@ class SpreadMapFragment : Fragment() {
             returnMap[id] = preprocessedCoordinatesForDrawing(coordinates, speedThreshold, distanceThreshold)
         }
         return returnMap
+    }
+
+    /**
+     * @param googleMap: map to be drawn on
+     * draws circle with current seekbar progress as radius and current center onto the map
+     */
+    private fun drawCircle(googleMap: GoogleMap) {
+        googleMap.clear()
+        googleMap.addCircle(
+            CircleOptions()
+                .center(currentCenter)
+                .radius(binding.seekbar.progress.toDouble())
+                .strokeColor(
+                    Color.BLACK
+                )
+                .strokeWidth(3F)
+        )
+        getGeoJSONMapFromServer(currentCenter!!, binding.seekbar.progress)
+        googleMap.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                currentCenter,
+                getZoomLevelForCircle(binding.seekbar.progress)
+            )
+        )
     }
 }
