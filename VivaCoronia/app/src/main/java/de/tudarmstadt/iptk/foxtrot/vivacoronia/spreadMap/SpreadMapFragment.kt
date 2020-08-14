@@ -208,7 +208,7 @@ class SpreadMapFragment : Fragment() {
         if (requireActivity().hasWindowFocus())
             Toast.makeText(
                 requireActivity(),
-                "Failed to connect to server",
+                R.string.server_connection_failed,
                 Toast.LENGTH_LONG
             ).show()
         else {
