@@ -31,16 +31,43 @@ object GoogleMapFunctions  {
     /**
      * @param amount: amount of color pairs to be generated
      * @return generates an given amount of color pairs, used as start and end colors in a color fade
+     * checks if generated colors a close to red by calculating the euclidean distance in the LAB color space
      */
     fun generateColors(amount: Int): List<Pair<Int, Int>>{
         val colors = ArrayList<Pair<Int, Int>>()
+        val redAsLab = DoubleArray(3)
+        val colorDistanceThreshold = 80
+        ColorUtils.colorToLAB(Color.RED, redAsLab)
         for(i in 0 until amount){
             val rnd = Random()
-            val color1 = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
-            val color2 = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+            val color1 = generateSingleColor(rnd, redAsLab, colorDistanceThreshold)
+            val color2 = generateSingleColor(rnd, redAsLab, colorDistanceThreshold)
             colors.add(Pair(color1, color2))
         }
         return colors
+    }
+
+    /**
+     * @param rnd: random to generate random int
+     * @param redAsLab: color red in LAB color space for comparison
+     * @param colorDistanceThreshold: distance threshold for color distance
+     * @return generates color which has at least the given threshold as distance from red
+     */
+    private fun generateSingleColor(
+        rnd: Random,
+        redAsLab: DoubleArray,
+        colorDistanceThreshold: Int
+    ): Int {
+        var color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+        val colorAsLab = DoubleArray(3)
+        ColorUtils.colorToLAB(color, colorAsLab)
+        var euclideanDistance = ColorUtils.distanceEuclidean(colorAsLab, redAsLab)
+        while (euclideanDistance < colorDistanceThreshold) {
+            color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+            ColorUtils.colorToLAB(color, colorAsLab)
+            euclideanDistance = ColorUtils.distanceEuclidean(colorAsLab, redAsLab)
+        }
+        return color
     }
 
     /**
