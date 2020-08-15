@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="de.tudarmstadt.iptk.foxtrot.vivacoronia" >
+    package="de.tudarmstadt.iptk.foxtrot.vivacoronia">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -18,17 +18,22 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
-        <activity android:name=".mainActivity.StartActivity" >
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".authentication.AdminLogin"
+            android:launchMode="singleInstance">
+        </activity>
+        <activity android:name=".mainActivity.StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".trading.offers.SubmitOfferActivity"
             android:label="@string/add_offer"
-            android:parentActivityName=".mainActivity.MainActivity" >
+            android:parentActivityName=".mainActivity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".mainActivity.MainActivity" />
@@ -56,7 +61,7 @@
 
         <activity
             android:name=".authentication.LoginActivity"
-            android:launchMode="singleInstance" >
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="loginApplication.intent.action.Launch" />
             </intent-filter>
@@ -76,14 +81,13 @@
             android:enabled="true"
             android:exported="false" />
 
-        <receiver android:name=".bootActions.AlarmBroadcastReceiver" >
+        <receiver android:name=".bootActions.AlarmBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver> <!-- activities here and first has to be main activity -->
-        <activity android:name=".mainActivity.MainActivity" >
-        </activity>
-        <activity android:name=".RegisterActivity" >
+        <activity android:name=".mainActivity.MainActivity"></activity>
+        <activity android:name=".RegisterActivity">
             <intent-filter>
                 <action android:name="registerApplication.intent.action.Launch" />
 
@@ -93,7 +97,7 @@
         <activity
             android:name=".infectionStatus.ScanQrCodeActivity"
             android:label="Scan QR-Code"
-            android:parentActivityName=".mainActivity.MainActivity" >
+            android:parentActivityName=".mainActivity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".mainActivity.MainActivity" />
@@ -101,7 +105,7 @@
         <activity
             android:name=".infectionStatus.UpdateInfectionActivity"
             android:label="@string/update_infection_label"
-            android:parentActivityName=".infectionStatus.ScanQrCodeActivity" >
+            android:parentActivityName=".infectionStatus.ScanQrCodeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".infectionStatus.ScanQrCodeActivity" />

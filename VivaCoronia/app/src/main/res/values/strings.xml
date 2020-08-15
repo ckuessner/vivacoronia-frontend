@@ -89,4 +89,9 @@
     <string name="login_pw">"Enter your password"</string>
     <string name="login_pwRe">"Reenter your password"</string>
     <string name="authBtn">"Login"</string>
+    <!-- Admin Login -->
+    <string name="admin_info">"Login with admin password"</string>
+    <string name="admin_pw">"Enter admin password"</string>
+    <string name="admin_pwRe">"Retype admin password"</string>
+    <string name="admin_button">"Login as admin"</string>
 </resources>

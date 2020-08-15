@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
+import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import org.json.JSONObject
@@ -74,14 +75,11 @@ object AuthenticationCommunicator : ApiBaseClient(){
 
         // this method creates a new JWT
         // and saves it in the preferences
-        fun makeNewJWT(ctx: Context, password: String?, userID: String? = null){
+        fun makeNewJWT(ctx: Context, password: String?, userID: String){
             val queue = getRequestQueue(ctx)?: return
             val baseUrl = Constants.SERVER_BASE_URL
             var url = ""
-            if (userID != null)
-                url = "$baseUrl/user/$userID/login"
-            else
-                url = "$baseUrl/admin/login"
+            url = "$baseUrl/user/$userID/login"
             val jsonPW = JSONObject()
             jsonPW.put("password", password)
             val responseFuture : RequestFuture<JSONObject> = RequestFuture.newFuture()
