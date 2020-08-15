@@ -4,11 +4,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.widget.Button
 import android.widget.TextView
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.AuthenticationCommunicator
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.MainActivity
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
