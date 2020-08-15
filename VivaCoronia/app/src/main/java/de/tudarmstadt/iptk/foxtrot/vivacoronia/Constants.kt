@@ -32,9 +32,6 @@ object Constants {
     val SERVER_WEBSOCKET_URL = BuildConfig.WEBSOCKET_SERVER
     val SERVER_BASE_URL = BuildConfig.API_SERVER
 
-    // local ip if you use an emulator, localhost if you use an external android device with port forwarding
-    // otherwise this constant will contain the base url to the server api
-    val SERVER_BASE_URL_LOCAL = "http://192.168.2.105:3000"
 
     val DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS"
 }

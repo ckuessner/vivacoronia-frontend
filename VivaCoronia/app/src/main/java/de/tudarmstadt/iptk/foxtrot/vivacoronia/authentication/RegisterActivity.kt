@@ -2,6 +2,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -9,16 +10,20 @@ import android.widget.TextView
 import android.widget.Toast
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.AuthenticationCommunicator
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.TextViewUtils
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.MainActivity
 
 class RegisterActivity : AppCompatActivity() {
     companion object {
-        fun notifyUserOfProcess(ctx : Context){
+        fun finishRegister(ctx : Context){
             val duration = Toast.LENGTH_SHORT
             Toast.makeText(ctx, "You successfully registered to save the world from corona!", duration).show()
-            val settings = ctx.getSharedPreferences(Constants().CLIENT, Context.MODE_PRIVATE)
+            val settings = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
             settings.edit().putBoolean("registered", true).apply()
             val ctxActivity = ctx as Activity
             ctxActivity.finish()
+            val intent = Intent(ctx, MainActivity::class.java)
+            ctx.startActivity(intent)
+
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {

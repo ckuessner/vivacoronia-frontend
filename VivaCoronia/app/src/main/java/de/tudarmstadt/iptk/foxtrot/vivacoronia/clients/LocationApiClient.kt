@@ -9,7 +9,6 @@ import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.RequestFuture
-import com.android.volley.toolbox.StringRequest
 import com.beust.klaxon.JsonArray
 import com.beust.klaxon.Parser
 import com.google.android.gms.maps.model.LatLng
@@ -200,7 +199,7 @@ object LocationApiClient : ApiBaseClient() {
                 .appendQueryParameter("start", startTime.toString())
                 .appendQueryParameter("end", endTime.toString())
                 .build().toString()
-        val request = JSONArrayJWTRequest(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) }, context)
+        val request = JsonArrayJWT(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) }, context)
         requestQueue.add(request)
         return parseGeoJSONForOneID(responseFuture.get().toString())
     }
@@ -213,7 +212,8 @@ object LocationApiClient : ApiBaseClient() {
             .appendQueryParameter("longitude", location.longitude.toString())
             .appendQueryParameter("distance", distance.toString())
             .build().toString()
-        val request = JSONArrayJWTRequest(getEndpoint(), responseFuture, Response.ErrorListener { onErrorCallback(it) }, context)
+
+        val request = JsonArrayJWT(getEndpoint(), responseFuture, Response.ErrorListener { onErrorCallback(it) }, context)
         requestQueue.add(request)
         return parseGeoJSONForMultipleID(responseFuture.get().toString())
     }

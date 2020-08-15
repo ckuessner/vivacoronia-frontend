@@ -8,12 +8,10 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.android.volley.NetworkResponse
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.VolleyError
-import com.android.volley.toolbox.HurlStack
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.BuildConfig
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
@@ -29,7 +27,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.LoginActivity
 import com.android.volley.Response.Listener;
-import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.*
 
 
 abstract class ApiBaseClient {
@@ -88,8 +86,15 @@ abstract class ApiBaseClient {
             return Volley.newRequestQueue(context)
         }
     }
+    companion object {
+        fun getJWTHeaderS(jwt: String): MutableMap<String, String> {
+            val params = HashMap<String, String>()
+            params["jwt"] = jwt
+            return params
+        }
+    }
     /*
-    This method sends a volley request with JWTs. Supports jsonObjects and jsonArrays
+    This method sends a volley request with JWTs.
      */
     protected class StringRequestJWT : StringRequest{
         private var jsonObj : JSONObject? = null
@@ -107,9 +112,7 @@ abstract class ApiBaseClient {
         inner class JWTRequestException : java.lang.Exception("You didn't input a jsonObject or a jsonArray")
 
         override fun getHeaders(): MutableMap<String, String> {
-            val params = HashMap<String,String>()
-            params["jwt"] = jwt as String
-            return params
+            return getJWTHeaderS(jwt)
         }
         override fun getBodyContentType(): String = "application/json; charset=utf-8"
         override fun getBody(): ByteArray {
@@ -121,14 +124,40 @@ abstract class ApiBaseClient {
         }
     }
 
-    protected class JSONArrayJWTRequest(url: String, list : Response.Listener<JSONArray>, error: Response.ErrorListener? = null, val ctx: Context) : JsonArrayRequest(url, list, ErrorJWTCheck(ctx, error)) {
+
+    protected class JsonObjectJWT : JsonObjectRequest {
+        private val jwt : String
+        private val ctx: Context
+        constructor(method: Int, url : String, body : JSONObject? = null, list : Listener<JSONObject>, error: Response.ErrorListener? = null,  ctx : Context) : super(method, url, body, list, ErrorJWTCheck(ctx, error)){
+            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString("jwt", null) as String
+            this.ctx = ctx
+        }
+        constructor(url: String, body: JSONObject? = null, list : Listener<JSONObject>, error: Response.ErrorListener? = null, ctx: Context) : super(url, body, list, ErrorJWTCheck(ctx, error)){
+            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString("jwt", null) as String
+            this.ctx = ctx
+        }
         override fun getHeaders(): MutableMap<String, String> {
-            val jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString("jwt", null) as String
-            val params = HashMap<String,String>()
-            params["jwt"] = jwt as String
-            return params
+            return getJWTHeaderS(jwt)
         }
     }
+
+
+    protected class JsonArrayJWT : JsonArrayRequest {
+        private val ctx : Context
+        private val jwt : String
+        constructor(url : String, list: Listener<JSONArray>, error: Response.ErrorListener? = null, ctx: Context) : super(url, list, ErrorJWTCheck(ctx, error)){
+            this.ctx = ctx
+            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString("jwt", null) as String
+        }
+        constructor(method: Int, url: String, body: JSONArray? = null, list: Listener<JSONArray>, error: Response.ErrorListener? = null, ctx : Context) : super(method, url, body, list, ErrorJWTCheck(ctx, error)){
+            this.ctx = ctx
+            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString("jwt", null) as String
+        }
+        override fun getHeaders(): MutableMap<String, String> {
+            return getJWTHeaderS(jwt)
+        }
+    }
+
 
     /*
     this class catches 401 authentication error and tries to create a new jwt for access by logging in

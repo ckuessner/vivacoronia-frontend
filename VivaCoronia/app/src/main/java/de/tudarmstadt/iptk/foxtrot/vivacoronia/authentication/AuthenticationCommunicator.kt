@@ -6,22 +6,20 @@ import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import org.json.JSONObject
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.RequestFuture
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.RegisterActivity
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.ApiBaseClient
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
 
-class AuthenticationCommunicator {
+object AuthenticationCommunicator : ApiBaseClient(){
 
-    inner class MatchingArraySizeException : Exception("The sizes of the arrays aren't the same")
-    inner class UnsupportedTypeException : java.lang.Exception("You tried to save a datatype that isn't supported yet")
-
-    companion object {
+    class MatchingArraySizeException : Exception("The sizes of the arrays aren't the same")
+    class UnsupportedTypeException : java.lang.Exception("You tried to save a datatype that isn't supported yet")
 
         private var TAG = "AuthenticationClient"
 
@@ -30,12 +28,12 @@ class AuthenticationCommunicator {
         private fun makeFirstJWT(ctx: Context, pw: String){
             var timeNow = Date().time
 
-            var settings = ctx.getSharedPreferences(Constants().CLIENT, Context.MODE_PRIVATE)
+            var settings = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
             val userID = settings.getString("userID", null)
 
-            val queue = Volley.newRequestQueue(ctx)
-            val baseUrl = Constants().SERVER_BASE_URL
-            val url = "$baseUrl/userJWT/$userID/"
+            val queue = getRequestQueue(ctx)?: return
+            val baseUrl = Constants.SERVER_BASE_URL
+            val url = "$baseUrl/user/$userID/login"
 
             val jsonPW = JSONObject()
             jsonPW.put("password", pw)
@@ -56,7 +54,7 @@ class AuthenticationCommunicator {
 
                     // save jwt in client settings of user
                     saveInPreferencesAny(ctx, savedIdentifiers, savedContent)
-                    RegisterActivity.notifyUserOfProcess(ctx)
+                    RegisterActivity.finishRegister(ctx)
                 },
                 Response.ErrorListener { error ->
                     Log.i(TAG, error.toString())
@@ -77,13 +75,13 @@ class AuthenticationCommunicator {
         // this method creates a new JWT
         // and saves it in the preferences
         fun makeNewJWT(ctx: Context, password: String?, userID: String? = null){
-            val queue = Volley.newRequestQueue(ctx)
-            val baseUrl = Constants().SERVER_BASE_URL
+            val queue = getRequestQueue(ctx)?: return
+            val baseUrl = Constants.SERVER_BASE_URL
             var url = ""
             if (userID != null)
-                url = "$baseUrl/userJWT/$userID/"
+                url = "$baseUrl/user/$userID/login"
             else
-                url = "$baseUrl/adminJWT/"
+                url = "$baseUrl/admin/login"
             val jsonPW = JSONObject()
             jsonPW.put("password", password)
             val responseFuture : RequestFuture<JSONObject> = RequestFuture.newFuture()
@@ -112,9 +110,9 @@ class AuthenticationCommunicator {
             savedIdentifiers: Array<String>,
             savedContent: Array<Any>
         ) {
-            var settings = ctx.getSharedPreferences(Constants().CLIENT, Context.MODE_PRIVATE)
+            var settings = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
             if (savedIdentifiers.size != savedContent.size) {
-                throw AuthenticationCommunicator().MatchingArraySizeException()
+                throw MatchingArraySizeException()
             }
             // inspiration: https://github.com/android/android-ktx/issues/435
             for (i in savedContent.indices) {
@@ -128,15 +126,15 @@ class AuthenticationCommunicator {
                 else if (savedContent[i] is Long)
                     settings.edit().putLong(savedIdentifiers[i], savedContent[i] as Long).apply()
                 else
-                    throw AuthenticationCommunicator().UnsupportedTypeException()
+                    throw UnsupportedTypeException()
             }
         }
 
         //this will create a userID and save it in shared preferences
         fun createAndSaveUser(context: Context, pw: String): Boolean {
             var succReg = true
-            val queue = Volley.newRequestQueue(context)
-            val baseUrl = Constants().SERVER_BASE_URL
+            val queue = getRequestQueue(context)?: return false
+            val baseUrl = Constants.SERVER_BASE_URL
             // post URL, this URL creates new user id
             val url = "$baseUrl/user/"
 
@@ -180,8 +178,7 @@ class AuthenticationCommunicator {
         in shared preferences
          */
         private fun saveInPreferences(context: Context, response: String) {
-            val settings = context.getSharedPreferences(Constants().CLIENT, Context.MODE_PRIVATE)
+            val settings = context.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
             settings.edit().putString("userID", response).apply()
         }
-    }
 }

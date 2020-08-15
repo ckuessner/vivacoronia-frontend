@@ -27,7 +27,7 @@ class LoginActivity : AppCompatActivity() {
             val canContinue = TextViewUtils.checkMatchingPasswords(passwordTextView, passwordReTextView)
             if(canContinue){
                 val pw = passwordTextView.text.toString()
-                val userID = ctx.getSharedPreferences(Constants().CLIENT, Context.MODE_PRIVATE).getString(Constants().USER_ID, null) as String
+                val userID = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.USER_ID, null) as String
                 AuthenticationCommunicator.makeNewJWT(ctx, pw, userID)
                 finish()
             }

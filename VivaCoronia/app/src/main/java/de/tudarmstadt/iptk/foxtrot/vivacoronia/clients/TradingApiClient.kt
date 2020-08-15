@@ -32,7 +32,7 @@ object TradingApiClient : ApiBaseClient() {
         val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
         val url = joinPaths(getEndpoint(), "categories")
         val future = RequestFuture.newFuture<JSONArray>()
-        val request = JsonArrayRequest(Request.Method.GET, url, null, future, future)
+        val request = JsonArrayJWT(Request.Method.GET, url, null, future, future, context)
         queue.add(request)
 
         val result = Klaxon().parseArray<String>(future.get().toString())
@@ -46,12 +46,12 @@ object TradingApiClient : ApiBaseClient() {
         val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
         val url = Uri.parse(getOffersEndpoint())
             .buildUpon()
-            .appendQueryParameter("userId", getUserId().toString())
+            .appendQueryParameter("userId", getUserId(context).toString())
             .build()
             .toString()
 
         val future = RequestFuture.newFuture<JSONArray>()
-        val request = JsonArrayRequest(Request.Method.GET, url, null, future, future)
+        val request = JsonArrayJWT(Request.Method.GET, url, null, future, future, context)
         queue.add(request)
         val futureResult = future.get().toString()
 
@@ -67,7 +67,7 @@ object TradingApiClient : ApiBaseClient() {
         body.put("sold", sold)
         body.put("deactivatedAt", deactivatedAt)
         val future = RequestFuture.newFuture<JSONObject>()
-        val request = JsonObjectRequest(Request.Method.PATCH, url, body, future, future)
+        val request = JsonObjectJWT(Request.Method.PATCH, url, body, future, future, context)
 
         queue.add(request)
         val result = future.get()
@@ -78,13 +78,13 @@ object TradingApiClient : ApiBaseClient() {
     fun putOffer(offer: Offer, context: Context): Offer? {
         val jsonString = offerConverter.toJsonString(offer)
         val jsonObject = JSONObject(jsonString)
-        jsonObject.put("userId", getUserId()) // TODO should be done/verified @ server
+        jsonObject.put("userId", getUserId(context)) // TODO should be done/verified @ server
         val url = joinPaths(getOffersEndpoint(), offer.id)
         val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
         val future = RequestFuture.newFuture<JSONObject>()
 
         val method = if (offer.id.isEmpty()) Request.Method.POST else Request.Method.PATCH // if id is not set, this is a new offer and should be posted
-        val request = JsonObjectRequest(method, url, jsonObject, future, future)
+        val request = JsonObjectJWT(method, url, jsonObject, future, future, context)
         queue.add(request)
         val result = future.get()
         return offerConverter.parse(result.toString())
