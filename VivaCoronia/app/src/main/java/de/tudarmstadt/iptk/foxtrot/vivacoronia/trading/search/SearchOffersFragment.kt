@@ -10,6 +10,7 @@ import android.widget.SearchView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.android.volley.VolleyError
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
@@ -22,7 +23,7 @@ import kotlinx.coroutines.launch
 class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener {
     private val _tag = "SearchOffersFragment"
 
-    var viewModel: SearchOffersViewModel = SearchOffersViewModel()
+    lateinit var viewModel: SearchOffersViewModel
     private lateinit var binding: FragmentSearchOffersBinding
     private lateinit var listResultFragment: SearchOffersListResultFragment
     private lateinit var mapResultFragment: SearchOffersMapResultFragment
@@ -32,6 +33,7 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search_offers, container, false)
+        viewModel = ViewModelProvider(requireActivity()).get(SearchOffersViewModel::class.java)
         binding.searchView.setOnQueryTextListener(this)
 
         val pagerAdapter = ScreenSlidePagerAdapter(this)

@@ -44,6 +44,5 @@ object Constants {
     val SERVER_ERROR = -4
     val FIREWALL_ERROR = -5
 
-
     val DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS"
 }

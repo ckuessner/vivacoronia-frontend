@@ -45,7 +45,10 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
                 markers[location] = marker
             }
         })
-        googleMap.setOnMapClickListener { selectedMarker?.setIcon(BitmapDescriptorFactory.defaultMarker()) }
+        googleMap.setOnMapClickListener {
+            selectedMarker?.setIcon(BitmapDescriptorFactory.defaultMarker())
+            selectedMarker = null
+        }
         mGoogleMap = googleMap
     }
 

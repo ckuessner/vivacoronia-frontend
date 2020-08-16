@@ -1,16 +1,12 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers
 
 import android.app.AlertDialog
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.core.view.setMargins
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -39,7 +35,7 @@ class OffersFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(OfferListViewModel::class.java)
 
         val adapter = OffersAdapter(::deleteOfferCallback, ::editOfferCallback)
-        adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
                 if (positionStart == 0)
@@ -51,7 +47,7 @@ class OffersFragment : Fragment() {
         viewModel.offers.observe(viewLifecycleOwner, Observer { it?.let { adapter.submitList(it) } })
 
         Offer.categories.observe(viewLifecycleOwner, Observer {
-            if(it.isNotEmpty())
+            if (it.isNotEmpty())
                 binding.add.isEnabled = true
         })
         binding.add.isEnabled = !Offer.categories.value.isNullOrEmpty() // Only allow adding offers if we fetched + received categories
@@ -77,8 +73,8 @@ class OffersFragment : Fragment() {
     }
 
     private fun deleteOfferCallback(id: String) {
-        val dialog = activity?.let {
-            AlertDialog.Builder(it)
+        activity?.let {
+            AlertDialog.Builder(it, R.style.AlterDialogTheme)
                 .setCancelable(true)
                 .setPositiveButton(R.string.yes) { _, _ ->
                     binding.offersListSwipeRefresh.isRefreshing = true
@@ -96,13 +92,7 @@ class OffersFragment : Fragment() {
                 .setTitle(R.string.delete_offer_title)
                 .setMessage(R.string.confirm_delete_message)
                 .show()
-        }?: return
-
-        styleDialogButtons(listOf(
-            dialog.getButton(AlertDialog.BUTTON_NEGATIVE),
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE),
-            dialog.getButton(AlertDialog.BUTTON_NEUTRAL)
-        )) // TODO löschen wenn styling auch ohne so funktioniert wie bei Timo
+        } ?: return
     }
 
     private fun performDelete(id: String, sold: Boolean) {
@@ -119,21 +109,7 @@ class OffersFragment : Fragment() {
         requireActivity().runOnUiThread { binding.offersListSwipeRefresh.isRefreshing = false }
     }
 
-    private fun styleDialogButtons(buttons: List<Button>) {
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        params.setMargins(5)
-
-        for (button in buttons) {
-            button.setTextColor(Color.BLACK)
-            button.setBackgroundColor(Color.LTGRAY)
-            button.layoutParams = params
-        }
-    }
-
-    private fun editOfferCallback(offer: Offer){
+    private fun editOfferCallback(offer: Offer) {
         SubmitOfferActivity.start(requireContext(), offer)
     }
 
@@ -151,13 +127,12 @@ class OffersFragment : Fragment() {
             if (requireActivity().hasWindowFocus())
                 requireActivity().runOnUiThread {
                     activity?.let {
-                        val dialog = AlertDialog.Builder(it)
+                        AlertDialog.Builder(it, R.style.AlterDialogTheme)
                             .setMessage("Please make sure you have a working Internet connection and try again.")
                             .setTitle("No Internet")
                             .setCancelable(false)
-                            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss()}
+                            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
                             .show()
-                        styleDialogButtons(listOf(dialog.getButton(AlertDialog.BUTTON_POSITIVE))) // TODO löschen wenn styling auch ohne so funktioniert wie bei Timo
                     }
                 }
         }
