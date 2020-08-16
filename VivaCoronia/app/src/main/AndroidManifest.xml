@@ -83,7 +83,8 @@
             </intent-filter>
         </receiver> <!-- activities here and first has to be main activity -->
         <activity android:name=".mainActivity.MainActivity" />
-        <activity android:name=".authentication.RegisterActivity">
+        <activity android:name=".authentication.RegisterActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="registerApplication.intent.action.Launch" />
 

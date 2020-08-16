@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-
     <item
         android:id="@+id/menu_item_location_history"
         android:icon="@drawable/ic_locationhistory"
@@ -14,29 +13,28 @@
 
     <item
         android:id="@+id/menu_item_trading"
-        android:title="@string/menu_item_trading"
-        android:icon="@drawable/ic_trading"/>
+        android:icon="@drawable/ic_trading"
+        android:title="@string/menu_item_trading" />
     <!-- TODO remove/merge -->
     <item
         android:id="@+id/menu_item_search"
-        android:title="@string/menu_item_search"
-        android:icon="@drawable/ic_trading"/>
+        android:icon="@drawable/ic_trading"
+        android:title="@string/menu_item_search" />
 
     <item
         android:id="@+id/menu_item_achievements"
-        android:title="@string/menu_item_achievements"
-        android:icon="@drawable/ic_achievement"/>
+        android:icon="@drawable/ic_achievement"
+        android:title="@string/menu_item_achievements" />
 
     <item
         android:id="@+id/menu_item_spreadmap"
-        android:title="@string/spreadmap"
-        android:icon="@drawable/ic_corona"/>
+        android:icon="@drawable/ic_corona"
+        android:title="@string/spreadmap" />
 
     <item
         android:id="@+id/menu_item_statusCheck"
-        android:title="@string/check_status"
         android:icon="@drawable/ic_admin"
-        />
+        android:title="@string/check_status" />
 
 
 </menu>

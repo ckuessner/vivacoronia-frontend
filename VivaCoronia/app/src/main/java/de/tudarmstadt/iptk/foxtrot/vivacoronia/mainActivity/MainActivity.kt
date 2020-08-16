@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -58,6 +59,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         // setup navigation
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
         val navController = findNavController(R.id.nav_fragment)
         navController.setGraph(R.navigation.nav_graph)
         // the location history view, trading view and achievements view are all root views
@@ -78,7 +82,6 @@ class MainActivity : AppCompatActivity() {
         // setup default toolbar with navcontroller
         // changes need to made here if a custom toolbar shall be used
         setupActionBarWithNavController(navController, appBarConfiguration)
-
 
         // setup nav view
         navView = findViewById(R.id.nav_view)
