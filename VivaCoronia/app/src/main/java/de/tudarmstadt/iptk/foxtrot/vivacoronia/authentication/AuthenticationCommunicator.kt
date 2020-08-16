@@ -5,7 +5,6 @@ import android.util.Log
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
-import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import org.json.JSONObject
@@ -13,8 +12,6 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.RequestFuture
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.RegisterActivity
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.ApiBaseClient
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.util.*
 
 object AuthenticationCommunicator : ApiBaseClient(){
@@ -24,62 +21,13 @@ object AuthenticationCommunicator : ApiBaseClient(){
 
         private var TAG = "AuthenticationClient"
 
-        //this method is basically makeNewJWT except that it should only be used when user is registering
-        //TODO: this is an ugly workaround, please refer to Patrick Vimr for refactoring ideas
-        private fun makeFirstJWT(ctx: Context, pw: String){
-            var timeNow = Date().time
-
-            var settings = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
-            val userID = settings.getString("userID", null)
-
-            val queue = getRequestQueue(ctx)?: return
-            val baseUrl = Constants.SERVER_BASE_URL
-            val url = "$baseUrl/user/$userID/login"
-
-            val jsonPW = JSONObject()
-            jsonPW.put("password", pw)
-            val requestBody = jsonPW.toString()
-
-            val jsonStringRequest = object : StringRequest(Request.Method.POST, url,
-                Response.Listener { response ->
-                    timeNow = Date().time - timeNow
-                    // convert jsonObject Response to String
-                    val respObject = JSONObject(response)
-                    val jwt = respObject.opt("jwt") as String
-
-
-                    // pack values to save in preferences
-                    val savedContent = arrayOf<Any>(jwt, Date().getTime())
-                    val savedIdentifiers = arrayOf<String>("jwt", "jwt_timeCreated")
-
-
-                    // save jwt in client settings of user
-                    saveInPreferencesAny(ctx, savedIdentifiers, savedContent)
-                    RegisterActivity.finishRegister(ctx)
-                },
-                Response.ErrorListener { error ->
-                    Log.i(TAG, error.toString())
-                    Toast.makeText(ctx, error.toString(), Toast.LENGTH_SHORT).show()
-                }
-            ) {
-                override fun getBodyContentType(): String {
-                    return "application/json; charset=utf-8"
-                }
-
-                override fun getBody(): ByteArray {
-                    return requestBody.toByteArray(Charsets.UTF_8)
-                }
-            };
-            queue.add(jsonStringRequest)
-        }
 
         // this method creates a new JWT
         // and saves it in the preferences
-        fun makeNewJWT(ctx: Context, password: String?, userID: String){
-            val queue = getRequestQueue(ctx)?: return
+        fun makeNewJWT(ctx: Context, password: String, userID: String) : Boolean{
+            val queue = getRequestQueue(ctx)?: return false
             val baseUrl = Constants.SERVER_BASE_URL
-            var url = ""
-            url = "$baseUrl/user/$userID/login"
+            val url = "$baseUrl/user/$userID/login"
             val jsonPW = JSONObject()
             jsonPW.put("password", password)
             val responseFuture : RequestFuture<JSONObject> = RequestFuture.newFuture()
@@ -87,17 +35,26 @@ object AuthenticationCommunicator : ApiBaseClient(){
 
             val jsonPostRequest = object : JsonObjectRequest(Request.Method.POST, url, jsonPW, responseFuture, Response.ErrorListener {
                 Log.i(TAG, it.message ?: "something went wrong while taking jwt")
-            }){};
+            }){
+
+                override fun getBodyContentType(): String {
+                    return "application/json; charset=utf-8"
+                }
+
+                override fun getBody(): ByteArray {
+                    return jsonPW.toString().toByteArray(Charsets.UTF_8)
+                }
+            };
             queue.add(jsonPostRequest)
 
-            GlobalScope.launch {
-                val response = responseFuture.get()
-                val jwt = response.opt("jwt")
-                val savedContent = arrayOf<Any>(jwt, Date().getTime())
-                val savedIdentifiers = arrayOf<String>("jwt", "jwt_timeCreated")
-                //save retrieved jwt with creation time in preferences
-                saveInPreferencesAny(ctx, savedIdentifiers, savedContent)
-            }
+
+            val response = responseFuture.get()
+            val jwt = response.opt("jwt")
+            val savedContent = arrayOf<Any>(jwt, Date().getTime())
+            val savedIdentifiers = arrayOf<String>("jwt", "jwt_timeCreated")
+            //save retrieved jwt with creation time in preferences
+            saveInPreferencesAny(ctx, savedIdentifiers, savedContent)
+            return true
         }
 
         /*
@@ -129,47 +86,35 @@ object AuthenticationCommunicator : ApiBaseClient(){
         }
 
         //this will create a userID and save it in shared preferences
-        fun createAndSaveUser(context: Context, pw: String): Boolean {
-            var succReg = true
-            val queue = getRequestQueue(context)?: return false
+        fun createAndSaveUser(context: Context, pw: String): String? {
+            val queue = getRequestQueue(context)?: return null
             val baseUrl = Constants.SERVER_BASE_URL
             // post URL, this URL creates new user id
             val url = "$baseUrl/user/"
 
             val jsonPW = JSONObject()
             jsonPW.put("password", pw)
-            val requestBody = jsonPW.toString()
-
-            // build request for creating a userid
-            val jsonStringRequest = object : StringRequest(Request.Method.POST, url,
-                Response.Listener { response ->
-                    // convert jsonObject Response to String
-                    val respObject = JSONObject(response)
-                    val resUserID = respObject.opt("userId") as String
 
 
-                    // save userID in settings
-                    saveInPreferences(context, resUserID)
-                    // make JWT for user
-                    makeFirstJWT(context, pw)
-                },
-                Response.ErrorListener { error ->
-                    succReg = false
-                    Log.i(TAG, error.toString())
-                    Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
-                }
-            ) {
+            val response : RequestFuture<JSONObject> = RequestFuture.newFuture()
+            val jsonRequest = object : JsonObjectRequest(Method.POST, url, jsonPW, response, Response.ErrorListener { error ->
+                Log.i(TAG, error.toString())
+                Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
+            }){
                 override fun getBodyContentType(): String {
                     return "application/json; charset=utf-8"
                 }
 
                 override fun getBody(): ByteArray {
-                    return requestBody.toByteArray(Charsets.UTF_8)
+                    return jsonPW.toString().toByteArray(Charsets.UTF_8)
                 }
             };
 
-            queue.add(jsonStringRequest)
-            return succReg
+            queue.add(jsonRequest)
+            val responseWithUserID = response.get()
+            val userID = responseWithUserID.opt("userId") as String
+            saveInPreferences(context, userID)
+            return userID
         }
         /*
         This function is responsible to save the retrieved userID with the input password

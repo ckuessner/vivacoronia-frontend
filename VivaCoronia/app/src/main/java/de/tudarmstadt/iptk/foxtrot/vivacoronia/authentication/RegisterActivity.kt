@@ -11,14 +11,14 @@ import android.widget.Toast
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.AuthenticationCommunicator
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.TextViewUtils
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.MainActivity
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class RegisterActivity : AppCompatActivity() {
     companion object {
         fun finishRegister(ctx : Context){
             val duration = Toast.LENGTH_SHORT
             Toast.makeText(ctx, "You successfully registered to save the world from corona!", duration).show()
-            val settings = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
-            settings.edit().putBoolean("registered", true).apply()
             val ctxActivity = ctx as Activity
             ctxActivity.finish()
             val intent = Intent(ctx, MainActivity::class.java)
@@ -47,7 +47,27 @@ class RegisterActivity : AppCompatActivity() {
             val canContinue = TextViewUtils.checkMatchingPasswords(passwordTextView, passwordReTextView)
             if (canContinue) {
                 val pw = passwordTextView.text.toString()
-                AuthenticationCommunicator.createAndSaveUser(ctx, pw)
+                GlobalScope.launch {
+                    val userID = AuthenticationCommunicator.createAndSaveUser(ctx, pw)
+                    var jwtDone = false
+                    if(userID != null) {
+                        jwtDone = AuthenticationCommunicator.makeNewJWT(ctx, pw, userID)
+                        runOnUiThread {
+                            if (jwtDone) finishRegister(ctx)
+                            else
+                                Toast.makeText(ctx, "Something went wrong while creating your account, check internet and try again", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    else {
+                        runOnUiThread {
+                            Toast.makeText(
+                                ctx,
+                                "Something went wrong while creating your account, check internet and try again",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
             }
         }
     }

@@ -7,10 +7,13 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.AuthenticationCommunicator
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.MainActivity
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,8 +33,16 @@ class LoginActivity : AppCompatActivity() {
             if(canContinue){
                 val pw = passwordTextView.text.toString()
                 val userID = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.USER_ID, null) as String
-                AuthenticationCommunicator.makeNewJWT(ctx, pw, userID)
-                finish()
+                var succJWT = false
+                GlobalScope.launch {
+                    succJWT = AuthenticationCommunicator.makeNewJWT(ctx, pw, userID)
+                    runOnUiThread {
+                        if (succJWT) finish()
+                        else {
+                            Toast.makeText(ctx, "Something went wrong while logging in, check internet and try again", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             }
         }
     }

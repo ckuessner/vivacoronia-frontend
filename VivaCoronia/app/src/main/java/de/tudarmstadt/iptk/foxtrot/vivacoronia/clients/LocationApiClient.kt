@@ -213,7 +213,7 @@ object LocationApiClient : ApiBaseClient() {
             .appendQueryParameter("distance", distance.toString())
             .build().toString()
 
-        val request = JsonArrayJWT(getEndpoint(), responseFuture, Response.ErrorListener { onErrorCallback(it) }, context)
+        val request = JsonArrayJWT(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) }, context)
         requestQueue.add(request)
         return parseGeoJSONForMultipleID(responseFuture.get().toString())
     }
