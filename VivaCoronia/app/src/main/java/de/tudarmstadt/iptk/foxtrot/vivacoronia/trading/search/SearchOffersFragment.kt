@@ -83,10 +83,9 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener {
                     Toast.makeText(requireContext(), R.string.server_connection_failed, Toast.LENGTH_SHORT).show()
                 }
                 Log.e(_tag, "Error while trying to fetch offers", e)
-            } finally {
-                binding.progressHorizontal.visibility = View.INVISIBLE
             }
         }
+        binding.progressHorizontal.visibility = View.INVISIBLE
         binding.searchView.clearFocus()
         return true
     }
@@ -102,6 +101,10 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         TODO("Not yet implemented")
+    }
+
+    fun returnToOfferList(){
+        binding.searchResultsPager.setCurrentItem(0, true)
     }
 
     private inner class ScreenSlidePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {

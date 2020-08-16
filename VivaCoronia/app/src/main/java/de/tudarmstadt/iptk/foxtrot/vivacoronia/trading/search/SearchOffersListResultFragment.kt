@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -39,7 +40,23 @@ class SearchOffersListResultFragment(private val parent: SearchOffersFragment) :
     }
 
     fun scrollToOffer(id: String) {
-        // TODO
-        Toast.makeText(requireActivity(), "Scrolling to $id", Toast.LENGTH_LONG).show()
+        val offers = parent.viewModel.searchResults.value
+        var offerByID: Pair<Int, Offer?> = Pair(0, null)
+        if(offers != null){
+            offerByID = findOfferByID(id, offers)
+        }
+        if(offerByID.second != null){
+            binding.resultList.scrollToPosition(offerByID.first)
+        }
+    }
+
+    private fun findOfferByID(id: String, offers: List<Offer>): Pair<Int, Offer?> {
+        var offerAndPos: Pair<Int, Offer?> = Pair(0, null)
+        for(offerPos in offers.indices){
+            if(offers[offerPos].id == id){
+                offerAndPos = Pair(offerPos, offers[offerPos])
+            }
+        }
+        return offerAndPos
     }
 }
