@@ -25,7 +25,7 @@ object Constants {
     val USER_ID = "userID"
     val CLIENT = "client_settings"
     val JWT = "jwt"
-
+    val adminJWT = "adminJWT"
     // infected stuff
     val INFECTED_NOTIFICATION_CHANNEL_ID = "infected_channel"
 

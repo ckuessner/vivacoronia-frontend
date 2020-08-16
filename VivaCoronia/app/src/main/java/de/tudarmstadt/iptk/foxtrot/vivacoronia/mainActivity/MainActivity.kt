@@ -2,12 +2,14 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity
 
 import android.Manifest
 import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -35,6 +37,11 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navView: NavigationView
 
+    private fun checkAdminJWT(ctx : Context) : Boolean{
+        val settings = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
+        val adminJWT = settings.getString(Constants.adminJWT, null)
+        return adminJWT != null
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +67,6 @@ class MainActivity : AppCompatActivity() {
         // setup navigation
         val navController = findNavController(R.id.nav_fragment)
         navController.setGraph(R.navigation.nav_graph)
-
         // the location history view, trading view and achievements view are all root views
         appBarConfiguration = AppBarConfiguration(
             setOf(
@@ -72,7 +78,6 @@ class MainActivity : AppCompatActivity() {
             ),
             findViewById<DrawerLayout>(R.id.drawer_layout)
         )
-
 
         // setup default toolbar with navcontroller
         // changes need to made here if a custom toolbar shall be used

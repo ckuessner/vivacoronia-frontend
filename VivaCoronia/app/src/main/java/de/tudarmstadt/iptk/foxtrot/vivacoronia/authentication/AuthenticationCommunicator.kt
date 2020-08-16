@@ -24,10 +24,13 @@ object AuthenticationCommunicator : ApiBaseClient(){
 
         // this method creates a new JWT
         // and saves it in the preferences
-        fun makeNewJWT(ctx: Context, password: String, userID: String) : Boolean{
+        fun makeNewJWT(ctx: Context, password: String, userID: String, isAdmin : Boolean = false) : Boolean{
             val queue = getRequestQueue(ctx)?: return false
             val baseUrl = Constants.SERVER_BASE_URL
-            val url = "$baseUrl/user/$userID/login"
+            var url = "$baseUrl/user/$userID/login"
+            if(isAdmin){
+                url = "$baseUrl/admin/login/"
+            }
             val jsonPW = JSONObject()
             jsonPW.put("password", password)
             val responseFuture : RequestFuture<JSONObject> = RequestFuture.newFuture()
@@ -51,7 +54,10 @@ object AuthenticationCommunicator : ApiBaseClient(){
             val response = responseFuture.get()
             val jwt = response.opt("jwt")
             val savedContent = arrayOf<Any>(jwt, Date().getTime())
-            val savedIdentifiers = arrayOf<String>("jwt", "jwt_timeCreated")
+            var savedIdentifiers = arrayOf<String>(Constants.JWT, "jwt_timeCreated")
+            if(isAdmin){
+                savedIdentifiers = arrayOf<String>(Constants.adminJWT, "jwt_timeCreated")
+            }
             //save retrieved jwt with creation time in preferences
             saveInPreferencesAny(ctx, savedIdentifiers, savedContent)
             return true
