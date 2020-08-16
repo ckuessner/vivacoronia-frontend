@@ -19,6 +19,9 @@
     <!-- manifest -->
     <string name="location_service_description_manifest">Allows to track your location and to warn you of possible infections.</string>
 
+    <!-- trading -->
+    <string name="offerDistance">%s km</string>
+
     <!-- infection status -->
     <string name="update_infection_button">Update Infection Status</string>
     <string name="update_infection_label">Update Infection Status</string>

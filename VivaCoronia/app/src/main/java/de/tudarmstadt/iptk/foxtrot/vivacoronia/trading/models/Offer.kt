@@ -16,6 +16,8 @@ class Offer(
     @Json(name="_id") var id: String,
     var productCategory: String
 ) : Parcelable {
+    var distance: Double = 0.0
+
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readInt(),

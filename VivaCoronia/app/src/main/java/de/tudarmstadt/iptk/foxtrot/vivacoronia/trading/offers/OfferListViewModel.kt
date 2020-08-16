@@ -3,10 +3,12 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.maps.model.LatLng
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import java.lang.IllegalArgumentException
 import java.text.NumberFormat
 import java.util.*
+import kotlin.math.*
 
 class OfferListViewModel : ViewModel() {
     val offers = MutableLiveData<MutableList<OfferViewModel>>()
@@ -17,6 +19,36 @@ class OfferListViewModel : ViewModel() {
                 list[index]
             )
         }
+    }
+
+    fun setDistances(location: LatLng?) {
+        if(location != null) {
+            for (offer in offers.value!!) {
+                offer.distance =
+                    String.format("%.3f", getCoordinateDistanceOnSphere(offer.offer.location, location))
+            }
+        }
+    }
+
+    private fun getCoordinateDistanceOnSphere(
+        startLocation: LatLng,
+        endLocation: LatLng
+    ): Double {
+        val lon1 = Math.toRadians(startLocation.longitude)
+        val lat1 = Math.toRadians(startLocation.latitude)
+        val lon2 = Math.toRadians(endLocation.longitude)
+        val lat2 = Math.toRadians(endLocation.latitude)
+
+        //Haversine formula, determines the great-circle distance between two points on a sphere with given longitude and latitude
+        val deltaLon = lon2 - lon1
+        val deltaLat = lat2 - lat1
+        val innerFormula =
+            sin(deltaLat / 2).pow(2.0) + cos(lat1) * cos(lat2) * sin(deltaLon / 2).pow(2.0)
+        val outerFormula = 2 * asin(sqrt(innerFormula))
+
+        //radius of the earth in kilometers
+        val radius = 6371
+        return outerFormula * radius
     }
 
     fun add(list: List<Offer>) {
@@ -101,6 +133,12 @@ class OfferViewModel(var offer: Offer) : ViewModel() {
         get() = offer.productCategory
         set(value){
             offer.productCategory = value
+        }
+
+    var distance: String
+        get() = offer.distance.toString()
+        set(value){
+            offer.distance = value.toDouble()
         }
 }
 
