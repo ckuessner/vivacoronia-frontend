@@ -14,14 +14,16 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
+import com.google.maps.android.clustering.Cluster
+import com.google.maps.android.clustering.ClusterItem
+import com.google.maps.android.clustering.ClusterManager
+import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentSearchOffersMapResultBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
+import kotlin.properties.Delegates
 
 class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : Fragment() {
     companion object {
@@ -31,9 +33,12 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
 
     private lateinit var binding: FragmentSearchOffersMapResultBinding
     private var mGoogleMap: GoogleMap? = null
-    private var markers = mutableMapOf<LatLng, Pair<String, Marker>>()
+    private var markers = mutableMapOf<LatLng, Pair<String, OfferClusterItem>>()
     private var selectedMarker: Marker? = null
+    private var selectedOfferItem: OfferClusterItem? = null
     private var userLocation: LatLng? = null
+    private lateinit var mClusterManager: ClusterManager<OfferClusterItem>
+    private lateinit var mRenderer: CustomClusterRenderer
 
     private val callback = OnMapReadyCallback { googleMap ->
 
@@ -52,38 +57,47 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15F))
 
+        mClusterManager = ClusterManager(requireContext(), googleMap)
+        mRenderer = CustomClusterRenderer(requireContext(), googleMap, mClusterManager)
+        mClusterManager.renderer = mRenderer
+        googleMap.setOnCameraIdleListener(mClusterManager)
+        googleMap.setOnMarkerClickListener(mClusterManager)
         parent.viewModel.searchResults.observe(viewLifecycleOwner, Observer<List<Offer>> { initialOffers ->
-            googleMap.clear()
+            //googleMap.clear()
+            mClusterManager.clearItems()
             markers = mutableMapOf()
-            val offersByLocation = initialOffers.groupBy { it.location } // TODO group markers if they are closer than 10 meters?
-            for ((location, offers) in offersByLocation) {
-                if (location.latitude == 0.0 && location.longitude == 0.0)
+            //val offersByLocation = initialOffers.groupBy { it.location } // TODO group markers if they are closer than 10 meters?
+            for (offer in initialOffers) {
+                if (offer.location.latitude == 0.0 && offer.location.longitude == 0.0)
                     continue
 
-                val markerOptions = MarkerOptions().position(location).title(offers[0].product).snippet(offers[0].details)
-                val marker = googleMap.addMarker(markerOptions)
-                marker.tag = offers
-                markers[location] = Pair(offers[0].id, marker)
+                //val markerOptions = MarkerOptions().position(location).title(offers[0].product).snippet(offers[0].details)
+                //val marker = googleMap.addMarker(markerOptions)
+                val offerItem = OfferClusterItem(offer.location, offer.product, offer.details)
+                mClusterManager.addItem(offerItem)
+                //marker.tag = offers
+                markers[offer.location] = Pair(offer.id, offerItem)
             }
+            mClusterManager.cluster()
         })
         googleMap.setOnMapClickListener {
             selectedMarker?.setIcon(BitmapDescriptorFactory.defaultMarker())
             selectedMarker = null
+            selectedOfferItem = null
+            mRenderer.selectedItem = null
         }
-        googleMap.setOnInfoWindowClickListener { marker ->
-            onInfoWindowClick(marker)
+        mClusterManager.setOnClusterItemInfoWindowClickListener { offerItem ->
+            onInfoWindowClick(offerItem)
         }
         mGoogleMap = googleMap
     }
 
-    private fun onInfoWindowClick(marker: Marker?) {
-        if(marker != null) {
-            onMarkerClick(marker)
-        }
+    private fun onInfoWindowClick(offerItem: OfferClusterItem) {
+        onMarkerClick(offerItem)
     }
 
-    private fun onMarkerClick(marker: Marker) {
-        val offerID = markers[marker.position]!!.first
+    private fun onMarkerClick(offerItem: OfferClusterItem) {
+        val offerID = markers[offerItem.position]!!.first
         parent.viewModel.onOfferMarkerClick(offerID)
     }
 
@@ -106,13 +120,78 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
         val markerPair = markers[latLng]
         if (mGoogleMap == null || markerPair == null)
             return false
-        val marker = markerPair.second
-        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-        selectedMarker?.setIcon(BitmapDescriptorFactory.defaultMarker())
-        selectedMarker = marker
-        selectedMarker!!.showInfoWindow()
+        val offerItem = markerPair.second
+        selectedOfferItem = offerItem
+        mRenderer.selectedItem = offerItem
+        val marker = mRenderer.getMarker(offerItem)
+        if(marker != null){
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+            //selectedMarker?.setIcon(BitmapDescriptorFactory.defaultMarker())
+            selectedMarker = marker
+            selectedMarker!!.showInfoWindow()
+        }
         mGoogleMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
 
         return true
+    }
+}
+
+class OfferClusterItem: ClusterItem{
+    private val mPosition: LatLng
+    private val mTitle: String
+    private val mSnippet: String
+
+    constructor(latLng: LatLng){
+        mPosition = latLng
+        mTitle = ""
+        mSnippet = ""
+    }
+
+    constructor(latLng: LatLng, title: String, snippet: String){
+        mPosition = latLng
+        mTitle = title
+        mSnippet = snippet
+    }
+
+    override fun getSnippet(): String {
+        return mSnippet
+    }
+
+    override fun getTitle(): String {
+        return mTitle
+    }
+
+    override fun getPosition(): LatLng {
+        return mPosition
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return if(other is OfferClusterItem){
+            this.hashCode() == other.hashCode()
+        } else{
+            false
+        }
+    }
+
+    override fun hashCode(): Int {
+        var result = mPosition.hashCode()
+        result = 31 * result + mTitle.hashCode()
+        result = 31 * result + mSnippet.hashCode()
+        return result
+    }
+}
+
+class CustomClusterRenderer(
+    val context: Context,
+    val map: GoogleMap,
+    clusterManager: ClusterManager<OfferClusterItem>
+): DefaultClusterRenderer<OfferClusterItem>(context, map, clusterManager) {
+    var selectedItem: OfferClusterItem? = null
+
+    override fun onBeforeClusterItemRendered(item: OfferClusterItem, markerOptions: MarkerOptions) {
+        super.onBeforeClusterItemRendered(item, markerOptions)
+        if(selectedItem != null && item == selectedItem){
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+        }
     }
 }
