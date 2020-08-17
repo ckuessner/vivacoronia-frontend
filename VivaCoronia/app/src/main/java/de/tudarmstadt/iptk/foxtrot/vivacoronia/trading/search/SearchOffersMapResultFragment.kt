@@ -32,7 +32,7 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
     private lateinit var binding: FragmentSearchOffersMapResultBinding
     private var mGoogleMap: GoogleMap? = null
     private var markers = mutableMapOf<LatLng, Pair<String, OfferClusterItem>>()
-    private var selectedMarker: Marker? = null
+    //private var selectedMarker: Marker? = null
     private var selectedOfferItem: OfferClusterItem? = null
     private var userLocation: LatLng? = null
     private lateinit var mClusterManager: ClusterManager<OfferClusterItem>
@@ -84,8 +84,7 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
             mClusterManager.cluster()
         })
         googleMap.setOnMapClickListener {
-            selectedMarker?.setIcon(BitmapDescriptorFactory.defaultMarker())
-            selectedMarker = null
+            mRenderer.getMarker(selectedOfferItem)?.setIcon(BitmapDescriptorFactory.defaultMarker())
             selectedOfferItem = null
             mRenderer.selectedItem = null
         }
@@ -124,15 +123,16 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
         if (mGoogleMap == null || markerPair == null)
             return false
         val offerItem = markerPair.second
-        selectedOfferItem = offerItem
-        mRenderer.selectedItem = offerItem
+        mRenderer.getMarker(selectedOfferItem)?.setIcon(BitmapDescriptorFactory.defaultMarker())
+        mRenderer.getMarker(selectedOfferItem)?.hideInfoWindow()
         val marker = mRenderer.getMarker(offerItem)
         if(marker != null){
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
             //selectedMarker?.setIcon(BitmapDescriptorFactory.defaultMarker())
-            selectedMarker = marker
-            selectedMarker!!.showInfoWindow()
+            marker.showInfoWindow()
         }
+        selectedOfferItem = offerItem
+        mRenderer.selectedItem = offerItem
         mGoogleMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
 
         return true
@@ -213,9 +213,5 @@ class CustomClusterRenderer(
         if(selectedItem != null && item == selectedItem){
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
         }
-    }
-
-    override fun shouldRenderAsCluster(cluster: Cluster<OfferClusterItem>): Boolean {
-        return super.shouldRenderAsCluster(cluster) && SearchOffersMapResultFragment.shouldCluster_zoom
     }
 }
