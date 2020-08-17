@@ -19,7 +19,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener {
+class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterOffersFragment.OnApplyQueryListener {
     private val _tag = "SearchOffersFragment"
 
     lateinit var viewModel: SearchOffersViewModel
@@ -34,6 +34,9 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener {
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search_offers, container, false)
         viewModel = ViewModelProvider(requireActivity()).get(SearchOffersViewModel::class.java)
+        if (viewModel.searchQuery.value == null)
+            viewModel.searchQuery.value = ProductSearchQuery()
+
         binding.searchView.setOnQueryTextListener(this)
 
         val pagerAdapter = ScreenSlidePagerAdapter(this)
@@ -69,12 +72,17 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        binding.progressHorizontal.visibility = View.VISIBLE
-        val productSearchQuery = ProductSearchQuery()
-        productSearchQuery.productName = query
+        viewModel.searchQuery.value!!.productName = query
+        onApplyQuery(viewModel.searchQuery.value!!)
+        binding.searchView.clearFocus()
+        return true
+    }
+
+    override fun onApplyQuery(searchQuery: ProductSearchQuery) {
+        binding.progressHorizontal.visibility = View.VISIBLE // TODO funktioniert noch nicht nach applyFilter
         GlobalScope.launch {
             try {
-                val offers = TradingApiClient.getOffers(requireContext(), productSearchQuery)
+                val offers = TradingApiClient.getOffers(requireContext(), searchQuery)
                 requireActivity().runOnUiThread {
                     viewModel.searchResults.value = offers
                 }
@@ -84,10 +92,10 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener {
                 }
                 Log.e(_tag, "Error while trying to fetch offers", e)
             }
+            requireActivity().runOnUiThread {
+                binding.progressHorizontal.visibility = View.INVISIBLE
+            }
         }
-        binding.progressHorizontal.visibility = View.INVISIBLE
-        binding.searchView.clearFocus()
-        return true
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
@@ -100,7 +108,12 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        TODO("Not yet implemented")
+        val filterFragment = FilterOffersFragment.newInstance(this)
+        parentFragmentManager.beginTransaction()
+            .replace(this.id, filterFragment)
+            .addToBackStack(null) // TODO funktioniert nicht
+            .commit()
+        return true
     }
 
     fun returnToOfferList(){

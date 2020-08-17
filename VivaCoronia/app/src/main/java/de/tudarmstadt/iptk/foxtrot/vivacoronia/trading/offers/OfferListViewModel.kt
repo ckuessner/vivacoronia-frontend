@@ -24,8 +24,7 @@ class OfferListViewModel : ViewModel() {
     fun setDistances(location: LatLng?) {
         if(location != null) {
             for (offer in offers.value!!) {
-                offer.distance =
-                    String.format("%.3f", getCoordinateDistanceOnSphere(offer.offer.location, location))
+                offer.offer.distance = String.format(Locale.US, "%.3f", getCoordinateDistanceOnSphere(offer.offer.location, location)).toDouble()
             }
         }
     }
@@ -133,12 +132,6 @@ class OfferViewModel(var offer: Offer) : ViewModel() {
         get() = offer.productCategory
         set(value){
             offer.productCategory = value
-        }
-
-    var distance: String
-        get() = offer.distance.toString()
-        set(value){
-            offer.distance = value.toDouble()
         }
 }
 

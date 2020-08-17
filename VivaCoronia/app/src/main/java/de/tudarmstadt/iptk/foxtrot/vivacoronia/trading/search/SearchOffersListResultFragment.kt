@@ -36,7 +36,10 @@ class SearchOffersListResultFragment(private val parent: SearchOffersFragment) :
         val adapter = SearchResultAdapter(SearchResultItemListener { parent.viewModel.onOfferDetailClick(it) })
         binding.resultList.adapter = adapter
 
-        parent.viewModel.searchResults.observe(viewLifecycleOwner, Observer<List<Offer>> { binding.offerListViewModel!!.setOffers(it ?: listOf()); binding.offerListViewModel!!.setDistances(getLastKnownLocation()) })
+        parent.viewModel.searchResults.observe(viewLifecycleOwner, Observer<List<Offer>> {
+            binding.offerListViewModel!!.setOffers(it ?: listOf())
+            binding.offerListViewModel!!.setDistances(getLastKnownLocation())
+        })
         binding.offerListViewModel!!.offers.observe(viewLifecycleOwner, Observer { it?.let { adapter.submitList(it) } })
 
         return binding.root
