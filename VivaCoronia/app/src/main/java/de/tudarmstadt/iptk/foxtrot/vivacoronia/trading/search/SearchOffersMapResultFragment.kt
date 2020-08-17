@@ -237,4 +237,8 @@ class CustomClusterRenderer(
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
         }
     }
+
+    override fun shouldRenderAsCluster(cluster: Cluster<OfferClusterItem>): Boolean {
+        return super.shouldRenderAsCluster(cluster) && SearchOffersMapResultFragment.shouldCluster_zoom
+    }
 }

@@ -22,8 +22,6 @@ import kotlin.math.*
 class SearchOffersListResultFragment(private val parent: SearchOffersFragment) : Fragment() {
     private lateinit var binding: FragmentSearchOffersListResultBinding
 
-    private lateinit var offerDistances: ArrayList<Double>
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
