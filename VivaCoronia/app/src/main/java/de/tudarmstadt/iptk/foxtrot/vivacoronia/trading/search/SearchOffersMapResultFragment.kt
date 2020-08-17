@@ -4,9 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.LocationManager
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -23,7 +22,6 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentSearchOffersMapResultBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
-import kotlin.properties.Delegates
 
 class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : Fragment() {
     companion object {
@@ -39,6 +37,7 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
     private var userLocation: LatLng? = null
     private lateinit var mClusterManager: ClusterManager<OfferClusterItem>
     private lateinit var mRenderer: CustomClusterRenderer
+    private var currentViewedCluster: List<OfferClusterItem>? = null
 
     private val callback = OnMapReadyCallback { googleMap ->
 
@@ -62,6 +61,10 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
         mClusterManager.renderer = mRenderer
         googleMap.setOnCameraIdleListener(mClusterManager)
         googleMap.setOnMarkerClickListener(mClusterManager)
+        mClusterManager.setOnClusterClickListener { cluster ->
+            showPopup(binding.anchorMenu, cluster.items.toMutableList())
+            true
+        }
         parent.viewModel.searchResults.observe(viewLifecycleOwner, Observer<List<Offer>> { initialOffers ->
             //googleMap.clear()
             mClusterManager.clearItems()
@@ -134,6 +137,23 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
 
         return true
     }
+
+    private fun showPopup(view: View, offerItems: List<OfferClusterItem>) {
+        val wrapper = ContextThemeWrapper(requireContext(), R.style.PopupMenuStyle)
+        val popup = PopupMenu(wrapper, view)
+        currentViewedCluster = offerItems
+        popup.inflate(R.menu.search_item_cluster_info_window)
+        for(i in offerItems.indices){
+            popup.menu.add(1, i, 1, offerItems[i].title)
+        }
+        popup.setOnMenuItemClickListener { item ->
+            if(currentViewedCluster != null) {
+                onMarkerClick(currentViewedCluster!![item.itemId])
+            }
+            true
+        }
+        popup.show()
+    }
 }
 
 class OfferClusterItem: ClusterItem{
@@ -193,5 +213,9 @@ class CustomClusterRenderer(
         if(selectedItem != null && item == selectedItem){
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
         }
+    }
+
+    override fun shouldRenderAsCluster(cluster: Cluster<OfferClusterItem>): Boolean {
+        return super.shouldRenderAsCluster(cluster) && SearchOffersMapResultFragment.shouldCluster_zoom
     }
 }
