@@ -9,7 +9,6 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import java.lang.IllegalArgumentException
 import java.text.NumberFormat
 import java.util.*
-import kotlin.math.*
 
 class OfferListViewModel : ViewModel() {
     val offersList = MutableLiveData<MutableList<OfferViewModel>>()

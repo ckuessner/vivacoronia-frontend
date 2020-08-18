@@ -138,10 +138,6 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
         return true
     }
 
-    fun returnToOfferList(){
-        binding.searchResultsPager.setCurrentItem(0, true)
-    }
-
     private inner class ScreenSlidePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
         private val numPages = 2
         override fun getItemCount(): Int = numPages
