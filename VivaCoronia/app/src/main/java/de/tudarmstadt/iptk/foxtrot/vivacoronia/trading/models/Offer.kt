@@ -15,7 +15,8 @@ class Offer(
     var details: String,
     @Json(name="_id") var id: String,
     var productCategory: String,
-    var distanceToUser: Double
+    var distanceToUser: Double,
+    var phoneNumber: String
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
@@ -26,10 +27,11 @@ class Offer(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
-        parcel.readDouble()
+        parcel.readDouble(),
+        parcel.readString()!!
     )
 
-    constructor() : this("", 0, 0.0, LatLng(0.0, 0.0), "", "", if (!categories.value.isNullOrEmpty()) categories.value!![0] else "", -1.0)
+    constructor() : this("", 0, 0.0, LatLng(0.0, 0.0), "", "", if (!categories.value.isNullOrEmpty()) categories.value!![0] else "", -1.0, "")
 
     fun getDistanceToUser(): String {
         if (distanceToUser == -1.0)
@@ -49,10 +51,11 @@ class Offer(
                 && other.id == id
                 && other.productCategory == productCategory
                 && other.product == product
+                && other.phoneNumber == phoneNumber
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(amount, priceTotal, location, details, id, productCategory, product)
+        return Objects.hash(amount, priceTotal, location, details, id, productCategory, product, phoneNumber)
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -63,6 +66,7 @@ class Offer(
         parcel.writeString(details)
         parcel.writeString(id)
         parcel.writeString(productCategory)
+        parcel.writeString(phoneNumber)
     }
 
     override fun describeContents(): Int {

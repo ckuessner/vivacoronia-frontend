@@ -92,6 +92,12 @@ class OfferViewModel(var offer: Offer) : ViewModel() {
         set(value){
             offer.productCategory = value
         }
+
+    var phoneNumber: String
+        get() = offer.phoneNumber
+        set(value){
+            offer.phoneNumber = value
+        }
 }
 
 class OfferViewModelFactory(private val offer: Offer): ViewModelProvider.Factory {

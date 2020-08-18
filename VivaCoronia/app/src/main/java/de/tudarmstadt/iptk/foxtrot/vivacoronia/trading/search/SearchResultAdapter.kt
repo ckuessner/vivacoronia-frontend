@@ -10,11 +10,11 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.ItemSearchResultBindi
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OfferViewModel
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OffersDiffCallback
 
-class SearchResultAdapter(private val clickListener: SearchResultItemListener) :
+class SearchResultAdapter(private val clickListener: SearchResultItemListener, private val callButtonListener: SearchResultCallListener) :
     ListAdapter<OfferViewModel, SearchResultViewHolder>(OffersDiffCallback()) {
 
     override fun onBindViewHolder(holder: SearchResultViewHolder, position: Int) {
-        holder.bind(getItem(position), clickListener)
+        holder.bind(getItem(position), clickListener, callButtonListener)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultViewHolder {
@@ -32,9 +32,10 @@ class SearchResultViewHolder private constructor(val binding: ItemSearchResultBi
         }
     }
 
-    fun bind(item: OfferViewModel, clickListener: SearchResultItemListener) {
+    fun bind(item: OfferViewModel, clickListener: SearchResultItemListener, onCallClickListener: SearchResultCallListener) {
         binding.offer = item
         binding.clickListener = clickListener
+        binding.callButtonListener = onCallClickListener
         binding.executePendingBindings()
         if (item.offer.location == LatLng(0.0, 0.0)) {
             binding.viewOnMap.isEnabled = false
@@ -45,4 +46,8 @@ class SearchResultViewHolder private constructor(val binding: ItemSearchResultBi
 
 class SearchResultItemListener(val clickListener: (offerId: String) -> Unit) {
     fun onViewOnMapClick(offer: OfferViewModel) = clickListener(offer.offer.id)
+}
+
+class SearchResultCallListener(val clickListener: (offerID: String) -> Unit) {
+    fun onCallButtonClick(offer: OfferViewModel) = clickListener(offer.offer.id)
 }

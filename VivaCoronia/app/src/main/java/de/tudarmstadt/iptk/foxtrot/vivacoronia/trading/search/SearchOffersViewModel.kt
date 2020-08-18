@@ -1,5 +1,6 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -20,6 +21,11 @@ class SearchOffersViewModel : ViewModel() {
 
     fun onOfferDetailClick(id: String) {
         _highlightOfferOnMap.value = searchResults.value!!.first { it.id == id }
+    }
+
+    fun onCallButtonClick(id: String) {
+        val test = searchResults.value!!.first {it.id == id}.phoneNumber
+        Log.d("call", "called number $id")
     }
 
     fun onOfferDetailClickNavigated() {

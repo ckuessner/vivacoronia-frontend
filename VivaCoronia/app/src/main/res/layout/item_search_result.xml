@@ -9,6 +9,10 @@
             type="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search.SearchResultItemListener" />
 
         <variable
+            name="callButtonListener"
+            type="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search.SearchResultCallListener" />
+
+        <variable
             name="offer"
             type="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OfferViewModel" />
     </data>
@@ -209,8 +213,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.4"
                 android:gravity="center"
-                android:text="Message"
+                android:text="@string/call"
                 app:icon="@drawable/ic_send"
+                android:onClick="@{() -> callButtonListener.onCallButtonClick(offer)}"
                 app:iconGravity="textStart"
                 app:iconPadding="10dp" />
 
