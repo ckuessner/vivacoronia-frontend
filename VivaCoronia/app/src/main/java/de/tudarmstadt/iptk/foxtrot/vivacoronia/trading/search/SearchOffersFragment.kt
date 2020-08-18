@@ -3,11 +3,10 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.fragment.app.Fragment
-import android.widget.SearchView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.SearchView
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -16,6 +15,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.TradingApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentSearchOffersBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.LocationUtility
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -34,8 +34,10 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search_offers, container, false)
         viewModel = ViewModelProvider(requireActivity()).get(SearchOffersViewModel::class.java)
-        if (viewModel.searchQuery.value == null)
+        if (viewModel.searchQuery.value == null) {
             viewModel.searchQuery.value = ProductSearchQuery()
+            viewModel.searchQuery.value!!.location = LocationUtility.getLastKnownLocation(requireActivity())
+        }
 
         binding.searchView.setOnQueryTextListener(this)
 
@@ -114,10 +116,6 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
             .addToBackStack(null) // TODO funktioniert nicht
             .commit()
         return true
-    }
-
-    fun returnToOfferList(){
-        binding.searchResultsPager.setCurrentItem(0, true)
     }
 
     private inner class ScreenSlidePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {

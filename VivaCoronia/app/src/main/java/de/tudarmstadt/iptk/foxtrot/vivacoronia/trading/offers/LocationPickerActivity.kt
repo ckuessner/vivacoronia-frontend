@@ -1,10 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers
 
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -15,8 +12,8 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.LocationUtility
 
 private const val ARG_INITIAL_POSITION = "initial_position"
 private const val SELECTED_POSITION_RESULT = "selected_position"
@@ -70,15 +67,7 @@ class LocationPickerActivity : AppCompatActivity(), OnMapReadyCallback {
             if (modelPosition != LatLng(0.0, 0.0))
                 return modelPosition
 
-            if (PermissionHandler.checkLocationPermissions(activity)) {
-                val locationManager = activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-                @SuppressLint("MissingPermission") // Check is in PermissionHandler
-                val currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-                if (currentLocation != null)
-                    return LatLng(currentLocation.latitude, currentLocation.longitude)
-            }
-
-            return LatLng(49.877405, 8.654213)
+            return LocationUtility.getLastKnownLocation(activity) ?: LatLng(49.877405, 8.654213)
         }
 
         fun getLatLngResult(intent: Intent): LatLng? {

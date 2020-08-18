@@ -14,9 +14,9 @@ class Offer(
     var location: LatLng,
     var details: String,
     @Json(name="_id") var id: String,
-    var productCategory: String
+    var productCategory: String,
+    var distanceToUser: Double
 ) : Parcelable {
-    var distance: Double = 0.0
 
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
@@ -25,10 +25,17 @@ class Offer(
         parcel.readParcelable(LatLng::class.java.classLoader)!!,
         parcel.readString()!!,
         parcel.readString()!!,
-        parcel.readString()!!
+        parcel.readString()!!,
+        parcel.readDouble()
     )
 
-    constructor() : this("", 0, 0.0, LatLng(0.0, 0.0), "", "", if (!categories.value.isNullOrEmpty()) categories.value!![0] else "")
+    constructor() : this("", 0, 0.0, LatLng(0.0, 0.0), "", "", if (!categories.value.isNullOrEmpty()) categories.value!![0] else "", -1.0)
+
+    fun getDistanceToUser(): String {
+        if (distanceToUser == -1.0)
+            return ""
+        return String.format(Locale.US, "%.3f", distanceToUser)
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other)

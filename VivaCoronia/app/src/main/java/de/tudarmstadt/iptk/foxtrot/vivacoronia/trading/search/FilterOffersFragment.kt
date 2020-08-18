@@ -53,6 +53,7 @@ class FilterOffersFragment(internal var callback: OnApplyQueryListener) : Fragme
         binding.categoryInputSpinner.setSelection(spinnerAdapter.getPosition(viewModel.searchQuery.value!!.category))
 
         binding.sortByRadioGroup.setOnCheckedChangeListener(this)
+        binding.sortByRadioGroup.check(mapSortOptionToId(viewModel.searchQuery.value!!.sortBy))
         return binding.root
     }
 
@@ -93,11 +94,23 @@ class FilterOffersFragment(internal var callback: OnApplyQueryListener) : Fragme
     override fun onNothingSelected(p0: AdapterView<*>?) {}
 
     override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
-        viewModel.searchQuery.value!!.sortBy = when (checkedId) {
+        viewModel.searchQuery.value!!.sortBy = mapIdToSortOption(checkedId)
+    }
+
+    private fun mapIdToSortOption(id: Int): ProductSearchQuery.SortOptions {
+        return when (id) {
             R.id.name_radio_button -> ProductSearchQuery.SortOptions.NAME
             R.id.distance_radio_button -> ProductSearchQuery.SortOptions.DISTANCE
             R.id.price_radio_button -> ProductSearchQuery.SortOptions.PRICE
             else -> ProductSearchQuery.SortOptions.NAME
+        }
+    }
+
+    private fun mapSortOptionToId(sortOption: ProductSearchQuery.SortOptions): Int {
+        return when (sortOption) {
+            ProductSearchQuery.SortOptions.NAME -> R.id.name_radio_button
+            ProductSearchQuery.SortOptions.DISTANCE -> R.id.distance_radio_button
+            ProductSearchQuery.SortOptions.PRICE -> R.id.price_radio_button
         }
     }
 

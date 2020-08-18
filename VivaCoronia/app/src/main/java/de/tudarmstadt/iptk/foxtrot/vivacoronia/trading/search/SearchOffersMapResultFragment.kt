@@ -1,8 +1,6 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.location.LocationManager
 import android.os.Bundle
 import android.view.*
 import android.widget.PopupMenu
@@ -14,14 +12,13 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentSearchOffersMapResultBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.LocationUtility
 
 class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : Fragment() {
     companion object {
@@ -41,19 +38,7 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
 
     private val callback = OnMapReadyCallback { googleMap ->
 
-        userLocation = LatLng(0.0, 0.0)
-        if (PermissionHandler.checkLocationPermissions(requireActivity())) {
-            val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            @SuppressLint("MissingPermission") // Check is in PermissionHandler
-            var currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            @SuppressLint("MissingPermission")
-            if(currentLocation == null){
-                currentLocation = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER)
-            }
-            if (currentLocation != null)
-                userLocation = LatLng(currentLocation.latitude, currentLocation.longitude)
-        }
-
+        userLocation = LocationUtility.getLastKnownLocation(requireActivity()) ?: LatLng(0.0, 0.0)
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15F))
 
         mClusterManager = ClusterManager(requireContext(), googleMap)

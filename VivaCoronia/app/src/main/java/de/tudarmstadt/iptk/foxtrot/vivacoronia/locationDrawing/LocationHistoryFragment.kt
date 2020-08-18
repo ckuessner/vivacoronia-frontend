@@ -1,10 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.locationDrawing
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Color
 import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -24,7 +21,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.jakewharton.threetenabp.AndroidThreeTen
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.LocationApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentLocationHistoryBinding
@@ -32,6 +28,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.getColorArray
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.getLatLong
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.preprocessedCoordinatesForDrawing
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.LocationUtility
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
@@ -62,18 +59,7 @@ class LocationHistoryFragment : Fragment() {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
-        var startLocation = LatLng(0.0, 0.0)
-        if (PermissionHandler.checkLocationPermissions(requireActivity())) {
-            val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            @SuppressLint("MissingPermission") // Check is in PermissionHandler
-            var currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            @SuppressLint("MissingPermission")
-            if(currentLocation == null){
-                currentLocation = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER)
-            }
-            if (currentLocation != null)
-                startLocation = LatLng(currentLocation.latitude, currentLocation.longitude)
-        }
+        val startLocation = LocationUtility.getLastKnownLocation(requireActivity()) ?: LatLng(0.0, 0.0)
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startLocation, 15F))
 
         val builder = MaterialDatePicker.Builder.dateRangePicker()

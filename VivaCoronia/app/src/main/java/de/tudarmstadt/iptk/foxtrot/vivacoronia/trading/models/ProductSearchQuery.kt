@@ -28,15 +28,15 @@ class ProductSearchQuery {
         if (category.isNotEmpty())
             builder.appendQueryParameter("productCategory", category)
         if (priceMin.isNotEmpty())
-            builder.appendQueryParameter("priceMin", priceMin)
+            builder.appendQueryParameter("priceMin", priceMin.replace(",", "."))
         if (priceMax.isNotEmpty())
-            builder.appendQueryParameter("priceMax", priceMax)
+            builder.appendQueryParameter("priceMax", priceMax.replace(",", "."))
         if (location != null) {
             builder.appendQueryParameter("longitude", location!!.longitude.toString())
             builder.appendQueryParameter("latitude", location!!.latitude.toString())
         }
         if (radiusInKm != 0)
-            builder.appendQueryParameter("radius", radiusInKm.toString())
+            builder.appendQueryParameter("radiusInKm", radiusInKm.toString())
 
         builder.appendQueryParameter("sortBy", sortBy.attribute)
         return builder.toString().replaceFirst("?", "")
