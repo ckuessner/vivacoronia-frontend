@@ -62,7 +62,7 @@ class AdminFragment : Fragment() {
                     val succJWT = AuthenticationCommunicator.makeNewJWT(ctx, pw, "", true)
                     requireActivity().runOnUiThread {
                         when(succJWT){
-                            0 -> Log.i("admin", "succ")//TODO: show succession
+                            0 -> Toast.makeText(ctx, "You can now access admin features!", Toast.LENGTH_SHORT).show()
                             else -> AuthenticationCommunicator.handleErrorShowing(ctx, succJWT)
                         }
                     }
@@ -70,6 +70,7 @@ class AdminFragment : Fragment() {
             }
         }
     }
+
 
 
     companion object {
