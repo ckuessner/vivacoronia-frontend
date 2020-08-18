@@ -103,10 +103,11 @@ abstract class ApiBaseClient {
         constructor(method: Int,
                     url: String,
                     req: Response.Listener<String>,
-                    error: Response.ErrorListener? = null, ctx: Context, jsonArr : JSONArray? = null, jsonObj : JSONObject? = null) : super(method, url, req, ErrorJWTCheck(ctx, error)) {
+                    error: Response.ErrorListener? = null, ctx: Context, jsonArr : JSONArray? = null, jsonObj : JSONObject? = null, isAdmin: Boolean = false) : super(method, url, req, ErrorJWTCheck(ctx, error)) {
             this.jsonArr = jsonArr
             this.jsonObj = jsonObj
-            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.JWT, null) as String
+            val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
+            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, null) as String
         }
 
         inner class JWTRequestException : java.lang.Exception("You didn't input a jsonObject or a jsonArray")
@@ -128,12 +129,14 @@ abstract class ApiBaseClient {
     protected class JsonObjectJWT : JsonObjectRequest {
         private val jwt : String
         private val ctx: Context
-        constructor(method: Int, url : String, body : JSONObject? = null, list : Listener<JSONObject>, error: Response.ErrorListener? = null,  ctx : Context) : super(method, url, body, list, ErrorJWTCheck(ctx, error)){
-            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString("jwt", null) as String
+        constructor(method: Int, url : String, body : JSONObject? = null, list : Listener<JSONObject>, error: Response.ErrorListener? = null,  ctx : Context, isAdmin : Boolean = false) : super(method, url, body, list, ErrorJWTCheck(ctx, error)){
+            val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
+            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, null) as String
             this.ctx = ctx
         }
-        constructor(url: String, body: JSONObject? = null, list : Listener<JSONObject>, error: Response.ErrorListener? = null, ctx: Context) : super(url, body, list, ErrorJWTCheck(ctx, error)){
-            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString("jwt", null) as String
+        constructor(url: String, body: JSONObject? = null, list : Listener<JSONObject>, error: Response.ErrorListener? = null, ctx: Context, isAdmin : Boolean = false) : super(url, body, list, ErrorJWTCheck(ctx, error)){
+            val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
+            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, null) as String
             this.ctx = ctx
         }
         override fun getHeaders(): MutableMap<String, String> {
@@ -145,13 +148,15 @@ abstract class ApiBaseClient {
     protected class JsonArrayJWT : JsonArrayRequest {
         private val ctx : Context
         private val jwt : String
-        constructor(url : String, list: Listener<JSONArray>, error: Response.ErrorListener? = null, ctx: Context) : super(url, list, ErrorJWTCheck(ctx, error)){
+        constructor(url : String, list: Listener<JSONArray>, error: Response.ErrorListener? = null, ctx: Context, isAdmin : Boolean = false) : super(url, list, ErrorJWTCheck(ctx, error)){
             this.ctx = ctx
-            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString("jwt", null) as String
+            val getterString = if(isAdmin) Constants.JWT else Constants.adminJWT
+            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, null) as String
         }
-        constructor(method: Int, url: String, body: JSONArray? = null, list: Listener<JSONArray>, error: Response.ErrorListener? = null, ctx : Context) : super(method, url, body, list, ErrorJWTCheck(ctx, error)){
+        constructor(method: Int, url: String, body: JSONArray? = null, list: Listener<JSONArray>, error: Response.ErrorListener? = null, ctx : Context, isAdmin : Boolean = false) : super(method, url, body, list, ErrorJWTCheck(ctx, error)){
             this.ctx = ctx
-            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString("jwt", null) as String
+            val getterString = if(isAdmin) Constants.JWT else Constants.adminJWT
+            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, null) as String
         }
         override fun getHeaders(): MutableMap<String, String> {
             return getJWTHeaderS(jwt)
@@ -163,13 +168,17 @@ abstract class ApiBaseClient {
     this class catches 401 authentication error and tries to create a new jwt for access by logging in
 
      */
-    private class ErrorJWTCheck(val ctx : Context, val errorSuper : Response.ErrorListener?) : Response.ErrorListener {
+    private class ErrorJWTCheck(val ctx : Context, val errorSuper : Response.ErrorListener?, val isAdmin : Boolean = false) : Response.ErrorListener {
         override fun onErrorResponse(error: VolleyError?) {
-            if (error?.networkResponse != null) {
+            if (error?.networkResponse != null && !isAdmin) {
                 if(error.networkResponse.statusCode == 401){
                     val intent = Intent(ctx, LoginActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     ctx.startActivity(intent)
+                    errorSuper?.onErrorResponse(error)
+                }
+                else if (error.networkResponse.statusCode == 401 && isAdmin){
+                    Toast.makeText(ctx, "You don't have permission for this, try to log in as admin", Toast.LENGTH_SHORT).show()
                     errorSuper?.onErrorResponse(error)
                 }
             }

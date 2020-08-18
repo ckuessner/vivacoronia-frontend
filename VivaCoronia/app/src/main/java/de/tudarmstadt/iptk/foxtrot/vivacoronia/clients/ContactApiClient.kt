@@ -21,7 +21,7 @@ object ContactApiClient : ApiBaseClient() {
         val requestUrl = Uri.parse(getEndpoint()).buildUpon()
             .appendQueryParameter("ids", ids.joinToString())
             .build().toString()
-        val request = JsonArrayRequest(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) })
+        val request = JsonArrayJWT(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) }, context)
         requestQueue.add(request)
         val test = responseFuture.get().toString()
         return parseContacts(test)
