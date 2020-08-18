@@ -23,7 +23,7 @@ class SearchOffersListResultFragment(private val parent: SearchOffersFragment) :
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search_offers_list_result, container, false)
 
         binding.offerListViewModel = ViewModelProvider(requireActivity()).get(OfferListViewModel::class.java)
-        val adapter = SearchResultAdapter(SearchResultItemListener { parent.viewModel.onOfferDetailClick(it) }, SearchResultCallListener { parent.viewModel.onCallButtonClick(it) })
+        val adapter = SearchResultAdapter(SearchResultItemListener { parent.viewModel.onOfferDetailClick(it) }, SearchResultCallListener { parent.viewModel.onCallButtonClick(it, requireActivity()) })
         binding.resultList.adapter = adapter
 
         parent.viewModel.searchResults.observe(viewLifecycleOwner, Observer<List<Offer>> {

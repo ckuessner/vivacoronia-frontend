@@ -1,11 +1,14 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search
 
-import android.util.Log
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
+
 
 class SearchOffersViewModel : ViewModel() {
     val searchQuery = MutableLiveData<ProductSearchQuery>()
@@ -23,9 +26,13 @@ class SearchOffersViewModel : ViewModel() {
         _highlightOfferOnMap.value = searchResults.value!!.first { it.id == id }
     }
 
-    fun onCallButtonClick(id: String) {
-        val test = searchResults.value!!.first {it.id == id}.phoneNumber
-        Log.d("call", "called number $id")
+    fun onCallButtonClick(id: String, activity: Activity) {
+        val numberIfAvailable = searchResults.value!!.first {it.id == id}.phoneNumber
+        if (numberIfAvailable != ""){
+            val intent = Intent(Intent.ACTION_DIAL)
+            intent.data = Uri.parse("tel:$numberIfAvailable")
+            activity.startActivity(intent)
+        }
     }
 
     fun onOfferDetailClickNavigated() {
