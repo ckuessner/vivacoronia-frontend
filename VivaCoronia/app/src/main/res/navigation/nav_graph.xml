@@ -31,4 +31,10 @@
         android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.spreadMap.SpreadMapFragment"
         android:label="Spread Map"
         tools:layout="@layout/fragment_spread_map" />
+    <fragment
+        android:id="@+id/adminLoginFragment"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.AdminFragment"
+        android:label="Admin Login"
+        tools:layout="@layout/fragment_admin"
+        />
 </navigation>

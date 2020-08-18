@@ -37,7 +37,14 @@ object AuthenticationCommunicator : ApiBaseClient(){
 
 
             val jsonPostRequest = object : JsonObjectRequest(Request.Method.POST, url, jsonPW, responseFuture, Response.ErrorListener {
-                Log.i(TAG, it.message ?: "something went wrong while taking jwt")
+                if(it.networkResponse != null && isAdmin){
+                    if(it.networkResponse.statusCode == 401){
+                        Toast.makeText(ctx, "The password you put in wasn't correct for admin access, please go back or try again", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                else {
+                    Toast.makeText(ctx, "Something went wrong while connecting, oops", Toast.LENGTH_SHORT).show()
+                }
             }){
 
                 override fun getBodyContentType(): String {

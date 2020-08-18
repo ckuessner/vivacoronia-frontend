@@ -27,5 +27,10 @@
         android:title="Spreadmap"
         android:icon="@drawable/ic_corona"/>
 
+    <item
+        android:id="@+id/menu_item_adminLogin"
+        android:title="AdminLogin"
+        />
+
 
 </menu>

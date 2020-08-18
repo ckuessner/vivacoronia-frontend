@@ -74,7 +74,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.tradingOverviewFragment,
                 R.id.achievementsFragment,
                 R.id.infectionStatusFragment,
-                R.id.spreadMapFragment
+                R.id.spreadMapFragment,
+                R.id.adminLoginFragment
             ),
             findViewById<DrawerLayout>(R.id.drawer_layout)
         )
@@ -105,6 +106,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.menu_item_spreadmap -> {
                     navController.navigate(R.id.spreadMapFragment)
+                }
+                R.id.menu_item_adminLogin -> {
+                    navController.navigate(R.id.adminLoginFragment)
                 }
             }
             findViewById<DrawerLayout>(R.id.drawer_layout).closeDrawer(navView)
