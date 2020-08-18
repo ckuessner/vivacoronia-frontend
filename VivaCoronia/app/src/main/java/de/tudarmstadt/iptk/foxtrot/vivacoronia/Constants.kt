@@ -32,6 +32,12 @@ object Constants {
     val SERVER_WEBSOCKET_URL = BuildConfig.WEBSOCKET_SERVER
     val SERVER_BASE_URL = BuildConfig.API_SERVER
 
+    // for error handling
+    val AUTH_ERROR = 401
+    val NULL_QUEUE = -1
+    val NO_INTERNET = -2
+    val VOLLEY_ERROR = -3
+
 
     val DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS"
 }

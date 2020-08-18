@@ -33,14 +33,15 @@ class LoginActivity : AppCompatActivity() {
             if(canContinue){
                 val pw = passwordTextView.text.toString()
                 val userID = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.USER_ID, null) as String
-                var succJWT = false
+                var succJWT = 0
                 GlobalScope.launch {
                     succJWT = AuthenticationCommunicator.makeNewJWT(ctx, pw, userID)
                     runOnUiThread {
-                        if (succJWT) finish()
-                        else {
-                            Toast.makeText(ctx, "Something went wrong while logging in, check internet and try again", Toast.LENGTH_SHORT).show()
+                        if(succJWT == 0){
+                            Toast.makeText(ctx, "Successful login", Toast.LENGTH_SHORT).show()
+                            finish()
                         }
+                        AuthenticationCommunicator.handleErrorShowing(ctx, succJWT)
                     }
                 }
             }

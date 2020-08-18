@@ -2,6 +2,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,8 +10,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.handleCoroutineException
 import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
@@ -50,7 +53,6 @@ class AdminFragment : Fragment() {
         val loginBtn = view.findViewById<Button>(R.id.adminLogin)
         val firstPw = view.findViewById<TextView>(R.id.adminPw)
         val secondPw = view.findViewById<TextView>(R.id.adminPwRe)
-
         loginBtn.setOnClickListener {
             val canContinue = TextViewUtils.checkMatchingPasswords(firstPw, secondPw)
             if (canContinue){
@@ -59,8 +61,10 @@ class AdminFragment : Fragment() {
                 GlobalScope.launch {
                     val succJWT = AuthenticationCommunicator.makeNewJWT(ctx, pw, "", true)
                     requireActivity().runOnUiThread {
-                        if(succJWT) //TODO: equivalent of fragment closing to get to mainActivity
-                        else Toast.makeText(ctx, "Something went wrong, please check your internet and try again", Toast.LENGTH_SHORT).show()
+                        when(succJWT){
+                            0 -> Log.i("admin", "succ")//TODO: show succession
+                            else -> AuthenticationCommunicator.handleErrorShowing(ctx, succJWT)
+                        }
                     }
                 }
             }

@@ -48,25 +48,20 @@ class RegisterActivity : AppCompatActivity() {
             if (canContinue) {
                 val pw = passwordTextView.text.toString()
                 GlobalScope.launch {
-                    val userID = AuthenticationCommunicator.createAndSaveUser(ctx, pw)
-                    var jwtDone = false
-                    if(userID != null) {
+                    val creationSucc = AuthenticationCommunicator.createAndSaveUser(ctx, pw)
+                    var jwtDone = 0
+                    if(creationSucc == 0) {
+                        //since we only get useriD == 0 if everything was ok, we can safely cast to string
+                        val userID = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.USER_ID, null) as String
                         jwtDone = AuthenticationCommunicator.makeNewJWT(ctx, pw, userID)
                         runOnUiThread {
-                            if (jwtDone) finishRegister(ctx)
+                            if (jwtDone == 0) finishRegister(ctx)
                             else
-                                Toast.makeText(ctx, "Something went wrong while creating your account, check internet and try again", Toast.LENGTH_SHORT).show()
+                                AuthenticationCommunicator.handleErrorShowing(ctx, jwtDone)
                         }
                     }
-                    else {
-                        runOnUiThread {
-                            Toast.makeText(
-                                ctx,
-                                "Something went wrong while creating your account, check internet and try again",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
+                    else
+                        AuthenticationCommunicator.handleErrorShowing(ctx, creationSucc)
                 }
             }
         }
