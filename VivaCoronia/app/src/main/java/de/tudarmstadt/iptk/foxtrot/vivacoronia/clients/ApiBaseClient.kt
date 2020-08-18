@@ -103,7 +103,7 @@ abstract class ApiBaseClient {
         constructor(method: Int,
                     url: String,
                     req: Response.Listener<String>,
-                    error: Response.ErrorListener? = null, ctx: Context, jsonArr : JSONArray? = null, jsonObj : JSONObject? = null, isAdmin: Boolean = false) : super(method, url, req, ErrorJWTCheck(ctx, error)) {
+                    error: Response.ErrorListener? = null, ctx: Context, jsonArr : JSONArray? = null, jsonObj : JSONObject? = null, isAdmin: Boolean = false) : super(method, url, req, ErrorJWTCheck(ctx, error, isAdmin)) {
             this.jsonArr = jsonArr
             this.jsonObj = jsonObj
             val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
@@ -129,12 +129,12 @@ abstract class ApiBaseClient {
     protected class JsonObjectJWT : JsonObjectRequest {
         private val jwt : String
         private val ctx: Context
-        constructor(method: Int, url : String, body : JSONObject? = null, list : Listener<JSONObject>, error: Response.ErrorListener? = null,  ctx : Context, isAdmin : Boolean = false) : super(method, url, body, list, ErrorJWTCheck(ctx, error)){
+        constructor(method: Int, url : String, body : JSONObject? = null, list : Listener<JSONObject>, error: Response.ErrorListener? = null,  ctx : Context, isAdmin : Boolean = false) : super(method, url, body, list, ErrorJWTCheck(ctx, error, isAdmin)){
             val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
             this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, null) as String
             this.ctx = ctx
         }
-        constructor(url: String, body: JSONObject? = null, list : Listener<JSONObject>, error: Response.ErrorListener? = null, ctx: Context, isAdmin : Boolean = false) : super(url, body, list, ErrorJWTCheck(ctx, error)){
+        constructor(url: String, body: JSONObject? = null, list : Listener<JSONObject>, error: Response.ErrorListener? = null, ctx: Context, isAdmin : Boolean = false) : super(url, body, list, ErrorJWTCheck(ctx, error, isAdmin)){
             val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
             this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, null) as String
             this.ctx = ctx
@@ -148,12 +148,12 @@ abstract class ApiBaseClient {
     protected class JsonArrayJWT : JsonArrayRequest {
         private val ctx : Context
         private val jwt : String
-        constructor(url : String, list: Listener<JSONArray>, error: Response.ErrorListener? = null, ctx: Context, isAdmin : Boolean = false) : super(url, list, ErrorJWTCheck(ctx, error)){
+        constructor(url : String, list: Listener<JSONArray>, error: Response.ErrorListener? = null, ctx: Context, isAdmin : Boolean = false) : super(url, list, ErrorJWTCheck(ctx, error, isAdmin)){
             this.ctx = ctx
             val getterString = if(isAdmin) Constants.JWT else Constants.adminJWT
             this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, null) as String
         }
-        constructor(method: Int, url: String, body: JSONArray? = null, list: Listener<JSONArray>, error: Response.ErrorListener? = null, ctx : Context, isAdmin : Boolean = false) : super(method, url, body, list, ErrorJWTCheck(ctx, error)){
+        constructor(method: Int, url: String, body: JSONArray? = null, list: Listener<JSONArray>, error: Response.ErrorListener? = null, ctx : Context, isAdmin : Boolean = false) : super(method, url, body, list, ErrorJWTCheck(ctx, error, isAdmin)){
             this.ctx = ctx
             val getterString = if(isAdmin) Constants.JWT else Constants.adminJWT
             this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, null) as String
@@ -168,7 +168,7 @@ abstract class ApiBaseClient {
     this class catches 401 authentication error and tries to create a new jwt for access by logging in
 
      */
-    private class ErrorJWTCheck(val ctx : Context, val errorSuper : Response.ErrorListener?, val isAdmin : Boolean = false) : Response.ErrorListener {
+    private class ErrorJWTCheck(val ctx : Context, val errorSuper : Response.ErrorListener?, val isAdmin : Boolean) : Response.ErrorListener {
         override fun onErrorResponse(error: VolleyError?) {
             if (error?.networkResponse != null && !isAdmin) {
                 if(error.networkResponse.statusCode == 401){
