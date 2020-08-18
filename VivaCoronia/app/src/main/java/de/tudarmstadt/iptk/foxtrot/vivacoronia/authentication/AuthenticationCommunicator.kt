@@ -29,7 +29,7 @@ object AuthenticationCommunicator : ApiBaseClient(){
          */
         fun handleErrorShowing(ctx: Context, errorCode: Int) {
             when(errorCode){
-                Constants.NO_INTERNET -> Toast.makeText(ctx, "No internet", Toast.LENGTH_SHORT).show()
+                Constants.NO_INTERNET -> Toast.makeText(ctx, "No internet, check your connection and try again", Toast.LENGTH_SHORT).show()
                 Constants.AUTH_ERROR -> Toast.makeText(ctx, "Password was wrong, try again or go back", Toast.LENGTH_SHORT).show()
                 Constants.VOLLEY_ERROR -> Toast.makeText(ctx, "Something went wrong with the server, oops", Toast.LENGTH_SHORT).show()
             }

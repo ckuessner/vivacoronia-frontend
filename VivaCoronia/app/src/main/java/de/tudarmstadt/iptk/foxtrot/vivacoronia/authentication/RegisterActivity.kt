@@ -61,7 +61,9 @@ class RegisterActivity : AppCompatActivity() {
                         }
                     }
                     else
-                        AuthenticationCommunicator.handleErrorShowing(ctx, creationSucc)
+                        runOnUiThread {
+                            AuthenticationCommunicator.handleErrorShowing(ctx, creationSucc)
+                        }
                 }
             }
         }

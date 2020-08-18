@@ -41,7 +41,9 @@ class LoginActivity : AppCompatActivity() {
                             Toast.makeText(ctx, "Successful login", Toast.LENGTH_SHORT).show()
                             finish()
                         }
-                        AuthenticationCommunicator.handleErrorShowing(ctx, succJWT)
+                        else {
+                            AuthenticationCommunicator.handleErrorShowing(ctx, succJWT)
+                        }
                     }
                 }
             }
