@@ -10,7 +10,7 @@ import java.util.*
 class Offer(
     var product: String,
     var amount: Int,
-    var priceTotal: Double,
+    var price: Double,
     var location: LatLng,
     var details: String,
     @Json(name = "_id") var id: String,
@@ -45,7 +45,7 @@ class Offer(
         return other != null
                 && other is Offer
                 && other.amount == amount
-                && other.priceTotal == priceTotal
+                && other.price == price
                 && other.location == location
                 && other.details == details
                 && other.id == id
@@ -56,13 +56,13 @@ class Offer(
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(amount, priceTotal, location, details, id, productCategory, product, phoneNumber)
+        return Objects.hash(amount, price, location, details, id, productCategory, product, phoneNumber)
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(product)
         parcel.writeInt(amount)
-        parcel.writeDouble(priceTotal)
+        parcel.writeDouble(price)
         parcel.writeParcelable(location, flags)
         parcel.writeString(details)
         parcel.writeString(id)

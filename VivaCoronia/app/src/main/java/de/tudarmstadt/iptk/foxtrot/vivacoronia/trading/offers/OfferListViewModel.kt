@@ -61,18 +61,18 @@ class OfferViewModel(var offer: Offer) : ViewModel() {
 
     var rawPrice: String
         get() {
-            return CurrencyFormatter.formatWithoutCurrency(offer.priceTotal)
+            return CurrencyFormatter.formatWithoutCurrency(offer.price)
         }
         set(value) {
-            offer.priceTotal = CurrencyFormatter.parseWithoutCurrency(value)
+            offer.price = CurrencyFormatter.parseWithoutCurrency(value)
         }
 
     var priceWithCurrency: String
         get() {
-            return CurrencyFormatter.format(offer.priceTotal)
+            return CurrencyFormatter.format(offer.price)
         }
         set(value) {
-            offer.priceTotal = CurrencyFormatter.parse(value)
+            offer.price = CurrencyFormatter.parse(value)
         }
 
     var details: String
