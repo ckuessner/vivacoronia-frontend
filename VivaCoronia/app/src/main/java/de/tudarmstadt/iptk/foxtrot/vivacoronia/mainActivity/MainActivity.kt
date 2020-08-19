@@ -136,6 +136,12 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount != 0) {
+            supportFragmentManager.popBackStack()
+        }
+    }
+
     //==============================================================================================
     // methods for drawer menu
     override fun onSupportNavigateUp(): Boolean {

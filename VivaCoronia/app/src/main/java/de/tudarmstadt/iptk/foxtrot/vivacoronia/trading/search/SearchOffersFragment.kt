@@ -32,7 +32,13 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
+
+        // needed on return to this fragment with onApplyQuery, because this method sometimes gets called after onApplyQuery
+        val isLoading = this::binding.isInitialized && binding.progressHorizontal.visibility == View.VISIBLE
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search_offers, container, false)
+        if (isLoading)
+            binding.progressHorizontal.visibility = View.VISIBLE
+
         viewModel = ViewModelProvider(requireActivity()).get(SearchOffersViewModel::class.java)
         if (viewModel.searchQuery.value == null) {
             viewModel.searchQuery.value = ProductSearchQuery()
