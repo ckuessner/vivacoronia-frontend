@@ -86,6 +86,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver> <!-- activities here and first has to be main activity -->
+        <!--TODO disable landscape mode-->
         <activity android:name=".mainActivity.MainActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"
