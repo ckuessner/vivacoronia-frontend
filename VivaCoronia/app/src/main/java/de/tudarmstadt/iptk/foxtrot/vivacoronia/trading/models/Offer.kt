@@ -13,7 +13,7 @@ class Offer(
     var priceTotal: Double,
     var location: LatLng,
     var details: String,
-    @Json(name="_id") var id: String,
+    @Json(name = "_id") var id: String,
     var productCategory: String,
     var distanceToUser: Double,
     var phoneNumber: String
@@ -52,6 +52,7 @@ class Offer(
                 && other.productCategory == productCategory
                 && other.product == product
                 && other.phoneNumber == phoneNumber
+                && other.distanceToUser == distanceToUser
     }
 
     override fun hashCode(): Int {
@@ -66,6 +67,7 @@ class Offer(
         parcel.writeString(details)
         parcel.writeString(id)
         parcel.writeString(productCategory)
+        parcel.writeDouble(distanceToUser)
         parcel.writeString(phoneNumber)
     }
 
@@ -77,7 +79,8 @@ class Offer(
         var categories = MutableLiveData<MutableList<String>>()
 
         @Suppress("unused") // The creator is necessary to implement Parcelable
-        @JvmField val CREATOR = object : Parcelable.Creator<Offer> {
+        @JvmField
+        val CREATOR = object : Parcelable.Creator<Offer> {
             override fun createFromParcel(parcel: Parcel): Offer {
                 return Offer(parcel)
             }
