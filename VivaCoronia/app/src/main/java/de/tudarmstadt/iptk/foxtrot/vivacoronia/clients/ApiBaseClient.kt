@@ -98,25 +98,33 @@ abstract class ApiBaseClient {
     This method sends a volley request with JWTs.
      */
     protected class StringRequestJWT : StringRequest{
-        private var jsonObj : JSONObject? = null
-        private var jsonArr : JSONArray? = null
         private val jwt : String
         private val isAdmin: Boolean
-        constructor(method: Int, url: String, list: Listener<String>, error: Response.ErrorListener? = null, ctx: Context, isAdmin : Boolean = false) : super(method, url, list, ErrorJWTCheck(ctx, error, isAdmin)){
+        private val body : String?
+        constructor(method: Int, url: String, list: Listener<String>, error: Response.ErrorListener? = null, ctx: Context, body: String? = null,isAdmin : Boolean = false) : super(method, url, list, ErrorJWTCheck(ctx, error, isAdmin)){
             this.isAdmin = isAdmin
             val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
             val defValue = if(isAdmin) "notNull" else null
             this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, defValue) as String
+            this.body = body
         }
-        constructor(url : String, list: Listener<String>, error: Response.ErrorListener? = null, ctx: Context, isAdmin : Boolean = false): super(url, list, ErrorJWTCheck(ctx, error, isAdmin)){
+        constructor(url : String, list: Listener<String>,error: Response.ErrorListener? = null, ctx: Context, body: String? = null, isAdmin : Boolean = false): super(url, list, ErrorJWTCheck(ctx, error, isAdmin)){
             this.isAdmin = isAdmin
             val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
             this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, null) as String
+            this.body = body
         }
 
 
         override fun getHeaders(): MutableMap<String, String> {
             return getJWTHeaderS(jwt, isAdmin)
+        }
+        override fun getBody(): ByteArray {
+            return body?.toByteArray() ?: super.getBody()
+        }
+
+        override fun getBodyContentType(): String {
+            return "application/json"
         }
     }
 

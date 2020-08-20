@@ -20,10 +20,10 @@ object InfectionApiClient : ApiBaseClient() {
         val queue = getRequestQueue(context) ?: return
         val url = getEndpoint(context)
 
-        val request = JsonObjectJWT(
-            url, infectionStatusData,
+        val request = StringRequestJWT(
+            url,
             Response.Listener { onUploadSuccessful() },
-            Response.ErrorListener { e -> onUploadFailed(e) }, context
+            Response.ErrorListener { e -> onUploadFailed(e) }, context, infectionStatusData.toString()
         )
 
 
