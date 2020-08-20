@@ -102,29 +102,21 @@ abstract class ApiBaseClient {
         private var jsonArr : JSONArray? = null
         private val jwt : String
         private val isAdmin: Boolean
-        constructor(method: Int,
-                    url: String,
-                    req: Response.Listener<String>,
-                    error: Response.ErrorListener? = null, ctx: Context, jsonArr : JSONArray? = null, jsonObj : JSONObject? = null, isAdmin: Boolean = false) : super(method, url, req, ErrorJWTCheck(ctx, error, isAdmin)) {
+        constructor(method: Int, url: String, list: Listener<String>, error: Response.ErrorListener? = null, ctx: Context, isAdmin : Boolean = false) : super(method, url, list, ErrorJWTCheck(ctx, error, isAdmin)){
             this.isAdmin = isAdmin
-            this.jsonArr = jsonArr
-            this.jsonObj = jsonObj
+            val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
+            val defValue = if(isAdmin) "notNull" else null
+            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, defValue) as String
+        }
+        constructor(url : String, list: Listener<String>, error: Response.ErrorListener? = null, ctx: Context, isAdmin : Boolean = false): super(url, list, ErrorJWTCheck(ctx, error, isAdmin)){
+            this.isAdmin = isAdmin
             val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
             this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, null) as String
         }
 
-        inner class JWTRequestException : java.lang.Exception("You didn't input a jsonObject or a jsonArray")
 
         override fun getHeaders(): MutableMap<String, String> {
             return getJWTHeaderS(jwt, isAdmin)
-        }
-        override fun getBodyContentType(): String = "application/json; charset=utf-8"
-        override fun getBody(): ByteArray {
-            return when {
-                jsonArr != null -> jsonArr.toString().toByteArray(Charsets.UTF_8)
-                jsonObj != null -> jsonObj.toString().toByteArray(Charsets.UTF_8)
-                else -> throw JWTRequestException()
-            }
         }
     }
 
