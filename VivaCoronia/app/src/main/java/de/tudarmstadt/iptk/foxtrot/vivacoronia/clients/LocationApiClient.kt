@@ -55,7 +55,7 @@ object LocationApiClient : ApiBaseClient() {
 
         val url = getUserEndpoint(context)
 
-        val jsonStringRequest = StringRequestJWT(Request.Method.POST, url, Response.Listener { response ->
+        val jsonStringRequest = JsonArrayJWT(Request.Method.POST, url, locationJSONArray, Response.Listener { response ->
             Log.i(
                 TAG,
                 "server response: $response"
@@ -72,7 +72,7 @@ object LocationApiClient : ApiBaseClient() {
                     TAG,
                     "upload failed: $error"
                 )
-            },context, locationJSONArray)
+            },context)
 
 
 
