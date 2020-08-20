@@ -99,7 +99,7 @@ object LocationApiClient : ApiBaseClient() {
      * @param json: given json file as string
      * @return hashmap with userID as key and the corresponding locations as entries
      */
-    private fun parseGeoJSONForMultipleID(json: String): MutableMap<Int, List<Location>>{
+    private fun parseGeoJSONForMultipleID(json: String): MutableMap<String, List<Location>>{
         val parser: Parser = Parser.default()
         val parsed: JsonArray<*> = parser.parse(StringBuilder(json)) as JsonArray<*>
         val loc = parsed["location"] as JsonArray<*>
@@ -116,12 +116,12 @@ object LocationApiClient : ApiBaseClient() {
      * @param ids JsonArray to parse userIDs from
      * @return hashmap with userID as key and the corresponding locations as entries
      */
-    private fun createCoordinatesUserMap(coordinates: JsonArray<*>, timestamps: JsonArray<*>, ids: JsonArray<*>): MutableMap<Int, List<Location>>{
-        val formatter = org.threeten.bp.format.DateTimeFormatter.ISO_ZONED_DATE_TIME
+    private fun createCoordinatesUserMap(coordinates: JsonArray<*>, timestamps: JsonArray<*>, ids: JsonArray<*>): MutableMap<String, List<Location>>{
+        val formatter = DateTimeFormatter.ISO_ZONED_DATE_TIME
         //val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        val map = mutableMapOf<Int, List<Location>>()
+        val map = mutableMapOf<String, List<Location>>()
         for (currentCoordinateIndex in 0 until coordinates.size) {
-            val currentID = ids[currentCoordinateIndex] as Int
+            val currentID = ids[currentCoordinateIndex].toString()
             val location = createLocationWithTimestamp(
                 timestamps,
                 currentCoordinateIndex,
@@ -148,7 +148,7 @@ object LocationApiClient : ApiBaseClient() {
      * @return a list of locations with coordinates and their respective timestamps
      */
     private fun createCoordinates(coordinates: JsonArray<*>, timestamps: JsonArray<*>): List<Location>{
-        val formatter = org.threeten.bp.format.DateTimeFormatter.ISO_ZONED_DATE_TIME
+        val formatter = DateTimeFormatter.ISO_ZONED_DATE_TIME
         //val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         val listOfCoordinates = ArrayList<Location>()
         for (currentCoordinateIndex in 0 until coordinates.size) {
@@ -204,7 +204,7 @@ object LocationApiClient : ApiBaseClient() {
         return parseGeoJSONForOneID(responseFuture.get().toString())
     }
 
-    fun getPositionsFromServer(context: Context, location: LatLng, distance: Int, onErrorCallback: ((error: VolleyError) -> Unit)): MutableMap<Int, List<Location>>{
+    fun getPositionsFromServer(context: Context, location: LatLng, distance: Int, onErrorCallback: ((error: VolleyError) -> Unit)): MutableMap<String, List<Location>>{
         val requestQueue = getRequestQueue(context) ?: return HashMap()
         val responseFuture = RequestFuture.newFuture<JSONArray>()
         val requestUrl = Uri.parse(getEndpoint()).buildUpon()
@@ -213,7 +213,7 @@ object LocationApiClient : ApiBaseClient() {
             .appendQueryParameter("distance", distance.toString())
             .build().toString()
 
-        val request = JsonArrayJWT(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) }, context)
+        val request = JsonArrayJWT(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) }, context, true)
         requestQueue.add(request)
         return parseGeoJSONForMultipleID(responseFuture.get().toString())
     }

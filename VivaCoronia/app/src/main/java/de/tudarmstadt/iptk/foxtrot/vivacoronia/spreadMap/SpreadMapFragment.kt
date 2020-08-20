@@ -178,7 +178,7 @@ class SpreadMapFragment : Fragment() {
         binding.progressHorizontal.visibility = View.VISIBLE
         binding.progressHorizontal.isIndeterminate = true
         GlobalScope.launch {
-            val response: MutableMap<Int, List<Location>> =
+            val response: MutableMap<String, List<Location>> =
                 LocationApiClient.getPositionsFromServer(requireContext(), location, distance, ::onFetchErrorCallback)
 
             requireActivity().runOnUiThread {
@@ -194,7 +194,7 @@ class SpreadMapFragment : Fragment() {
     private fun getContactsForIDs(){
         GlobalScope.launch {
             val ids = viewModel.spreadMapData.value!!.keys.toList()
-            val response: MutableMap<Int, Pair<Boolean, ZonedDateTime>> =
+            val response: MutableMap<String, Pair<Boolean, ZonedDateTime>> =
                 ContactApiClient.getContactsForIDsFromServer(ids, requireContext(), ::onFetchErrorCallback)
 
             requireActivity().runOnUiThread {
@@ -221,7 +221,7 @@ class SpreadMapFragment : Fragment() {
      * @param mMap: given map to draw on
      * draws the routes for every given userID in the KeyValue-Map on the GoogleMap with randomized colors
      */
-    private fun drawCoordinatesFromMap(coordinatesMap: MutableMap<Int, List<Location>>, contacts: MutableMap<Int, Pair<Boolean, ZonedDateTime>>?, mMap: GoogleMap){
+    private fun drawCoordinatesFromMap(coordinatesMap: MutableMap<String, List<Location>>, contacts: MutableMap<String, Pair<Boolean, ZonedDateTime>>?, mMap: GoogleMap){
         if(coordinatesMap.isEmpty()){
             binding.progressHorizontal.visibility = View.GONE
         }
@@ -293,8 +293,8 @@ class SpreadMapFragment : Fragment() {
      * @return KeyValue-Map with userIDs as keys and lists of location lists as values with each sublist representing a
      * part of the route not connected to the other parts
      */
-    private fun getPreprocessedCoordinateMap(coordinatesMap: MutableMap<Int, List<Location>>): Map<Int, List<List<Location>>>{
-        val returnMap: MutableMap<Int, List<List<Location>>> = mutableMapOf()
+    private fun getPreprocessedCoordinateMap(coordinatesMap: MutableMap<String, List<Location>>): Map<String, List<List<Location>>>{
+        val returnMap: MutableMap<String, List<List<Location>>> = mutableMapOf()
         for ((id,coordinates) in coordinatesMap){
             returnMap[id] = preprocessedCoordinatesForDrawing(coordinates, speedThreshold, distanceThreshold)
         }

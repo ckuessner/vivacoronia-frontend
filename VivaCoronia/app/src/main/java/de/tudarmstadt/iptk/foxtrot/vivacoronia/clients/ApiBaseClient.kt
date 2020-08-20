@@ -87,9 +87,10 @@ abstract class ApiBaseClient {
         }
     }
     companion object {
-        fun getJWTHeaderS(jwt: String): MutableMap<String, String> {
+        fun getJWTHeaderS(jwt: String, isAdmin: Boolean = false): MutableMap<String, String> {
+            val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
             val params = HashMap<String, String>()
-            params["jwt"] = jwt
+            params[getterString] = jwt
             return params
         }
     }
@@ -100,10 +101,12 @@ abstract class ApiBaseClient {
         private var jsonObj : JSONObject? = null
         private var jsonArr : JSONArray? = null
         private val jwt : String
+        private val isAdmin: Boolean
         constructor(method: Int,
                     url: String,
                     req: Response.Listener<String>,
                     error: Response.ErrorListener? = null, ctx: Context, jsonArr : JSONArray? = null, jsonObj : JSONObject? = null, isAdmin: Boolean = false) : super(method, url, req, ErrorJWTCheck(ctx, error, isAdmin)) {
+            this.isAdmin = isAdmin
             this.jsonArr = jsonArr
             this.jsonObj = jsonObj
             val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
@@ -113,7 +116,7 @@ abstract class ApiBaseClient {
         inner class JWTRequestException : java.lang.Exception("You didn't input a jsonObject or a jsonArray")
 
         override fun getHeaders(): MutableMap<String, String> {
-            return getJWTHeaderS(jwt)
+            return getJWTHeaderS(jwt, isAdmin)
         }
         override fun getBodyContentType(): String = "application/json; charset=utf-8"
         override fun getBody(): ByteArray {
@@ -129,18 +132,23 @@ abstract class ApiBaseClient {
     protected class JsonObjectJWT : JsonObjectRequest {
         private val jwt : String
         private val ctx: Context
+        private val isAdmin: Boolean
         constructor(method: Int, url : String, body : JSONObject? = null, list : Listener<JSONObject>, error: Response.ErrorListener? = null,  ctx : Context, isAdmin : Boolean = false) : super(method, url, body, list, ErrorJWTCheck(ctx, error, isAdmin)){
+            this.isAdmin = isAdmin
             val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
-            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, null) as String
+            val defValue = if(isAdmin) "notNull" else null
+            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, defValue) as String
             this.ctx = ctx
         }
         constructor(url: String, body: JSONObject? = null, list : Listener<JSONObject>, error: Response.ErrorListener? = null, ctx: Context, isAdmin : Boolean = false) : super(url, body, list, ErrorJWTCheck(ctx, error, isAdmin)){
+            this.isAdmin = isAdmin
             val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
-            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, null) as String
+            val defValue = if(isAdmin) "notNull" else null
+            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, defValue) as String
             this.ctx = ctx
         }
         override fun getHeaders(): MutableMap<String, String> {
-            return getJWTHeaderS(jwt)
+            return getJWTHeaderS(jwt, isAdmin)
         }
     }
 
@@ -148,18 +156,23 @@ abstract class ApiBaseClient {
     protected class JsonArrayJWT : JsonArrayRequest {
         private val ctx : Context
         private val jwt : String
+        private val isAdmin: Boolean
         constructor(url : String, list: Listener<JSONArray>, error: Response.ErrorListener? = null, ctx: Context, isAdmin : Boolean = false) : super(url, list, ErrorJWTCheck(ctx, error, isAdmin)){
+            this.isAdmin = isAdmin
             this.ctx = ctx
-            val getterString = if(isAdmin) Constants.JWT else Constants.adminJWT
-            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, null) as String
+            val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
+            val defValue = if(isAdmin) "notNull" else null
+            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, defValue) as String
         }
         constructor(method: Int, url: String, body: JSONArray? = null, list: Listener<JSONArray>, error: Response.ErrorListener? = null, ctx : Context, isAdmin : Boolean = false) : super(method, url, body, list, ErrorJWTCheck(ctx, error, isAdmin)){
+            this.isAdmin = isAdmin
             this.ctx = ctx
-            val getterString = if(isAdmin) Constants.JWT else Constants.adminJWT
-            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, null) as String
+            val getterString = if(isAdmin) Constants.adminJWT else Constants.JWT
+            val defValue = if(isAdmin) "notNull" else null
+            this.jwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(getterString, defValue) as String
         }
         override fun getHeaders(): MutableMap<String, String> {
-            return getJWTHeaderS(jwt)
+            return getJWTHeaderS(jwt, isAdmin)
         }
     }
 

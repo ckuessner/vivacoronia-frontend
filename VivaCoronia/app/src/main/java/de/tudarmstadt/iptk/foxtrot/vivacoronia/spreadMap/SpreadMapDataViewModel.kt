@@ -6,6 +6,6 @@ import androidx.lifecycle.ViewModel
 import org.threeten.bp.ZonedDateTime
 
 class SpreadMapDataViewModel: ViewModel() {
-    val spreadMapData = MutableLiveData<MutableMap<Int, List<Location>>>()
-    val contactData = MutableLiveData<MutableMap<Int, Pair<Boolean, ZonedDateTime>>>()
+    val spreadMapData = MutableLiveData<MutableMap<String, List<Location>>>()
+    val contactData = MutableLiveData<MutableMap<String, Pair<Boolean, ZonedDateTime>>>()
 }
