@@ -21,6 +21,7 @@ object InfectionApiClient : ApiBaseClient() {
         val url = getEndpoint(context)
 
         val request = StringRequestJWT(
+            Request.Method.POST,
             url,
             Response.Listener { onUploadSuccessful() },
             Response.ErrorListener { e -> onUploadFailed(e) }, context, infectionStatusData.toString()
