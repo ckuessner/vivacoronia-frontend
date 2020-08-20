@@ -7,6 +7,7 @@ import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.RequestFuture
 import com.android.volley.toolbox.StringRequest
+import com.beust.klaxon.JsonObject
 import org.json.JSONObject
 
 object InfectionApiClient : ApiBaseClient() {
@@ -18,7 +19,13 @@ object InfectionApiClient : ApiBaseClient() {
     fun postInfectionStatus(context: Context, infectionStatusData: JSONObject, onUploadSuccessful: () -> Unit, onUploadFailed: (error: VolleyError) -> Unit){
         val queue = getRequestQueue(context) ?: return
         val url = getEndpoint(context)
-        val request = StringRequestJWT(Request.Method.POST, url, Response.Listener { onUploadSuccessful()}, Response.ErrorListener { e -> onUploadFailed(e)}, context)
+
+        val request = JsonObjectJWT(
+            url, infectionStatusData,
+            Response.Listener { onUploadSuccessful() },
+            Response.ErrorListener { e -> onUploadFailed(e) }, context
+        )
+
 
         queue.add(request)
     }
