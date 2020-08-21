@@ -29,7 +29,6 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
     private lateinit var binding: FragmentSearchOffersMapResultBinding
     private var mGoogleMap: GoogleMap? = null
     private var markers = mutableMapOf<LatLng, Pair<String, OfferClusterItem>>()
-    //private var selectedMarker: Marker? = null
     private var selectedOfferItem: OfferClusterItem? = null
     private var userLocation: LatLng? = null
     private var userZoom: Float = 15F
@@ -179,22 +178,10 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
     }
 }
 
-class OfferClusterItem: ClusterItem{
-    private val mPosition: LatLng
-    private val mTitle: String
-    private val mSnippet: String
-
-    constructor(latLng: LatLng){
-        mPosition = latLng
-        mTitle = ""
-        mSnippet = ""
-    }
-
-    constructor(latLng: LatLng, title: String, snippet: String){
-        mPosition = latLng
-        mTitle = title
-        mSnippet = snippet
-    }
+class OfferClusterItem(latLng: LatLng, title: String, snippet: String) : ClusterItem{
+    private val mPosition: LatLng = latLng
+    private val mTitle: String = title
+    private val mSnippet: String = snippet
 
     override fun getSnippet(): String {
         return mSnippet
@@ -236,5 +223,9 @@ class CustomClusterRenderer(
         if(selectedItem != null && item == selectedItem){
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
         }
+    }
+
+    override fun shouldRenderAsCluster(cluster: Cluster<OfferClusterItem>): Boolean {
+        return super.shouldRenderAsCluster(cluster) || cluster.size > 1
     }
 }
