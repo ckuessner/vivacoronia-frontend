@@ -29,7 +29,8 @@
 
     <item
         android:id="@+id/menu_item_adminLogin"
-        android:title="AdminLogin"
+        android:title="Admin Login"
+        android:icon="@drawable/ic_admin"
         />
 
 
