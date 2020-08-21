@@ -94,4 +94,6 @@
     <string name="admin_pw">"Enter admin password"</string>
     <string name="admin_pwRe">"Retype admin password"</string>
     <string name="admin_button">"Login as admin"</string>
+    <string name="spreadmap">Spreadmap</string>
+    <string name="admin_login">Admin Login</string>
 </resources>

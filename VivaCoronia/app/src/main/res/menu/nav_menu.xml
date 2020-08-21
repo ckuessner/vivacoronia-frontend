@@ -24,12 +24,12 @@
 
     <item
         android:id="@+id/menu_item_spreadmap"
-        android:title="Spreadmap"
+        android:title="@string/spreadmap"
         android:icon="@drawable/ic_corona"/>
 
     <item
         android:id="@+id/menu_item_adminLogin"
-        android:title="Admin Login"
+        android:title="@string/admin_login"
         android:icon="@drawable/ic_admin"
         />
 
