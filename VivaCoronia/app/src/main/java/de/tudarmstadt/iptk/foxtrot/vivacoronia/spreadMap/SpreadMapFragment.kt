@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.android.volley.VolleyError
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
+import com.google.android.material.datepicker.MaterialDatePicker
 
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
@@ -36,7 +37,11 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.preprocessedCoordinatesForDrawing
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.threeten.bp.LocalDate
+import org.threeten.bp.ZoneOffset
 import org.threeten.bp.ZonedDateTime
+import java.util.*
+import kotlin.collections.HashMap
 
 class SpreadMapFragment : Fragment() {
 
@@ -49,6 +54,10 @@ class SpreadMapFragment : Fragment() {
     private val speedThreshold: Float = 1F
     //current center for circle drawing
     private var currentCenter: LatLng? = null
+    private val dayInMillis = 24 * 60 * 60 * 1000
+
+    var selectionStart = Date(LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000)
+    var selectionEnd = Date(LocalDate.now().atStartOfDay().atZone(ZoneOffset.UTC).toEpochSecond() * 1000 + dayInMillis)
 
     private val callback = OnMapReadyCallback { googleMap ->
         /**
@@ -95,10 +104,29 @@ class SpreadMapFragment : Fragment() {
         }
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentCenter, 15F))
-        drawCircle(googleMap)
+
+        val builder = MaterialDatePicker.Builder.dateRangePicker()
+        val now = Calendar.getInstance()
+
+        builder.setSelection(androidx.core.util.Pair(now.timeInMillis, now.timeInMillis))
+        builder.setTitleText("Select a tracking period")
+        val picker = builder.build()
+
+        drawCircle(googleMap, selectionStart, selectionEnd)
+
+        binding.progressHorizontal.max = 100
+        binding.datePickerBtn.setOnClickListener {
+            picker.show(requireActivity().supportFragmentManager, "DATE_PICKER")
+        }
+        picker.addOnPositiveButtonClickListener {
+            selectionStart = Date(picker.selection?.first!!)
+            selectionEnd = Date(picker.selection?.second!! + dayInMillis)
+            googleMap.clear()
+            drawCircle(googleMap, selectionStart, selectionEnd)
+        }
         googleMap.setOnMapLongClickListener { latLng ->
             currentCenter = latLng
-            drawCircle(googleMap)
+            drawCircle(googleMap, selectionStart, selectionEnd)
         }
 
         binding.distanceText.text = getString(R.string.filter_radius_distance_text, binding.seekbar.progress)
@@ -134,16 +162,16 @@ class SpreadMapFragment : Fragment() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 binding.distanceText.text = getString(R.string.filter_radius_distance_text, seekBar!!.progress)
                 if(currentCenter != null) {
-                    val builder = AlertDialog.Builder(context, R.style.AlterDialogTheme)
-                    builder.setCancelable(true)
-                    builder.setTitle("Spreadmap")
-                    builder.setMessage("Apply the new radius for the current center?")
-                    builder.setPositiveButton("Confirm") { _, _ ->
-                        drawCircle(googleMap)
+                    val alertBuilder = AlertDialog.Builder(context, R.style.AlterDialogTheme)
+                    alertBuilder.setCancelable(true)
+                    alertBuilder.setTitle("Spreadmap")
+                    alertBuilder.setMessage("Apply the new radius for the current center?")
+                    alertBuilder.setPositiveButton("Confirm") { _, _ ->
+                        drawCircle(googleMap, selectionStart, selectionEnd)
                     }
-                    builder.setNegativeButton(android.R.string.cancel) { _, _ ->
+                    alertBuilder.setNegativeButton(android.R.string.cancel) { _, _ ->
                     }
-                    val dialog: AlertDialog = builder.create()
+                    val dialog: AlertDialog = alertBuilder.create()
                     dialog.show()
                 }
             }
@@ -174,12 +202,12 @@ class SpreadMapFragment : Fragment() {
      * sends a request to the server from the LocationApiClient and writes resulting map of ids with
      * their locations into the respective live data
      */
-    private fun getGeoJSONMapFromServer(location: LatLng, distance: Int) {
+    private fun getGeoJSONMapFromServer(location: LatLng, distance: Int, start: Date, end: Date) {
         binding.progressHorizontal.visibility = View.VISIBLE
         binding.progressHorizontal.isIndeterminate = true
         GlobalScope.launch {
             val response: MutableMap<String, List<Location>> =
-                LocationApiClient.getPositionsFromServer(requireContext(), location, distance, ::onFetchErrorCallback)
+                LocationApiClient.getPositionsFromServer(requireContext(), location, distance, start, end, ::onFetchErrorCallback)
 
             requireActivity().runOnUiThread {
                 viewModel.spreadMapData.value = response
@@ -227,7 +255,6 @@ class SpreadMapFragment : Fragment() {
         }
         else{
             val processedLocationMap = getPreprocessedCoordinateMap(coordinatesMap)
-            val totalLocationCount = coordinatesMap.flatMap { it.value }.count()
             val colorPairsForIDs = generateColors(processedLocationMap.size)
             var currentColorPairForID = 0
             for((key, processedList) in processedLocationMap){
@@ -298,14 +325,20 @@ class SpreadMapFragment : Fragment() {
         for ((id,coordinates) in coordinatesMap){
             returnMap[id] = preprocessedCoordinatesForDrawing(coordinates, speedThreshold, distanceThreshold)
         }
-        return returnMap
+        val returnMapCopy = HashMap(returnMap)
+        for ((id, _) in returnMap){
+            if(viewModel.contactData.value != null && !viewModel.contactData.value!!.containsKey(id)){
+                returnMapCopy.remove(id)
+            }
+        }
+        return returnMapCopy
     }
 
     /**
      * @param googleMap: map to be drawn on
      * draws circle with current seekbar progress as radius and current center onto the map
      */
-    private fun drawCircle(googleMap: GoogleMap) {
+    private fun drawCircle(googleMap: GoogleMap, start: Date, end: Date) {
         googleMap.clear()
         googleMap.addCircle(
             CircleOptions()
@@ -316,7 +349,7 @@ class SpreadMapFragment : Fragment() {
                 )
                 .strokeWidth(3F)
         )
-        getGeoJSONMapFromServer(currentCenter!!, binding.seekbar.progress)
+        getGeoJSONMapFromServer(currentCenter!!, binding.seekbar.progress, start, end)
         googleMap.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
                 currentCenter,

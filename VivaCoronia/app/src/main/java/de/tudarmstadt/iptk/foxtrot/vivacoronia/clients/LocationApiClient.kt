@@ -204,13 +204,15 @@ object LocationApiClient : ApiBaseClient() {
         return parseGeoJSONForOneID(responseFuture.get().toString())
     }
 
-    fun getPositionsFromServer(context: Context, location: LatLng, distance: Int, onErrorCallback: ((error: VolleyError) -> Unit)): MutableMap<String, List<Location>>{
+    fun getPositionsFromServer(context: Context, location: LatLng, distance: Int, startTime: Date, endTime: Date, onErrorCallback: ((error: VolleyError) -> Unit)): MutableMap<String, List<Location>>{
         val requestQueue = getRequestQueue(context) ?: return HashMap()
         val responseFuture = RequestFuture.newFuture<JSONArray>()
         val requestUrl = Uri.parse(getEndpoint()).buildUpon()
             .appendQueryParameter("latitude", location.latitude.toString())
             .appendQueryParameter("longitude", location.longitude.toString())
             .appendQueryParameter("distance", distance.toString())
+            .appendQueryParameter("start", startTime.toString())
+            .appendQueryParameter("end", endTime.toString())
             .build().toString()
 
         val request = JsonArrayJWT(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) }, context, true)
