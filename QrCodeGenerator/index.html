@@ -3,6 +3,7 @@
 
 <head>
     <title>VivaCoronia QR-Codes</title>
+    <meta charset="utf-8">
     <link rel="stylesheet" href="index.css">
     <script type="text/javascript" src="libs/jquery.min.js"></script>
     <script type="text/javascript" src="libs/qrcode.js"></script>
@@ -33,16 +34,16 @@
                     <script>
                         var dt = new Date();
                         document.getElementById("occured-date-estimation").value = toDateString(dt)
-                        
+
                         function toDateString(dt){
                             return dt.getFullYear() + "-" + appendZero(dt.getMonth()+1) + "-" + appendZero(dt.getDate()-1) + "T" + appendZero(dt.getHours()) + ":" + appendZero(dt.getMinutes())
                         }
 
                         function appendZero(s){
                             if (s < 10){
-                                return "0"+s 
+                                return "0"+s
                             }
-                            return s 
+                            return s
                         }
                     </script>
                 </div>
@@ -163,11 +164,20 @@
                 var datax = JSON.stringify(data, Object.keys(data).sort());
                 console.log(datax);
                 var hSig = rsa.sign(datax, "sha256");
-                data["signature"] = hSig;
+                const sigBase64Encoded = hextob64(hSig)
+                data["signature"] = sigBase64Encoded;
             }
         }
 
-        var qrcode = new QRCode(document.getElementById("qrcode"));
+        function shortDate(date) {
+          return date.toISOString().substring(0,10)
+        }
+
+        function deflate (data) {
+          return {ns: data.newStatus, dot: shortDate(data.dateOfTest), ode: shortDate(data.occuredDateEstimation), s: data.signature}
+        }
+
+        var qrcode = new QRCode(document.getElementById("qrcode"), {correctLevel : 1});
 
         function makeCode() {
             data = {};
@@ -182,6 +192,7 @@
                 return;
 
             signData(data);
+            console.log("QR Code data:", JSON.stringify(data))
 
             qrcode.makeCode(JSON.stringify(data));
         }
