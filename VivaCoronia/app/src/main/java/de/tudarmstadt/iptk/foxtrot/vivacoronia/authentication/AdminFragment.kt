@@ -52,17 +52,20 @@ class AdminFragment : Fragment() {
     private fun setLoginLogic(ctx: Context, view: View){
         val loginBtn = view.findViewById<Button>(R.id.adminLogin)
         val firstPw = view.findViewById<TextView>(R.id.adminPw)
-        val secondPw = view.findViewById<TextView>(R.id.adminPwRe)
         loginBtn.setOnClickListener {
-            val canContinue = TextViewUtils.checkMatchingPasswords(firstPw, secondPw)
-            if (canContinue){
+            val isOk = TextViewUtils.checkValidInput(firstPw)
+            if(isOk){
                 val pw = firstPw.text.toString()
                 // we use empty userID because adminJWT doesn't need userID
                 GlobalScope.launch {
                     val succJWT = AuthenticationCommunicator.makeNewJWT(ctx, pw, "", true)
                     requireActivity().runOnUiThread {
-                        when(succJWT){
-                            0 -> Toast.makeText(ctx, "You can now access admin features!", Toast.LENGTH_SHORT).show()
+                        when (succJWT) {
+                            0 -> Toast.makeText(
+                                ctx,
+                                "You can now access admin features!",
+                                Toast.LENGTH_SHORT
+                            ).show()
                             else -> AuthenticationCommunicator.handleErrorShowing(ctx, succJWT)
                         }
                     }
