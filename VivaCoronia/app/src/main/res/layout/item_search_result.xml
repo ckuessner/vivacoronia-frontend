@@ -54,7 +54,7 @@
             android:id="@+id/list_item_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="30dip"
+            android:layout_marginStart="20dip"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             android:baselineAligned="false"
@@ -75,7 +75,7 @@
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
                         android:text="@string/product"
-                        android:textSize="18sp" />
+                        android:textSize="14sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -84,7 +84,7 @@
                         android:paddingEnd="10dp"
                         android:text="@{offer.product}"
                         android:textAlignment="viewEnd"
-                        android:textSize="18sp" />
+                        android:textSize="14sp" />
                 </TableRow>
 
                 <TableRow>
@@ -95,7 +95,7 @@
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
                         android:text="@string/amount"
-                        android:textSize="18sp" />
+                        android:textSize="14sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -104,7 +104,7 @@
                         android:paddingEnd="10dp"
                         android:text="@{offer.amount}"
                         android:textAlignment="viewEnd"
-                        android:textSize="18sp" />
+                        android:textSize="14sp" />
                 </TableRow>
 
                 <TableRow>
@@ -115,7 +115,7 @@
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
                         android:text="@string/price"
-                        android:textSize="18sp" />
+                        android:textSize="14sp" />
                     <!-- TODO preis pro Stück-->
                     <TextView
                         android:layout_width="wrap_content"
@@ -124,7 +124,7 @@
                         android:paddingEnd="10dp"
                         android:text="@{offer.priceWithCurrency}"
                         android:textAlignment="viewEnd"
-                        android:textSize="18sp" />
+                        android:textSize="14sp" />
                 </TableRow>
 
                 <TableRow
@@ -137,7 +137,7 @@
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
                         android:text="@string/category"
-                        android:textSize="18sp" />
+                        android:textSize="14sp" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -146,29 +146,7 @@
                         android:paddingEnd="10dp"
                         android:text="@{offer.productCategory}"
                         android:textAlignment="viewEnd"
-                        android:textSize="18sp" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
-                        android:text="@string/details"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
-                        android:text="@{offer.details}"
-                        android:textAlignment="viewEnd"
-                        android:textSize="18sp" />
+                        android:textSize="14sp" />
                 </TableRow>
 
                 <TableRow
@@ -181,8 +159,8 @@
                         android:layout_height="wrap_content"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
-                        android:text="@string/location"
-                        android:textSize="18sp" />
+                        android:text="@string/distance"
+                        android:textSize="14sp" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -192,7 +170,29 @@
                         android:paddingEnd="10dp"
                         android:text="@{@string/offerDistance(offer.offer.distanceToUser)}"
                         android:textAlignment="viewEnd"
-                        android:textSize="18sp" />
+                        android:textSize="14sp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@string/details"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@{offer.details}"
+                        android:textAlignment="viewEnd"
+                        android:textSize="14sp" />
                 </TableRow>
             </TableLayout>
         </LinearLayout>
@@ -213,10 +213,10 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.4"
                 android:gravity="center"
+                android:onClick="@{() -> callButtonListener.onCallButtonClick(offer)}"
                 android:text="@string/call"
                 android:textColor="#FFFFFF"
                 app:icon="@drawable/ic_call"
-                android:onClick="@{() -> callButtonListener.onCallButtonClick(offer)}"
                 app:iconGravity="textStart"
                 app:iconPadding="10dp" />
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
 
@@ -8,215 +9,220 @@
             type="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search.SearchOffersViewModel" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="20dp"
-        android:orientation="vertical">
-
+        android:layout_margin="5dp">
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="15dp">
-
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.25" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/done_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:drawableLeft="@drawable/ic_check"
-                android:paddingHorizontal="30dp"
-                android:paddingVertical="5dp"
-                android:text="Done"
-                android:textAlignment="center"
-                android:textColor="#FFFFFF"
-                android:textSize="24sp" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.25" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/category_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/category" />
-
-            <Spinner
-                android:id="@+id/category_input_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginBottom="30dp"
-                android:prompt="@string/category"
-                android:spinnerMode="dialog" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:orientation="horizontal"
-            android:weightSum="1">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:text=""
-                android:textSize="40sp" />
-
-            <ImageView
-                android:id="@+id/location_picker_button"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_weight="0.3"
-                android:contentDescription="@string/title_activity_location_picker"
-                android:padding="5dp"
-                android:src="@drawable/ic_location" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="0.7"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/radius_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{@string/searchRadius(searchOffers.searchQuery.radiusInKm)}"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <SeekBar
-            android:id="@+id/radius_seekbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:max="30"
-            android:paddingTop="15dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/radius_text" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-        </LinearLayout>
+            android:layout_margin="20dp"
+            android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginBottom="30dp">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_gravity="center"
+                android:layout_marginBottom="15dp">
 
-                <EditText
-                    android:id="@+id/price_from"
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.25" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/done_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:drawableLeft="@drawable/ic_check"
+                    android:paddingHorizontal="30dp"
+                    android:paddingVertical="5dp"
+                    android:text="Done"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.25" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/category_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/category" />
+
+                <Spinner
+                    android:id="@+id/category_input_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="30dp"
+                    android:prompt="@string/category"
+                    android:spinnerMode="dialog" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:text=""
+                    android:textSize="40sp" />
+
+                <ImageView
+                    android:id="@+id/location_picker_button"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.3"
+                    android:contentDescription="@string/title_activity_location_picker"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_location" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.7"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/radius_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{@string/searchRadius(searchOffers.searchQuery.radiusInKm)}"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <SeekBar
+                        android:id="@+id/radius_seekbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:max="30"
+                        android:paddingTop="15dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/radius_text" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="30dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <EditText
+                        android:id="@+id/price_from"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:digits="0123456789,"
+                        android:hint="@string/from"
+                        android:importantForAutofill="no"
+                        android:inputType="number"
+                        android:padding="5dp"
+                        android:singleLine="true"
+                        android:text="@={searchOffers.searchQuery.priceMin}"
+                        android:textSize="24sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/EUR"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:text="-"
+                    android:textSize="24sp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <EditText
+                        android:id="@+id/price_to"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:digits="0123456789,"
+                        android:hint="@string/to"
+                        android:importantForAutofill="no"
+                        android:inputType="number"
+                        android:padding="5dp"
+                        android:singleLine="true"
+                        android:text="@={searchOffers.searchQuery.priceMax}"
+                        android:textSize="24sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/EUR"
+                    android:textSize="24sp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sort by:"
+                android:textSize="24sp" />
+
+            <RadioGroup
+                android:id="@+id/sort_by_radio_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp">
+
+                <RadioButton
+                    android:id="@+id/name_radio_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:digits="0123456789,"
-                    android:hint="@string/from"
-                    android:importantForAutofill="no"
-                    android:inputType="number"
-                    android:padding="5dp"
-                    android:singleLine="true"
-                    android:text="@={searchOffers.searchQuery.priceMin}"
+                    android:layout_margin="5dp"
+                    android:text="@string/product"
                     android:textSize="24sp" />
-            </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/EUR"
-                android:textSize="24sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:text="-"
-                android:textSize="24sp" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-
-                <EditText
-                    android:id="@+id/price_to"
+                <RadioButton
+                    android:id="@+id/distance_radio_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:digits="0123456789,"
-                    android:hint="@string/to"
-                    android:importantForAutofill="no"
-                    android:inputType="number"
-                    android:padding="5dp"
-                    android:singleLine="true"
-                    android:text="@={searchOffers.searchQuery.priceMax}"
+                    android:layout_margin="5dp"
+                    android:text="Distance"
                     android:textSize="24sp" />
-            </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/EUR"
-                android:textSize="24sp" />
+                <RadioButton
+                    android:id="@+id/price_radio_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="@string/price"
+                    android:textSize="24sp" />
+            </RadioGroup>
         </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Sort by:"
-            android:textSize="24sp" />
-
-        <RadioGroup
-            android:id="@+id/sort_by_radio_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="5dp">
-
-            <RadioButton
-                android:layout_margin="5dp"
-                android:id="@+id/name_radio_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/product"
-                android:textSize="24sp" />
-
-            <RadioButton
-                android:layout_margin="5dp"
-                android:id="@+id/distance_radio_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Distance"
-                android:textSize="24sp" />
-
-            <RadioButton
-                android:layout_margin="5dp"
-                android:id="@+id/price_radio_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/price"
-                android:textSize="24sp" />
-        </RadioGroup>
-    </LinearLayout>
+    </ScrollView>
 </layout>

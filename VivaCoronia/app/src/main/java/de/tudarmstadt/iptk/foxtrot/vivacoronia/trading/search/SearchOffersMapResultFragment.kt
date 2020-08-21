@@ -12,8 +12,10 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
+import com.google.maps.android.clustering.algo.NonHierarchicalDistanceBasedAlgorithm
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentSearchOffersMapResultBinding
@@ -29,7 +31,6 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
     private lateinit var binding: FragmentSearchOffersMapResultBinding
     private var mGoogleMap: GoogleMap? = null
     private var markers = mutableMapOf<LatLng, Pair<String, OfferClusterItem>>()
-    //private var selectedMarker: Marker? = null
     private var selectedOfferItem: OfferClusterItem? = null
     private var userLocation: LatLng? = null
     private lateinit var mClusterManager: ClusterManager<OfferClusterItem>
@@ -39,9 +40,12 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
     private val callback = OnMapReadyCallback { googleMap ->
 
         userLocation = LocationUtility.getLastKnownLocation(requireActivity()) ?: LatLng(0.0, 0.0)
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15F))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15F)) // TODO set Zoom level to previous zoom level or to selected location
 
         mClusterManager = ClusterManager(requireContext(), googleMap)
+        mClusterManager.algorithm = NonHierarchicalDistanceBasedAlgorithm<OfferClusterItem>().apply {
+            maxDistanceBetweenClusteredItems = 50
+        }
         mRenderer = CustomClusterRenderer(requireContext(), googleMap, mClusterManager)
         mClusterManager.renderer = mRenderer
         googleMap.setOnCameraIdleListener(mClusterManager)
@@ -51,19 +55,15 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
             true
         }
         parent.viewModel.searchResults.observe(viewLifecycleOwner, Observer<List<Offer>> { initialOffers ->
-            //googleMap.clear()
+            mGoogleMap?.clear()
             mClusterManager.clearItems()
             markers = mutableMapOf()
-            //val offersByLocation = initialOffers.groupBy { it.location } // TODO group markers if they are closer than 10 meters?
             for (offer in initialOffers) {
                 if (offer.location.latitude == 0.0 && offer.location.longitude == 0.0)
                     continue
 
-                //val markerOptions = MarkerOptions().position(location).title(offers[0].product).snippet(offers[0].details)
-                //val marker = googleMap.addMarker(markerOptions)
                 val offerItem = OfferClusterItem(offer.location, offer.product, offer.details)
                 mClusterManager.addItem(offerItem)
-                //marker.tag = offers
                 markers[offer.location] = Pair(offer.id, offerItem)
             }
             mClusterManager.cluster()
@@ -113,7 +113,6 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
         val marker = mRenderer.getMarker(offerItem)
         if(marker != null){
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-            //selectedMarker?.setIcon(BitmapDescriptorFactory.defaultMarker())
             marker.showInfoWindow()
         }
         selectedOfferItem = offerItem
@@ -141,22 +140,10 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
     }
 }
 
-class OfferClusterItem: ClusterItem{
-    private val mPosition: LatLng
-    private val mTitle: String
-    private val mSnippet: String
-
-    constructor(latLng: LatLng){
-        mPosition = latLng
-        mTitle = ""
-        mSnippet = ""
-    }
-
-    constructor(latLng: LatLng, title: String, snippet: String){
-        mPosition = latLng
-        mTitle = title
-        mSnippet = snippet
-    }
+class OfferClusterItem(latLng: LatLng, title: String, snippet: String) : ClusterItem{
+    private val mPosition: LatLng = latLng
+    private val mTitle: String = title
+    private val mSnippet: String = snippet
 
     override fun getSnippet(): String {
         return mSnippet
@@ -198,5 +185,9 @@ class CustomClusterRenderer(
         if(selectedItem != null && item == selectedItem){
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
         }
+    }
+
+    override fun shouldRenderAsCluster(cluster: Cluster<OfferClusterItem>): Boolean {
+        return super.shouldRenderAsCluster(cluster) || cluster.size > 1
     }
 }

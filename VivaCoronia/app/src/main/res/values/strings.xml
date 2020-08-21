@@ -85,6 +85,8 @@
     <string name="to">To</string>
 
     <string name="filter_radius_distance_text">\u0020%dm\u0020</string>
+    <string name="distance">Distance</string>
+
     <!-- Register process -->
     <string name="register">Register</string>
     <string name="tag_reg">Join our big corona community to save the world</string>

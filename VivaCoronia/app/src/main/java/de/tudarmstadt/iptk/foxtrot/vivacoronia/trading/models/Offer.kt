@@ -5,6 +5,7 @@ import android.os.Parcelable
 import androidx.lifecycle.MutableLiveData
 import com.beust.klaxon.Json
 import com.google.android.gms.maps.model.LatLng
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import java.util.*
 
 class Offer(
@@ -34,9 +35,9 @@ class Offer(
     constructor() : this("", 0, 0.0, LatLng(0.0, 0.0), "", "", if (!categories.value.isNullOrEmpty()) categories.value!![0] else "", -1.0, "")
 
     fun getDistanceToUser(): String {
-        if (distanceToUser == -1.0)
-            return ""
-        return String.format(Locale.US, "%.3f", distanceToUser)
+        if (distanceToUser == -1.0 || location == LatLng(0.0, 0.0))
+            return "n/a"
+        return String.format(Locale.GERMAN, "%.3f", distanceToUser)
     }
 
     override fun equals(other: Any?): Boolean {

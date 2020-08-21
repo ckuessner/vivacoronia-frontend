@@ -87,7 +87,7 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
     }
 
     override fun onApplyQuery(searchQuery: ProductSearchQuery) {
-        binding.progressHorizontal.visibility = View.VISIBLE // TODO funktioniert noch nicht nach applyFilter
+        binding.progressHorizontal.visibility = View.VISIBLE
         GlobalScope.launch {
             try {
                 val offers = TradingApiClient.getOffers(requireContext(), searchQuery)
