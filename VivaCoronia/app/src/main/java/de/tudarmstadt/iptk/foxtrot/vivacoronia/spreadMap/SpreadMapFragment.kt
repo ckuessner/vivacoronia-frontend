@@ -300,15 +300,13 @@ class SpreadMapFragment : Fragment() {
                 }
                 val startMarkerLocation = processedList.first().first().getLatLong()
                 val endMarkerLocation = processedList.last().last().getLatLong()
-                val startColor = FloatArray(3)
-                ColorUtils.colorToHSL(colorFadeForID[0], startColor)
-                val endColor = FloatArray(3)
-                ColorUtils.colorToHSL(colorFadeForID[colorFadeForID.lastIndex], endColor)
+                val markerColor = FloatArray(3)
+                ColorUtils.colorToHSL(colorFadeForID.lastIndex, markerColor)
                 mMap.addMarker(
-                    MarkerOptions().position(startMarkerLocation).title("Start for ID: $key").icon(BitmapDescriptorFactory.defaultMarker(startColor[0]))
+                    MarkerOptions().position(startMarkerLocation).title("Start for ID: $key").icon(BitmapDescriptorFactory.defaultMarker(markerColor[0]))
                 )
                 mMap.addMarker(
-                    MarkerOptions().position(endMarkerLocation).title("End for ID: $key").icon(BitmapDescriptorFactory.defaultMarker(endColor[0]))
+                    MarkerOptions().position(endMarkerLocation).title("End for ID: $key").icon(BitmapDescriptorFactory.defaultMarker(markerColor[0]))
                 )
             }
             binding.progressHorizontal.visibility = View.GONE
