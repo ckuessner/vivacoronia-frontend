@@ -24,6 +24,20 @@
         android:layout_alignParentTop="true"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/date_picker_btn"
+        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
+        android:layout_width="80dp"
+        android:layout_height="111dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="top"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="20dp"
+        android:contentDescription="@string/select_date_range"
+        app:icon="@drawable/ic_baseline_date_range_24"
+        app:iconSize="30dp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
