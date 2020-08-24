@@ -9,6 +9,7 @@ import android.widget.Toast
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.AuthenticationApiClient
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.RequestUtility
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 

@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.RequestUtility
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.RequestUtility
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.TextViewUtils
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.AuthenticationApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.MainActivity
@@ -54,7 +54,7 @@ class RegisterActivity : AppCompatActivity() {
                     if(creationSucc == 0) {
                         //since we only get useriD == 0 if everything was ok, we can safely cast to string
                         val userID = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.USER_ID, null) as String
-                        jwtDone = RequestUtility.makeNewJWT(ctx, pw, userID)
+                        jwtDone = AuthenticationApiClient.makeNewJWT(ctx, pw, userID)
                         runOnUiThread {
                             if (jwtDone == 0) finishRegister(ctx)
                             else

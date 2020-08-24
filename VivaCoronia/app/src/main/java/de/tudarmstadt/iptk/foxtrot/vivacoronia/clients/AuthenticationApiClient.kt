@@ -4,7 +4,6 @@ import android.content.Context
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.RequestFuture
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.RequestUtility
 import org.json.JSONObject
 import java.util.*
 import java.util.concurrent.ExecutionException

@@ -1,20 +1,10 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import com.android.volley.NoConnectionError
-import com.android.volley.Request
-import com.android.volley.Response
 import com.android.volley.VolleyError
-import com.android.volley.toolbox.StringRequest
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
-import org.json.JSONObject
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.RequestFuture
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.RegisterActivity
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.ApiBaseClient
-import java.util.*
 import java.util.concurrent.ExecutionException
 
 object RequestUtility : ApiBaseClient(){
