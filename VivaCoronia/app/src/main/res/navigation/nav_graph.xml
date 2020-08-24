@@ -33,8 +33,8 @@
         tools:layout="@layout/fragment_spread_map" />
     <fragment
         android:id="@+id/adminLoginFragment"
-        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.AdminFragment"
-        android:label="Admin Login"
-        tools:layout="@layout/fragment_admin"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.StatusCheckFragment"
+        android:label="Check Status"
+        tools:layout="@layout/fragment_status"
         />
 </navigation>

@@ -23,7 +23,7 @@ import java.util.*
 import kotlin.math.floor
 
 
-class AdminFragment : Fragment() {
+class StatusCheckFragment : Fragment() {
 
 
     override fun onCreateView(
@@ -31,7 +31,7 @@ class AdminFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view =  inflater.inflate(R.layout.fragment_admin, container, false)
+        val view =  inflater.inflate(R.layout.fragment_status, container, false)
         setStatusButtonLogic(requireActivity(), view)
         setUserIDShowLogic(requireActivity(), view)
         val currDate = Date().time

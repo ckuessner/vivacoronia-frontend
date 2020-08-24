@@ -94,7 +94,7 @@
     <string name="current_status">"Feature permissions: User"</string>
     <string name="admin_button">"Reload status"</string>
     <string name="spreadmap">Spreadmap</string>
-    <string name="admin_login">Admin Login</string>
+    <string name="check_status">Check Status</string>
     <string name="userID_info">Show your userID</string>
     <string name="expiry_info">"</string>
 </resources>

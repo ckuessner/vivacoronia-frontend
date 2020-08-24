@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -107,7 +106,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.menu_item_spreadmap -> {
                     navController.navigate(R.id.spreadMapFragment)
                 }
-                R.id.menu_item_adminLogin -> {
+                R.id.menu_item_statusCheck -> {
                     navController.navigate(R.id.adminLoginFragment)
                 }
             }

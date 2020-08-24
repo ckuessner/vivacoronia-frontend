@@ -28,8 +28,8 @@
         android:icon="@drawable/ic_corona"/>
 
     <item
-        android:id="@+id/menu_item_adminLogin"
-        android:title="@string/admin_login"
+        android:id="@+id/menu_item_statusCheck"
+        android:title="@string/check_status"
         android:icon="@drawable/ic_admin"
         />
 
