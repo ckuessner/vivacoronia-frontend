@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -187,11 +188,15 @@ abstract class ApiBaseClient {
                 if(error.networkResponse.statusCode == 401){
                     val intent = Intent(ctx, LoginActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    intent.putExtra("isAdmin", false)
                     ctx.startActivity(intent)
                     errorSuper?.onErrorResponse(error)
                 }
                 else if (error.networkResponse.statusCode == 401 && isAdmin){
-                    Toast.makeText(ctx, "You don't have permission for this, try to log in as admin", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(ctx, LoginActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    intent.putExtra("isAdmin", true)
+                    ctx.startActivity(intent)
                     errorSuper?.onErrorResponse(error)
                 }
             }

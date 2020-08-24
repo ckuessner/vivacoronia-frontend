@@ -8,8 +8,9 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.AuthenticationCommunicator
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.RequestUtility
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.TextViewUtils
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.AuthenticationApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.MainActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -48,21 +49,21 @@ class RegisterActivity : AppCompatActivity() {
             if (canContinue) {
                 val pw = passwordTextView.text.toString()
                 GlobalScope.launch {
-                    val creationSucc = AuthenticationCommunicator.createAndSaveUser(ctx, pw)
+                    val creationSucc = AuthenticationApiClient.createAndSaveUser(ctx, pw)
                     var jwtDone = 0
                     if(creationSucc == 0) {
                         //since we only get useriD == 0 if everything was ok, we can safely cast to string
                         val userID = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.USER_ID, null) as String
-                        jwtDone = AuthenticationCommunicator.makeNewJWT(ctx, pw, userID)
+                        jwtDone = RequestUtility.makeNewJWT(ctx, pw, userID)
                         runOnUiThread {
                             if (jwtDone == 0) finishRegister(ctx)
                             else
-                                AuthenticationCommunicator.handleErrorShowing(ctx, jwtDone)
+                                RequestUtility.handleErrorShowing(ctx, jwtDone)
                         }
                     }
                     else
                         runOnUiThread {
-                            AuthenticationCommunicator.handleErrorShowing(ctx, creationSucc)
+                            RequestUtility.handleErrorShowing(ctx, creationSucc)
                         }
                 }
             }

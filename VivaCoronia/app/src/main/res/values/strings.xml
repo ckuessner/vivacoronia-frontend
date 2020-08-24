@@ -90,10 +90,11 @@
     <string name="login_pwRe">"Reenter your password"</string>
     <string name="authBtn">"Login"</string>
     <!-- Admin Login -->
-    <string name="admin_info">"Login with admin password"</string>
-    <string name="admin_pw">"Enter admin password"</string>
-    <string name="admin_pwRe">"Retype admin password"</string>
-    <string name="admin_button">"Login as admin"</string>
+    <string name="status_info">"Current status"</string>
+    <string name="current_status">"Feature permissions: User"</string>
+    <string name="admin_button">"Reload status"</string>
     <string name="spreadmap">Spreadmap</string>
     <string name="admin_login">Admin Login</string>
+    <string name="userID_info">Show your userID</string>
+    <string name="expiry_info">"</string>
 </resources>

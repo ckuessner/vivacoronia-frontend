@@ -10,10 +10,23 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/adminInfo"
+            android:id="@+id/userStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/admin_info"
+            android:text="@string/current_status"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/statusChecker"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/statusInfo"
+            app:layout_constraintVertical_bias="0.269" />
+
+        <TextView
+            android:id="@+id/statusInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/status_info"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textSize="24sp"
             android:textStyle="bold"
@@ -23,33 +36,60 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.074" />
 
-        <EditText
-            android:id="@+id/adminPw"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/admin_pw"
-            android:inputType="textPassword"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/adminInfo"
-            app:layout_constraintVertical_bias="0.229" />
-
         <Button
-            android:id="@+id/adminLogin"
+            android:id="@+id/statusChecker"
             android:layout_width="150sp"
-            android:layout_height="wrap_content"
+            android:layout_height="100sp"
             android:background="@drawable/btn_custom"
             android:text="@string/admin_button"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.199"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/adminPw" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.735" />
+
+        <EditText
+            android:id="@+id/expiryTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="time"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userStatus"
+            app:layout_constraintVertical_bias="0.246" />
+
+        <TextView
+            android:id="@+id/expiryInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="124dp"
+            android:text="@string/expiry_info"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/expiryTime"
+            app:layout_constraintHorizontal_bias="0.41"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userStatus"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <Button
+            android:id="@+id/showUserID"
+            android:layout_width="150sp"
+            android:layout_height="100sp"
+            android:background="@drawable/btn_custom"
+            android:text="@string/userID_info"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.938"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.735" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
