@@ -41,8 +41,10 @@ class StatusCheckFragment : Fragment() {
     override fun onResume() {
         val isAdmin = requireActivity().getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getBoolean(Constants.IS_ADMIN, false)
         val adminJwt = requireActivity().getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.adminJWT, null)
-        if(isAdmin && adminJwt != null)
+        if(isAdmin && adminJwt != null) {
             view?.findViewById<TextView>(R.id.userStatus)?.text = "Feature permissions: Admin"
+            showExpiry(requireActivity(), view as View)
+        }
         super.onResume()
     }
 

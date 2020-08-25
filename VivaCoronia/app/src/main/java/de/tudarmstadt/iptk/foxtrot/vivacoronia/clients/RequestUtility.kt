@@ -20,7 +20,8 @@ object RequestUtility : ApiBaseClient(){
             when(errorCode){
                 Constants.NO_INTERNET -> Toast.makeText(ctx, "No internet, check your connection and try again", Toast.LENGTH_SHORT).show()
                 Constants.AUTH_ERROR -> Toast.makeText(ctx, "Password was wrong, try again or go back", Toast.LENGTH_SHORT).show()
-                Constants.VOLLEY_ERROR -> Toast.makeText(ctx, "Something went wrong with the server, oops", Toast.LENGTH_SHORT).show()
+                Constants.SERVER_ERROR -> Toast.makeText(ctx, "Something went wrong with the server, oops", Toast.LENGTH_SHORT).show()
+                Constants.FIREWALL_ERROR -> Toast.makeText(ctx, "Your network doesn't allow connection to the server", Toast.LENGTH_SHORT).show()
             }
         }
 
