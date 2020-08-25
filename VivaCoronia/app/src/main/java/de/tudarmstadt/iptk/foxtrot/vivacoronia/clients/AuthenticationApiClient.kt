@@ -56,8 +56,8 @@ object AuthenticationApiClient : ApiBaseClient() {
         try {
             val response = responseFuture.get()
             val jwt = response.opt("jwt")
-            val savedContent = arrayOf<Any>(jwt, Date().time)
-            var savedIdentifiers = arrayOf<String>(Constants.JWT, "jwt_timeCreated")
+            val savedContent = arrayOf<Any>(jwt, Calendar.getInstance().time.time)
+            var savedIdentifiers = arrayOf<String>(Constants.JWT, Constants.JWT_Time)
             if (isAdmin) {
                 savedIdentifiers = arrayOf<String>(Constants.adminJWT, Constants.adminJWT_Time)
             }

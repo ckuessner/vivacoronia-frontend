@@ -34,8 +34,7 @@ class StatusCheckFragment : Fragment() {
         val view =  inflater.inflate(R.layout.fragment_status, container, false)
         setStatusButtonLogic(requireActivity(), view)
         setUserIDShowLogic(requireActivity(), view)
-        val currDate = Date().time
-        showExpiry(requireActivity(), view, currDate)
+        showExpiry(requireActivity(), view)
         return view
     }
 
@@ -82,7 +81,7 @@ class StatusCheckFragment : Fragment() {
         }
     }
 
-    private fun showExpiry(ctx: Context, view: View, lastKnownTime : Long){
+    private fun showExpiry(ctx: Context, view: View){
         val isAdmin = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getBoolean(Constants.IS_ADMIN, false)
         val adminJwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.adminJWT, null)
         //to check whether we actually show something, check whether isAdmin
@@ -98,8 +97,9 @@ class StatusCheckFragment : Fragment() {
 
             //set time to show in expiry, init is 1 day
             val settings = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
-            val currentExpiry = settings.getLong(Constants.adminJWT_Time, 0)
-            val difference = lastKnownTime - currentExpiry
+            val creationTime = settings.getLong(Constants.adminJWT_Time, 0)
+            val currentTime = Calendar.getInstance().time.time
+            val difference = currentTime - creationTime
             //convert remaining time to hours, minutes and seconds
             val toShowHour : Int = floor((difference / 3600).toDouble()).toInt()
             var remainingTime : Long = difference - toShowHour.toLong() * 3600

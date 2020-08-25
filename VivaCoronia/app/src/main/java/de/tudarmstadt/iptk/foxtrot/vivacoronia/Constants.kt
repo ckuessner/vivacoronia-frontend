@@ -27,6 +27,7 @@ object Constants {
     val JWT = "jwt"
     val adminJWT = "adminJWT"
     val adminJWT_Time = "adminTime"
+    val JWT_Time = "jwtTime"
     val IS_ADMIN = "adminStatus"
     // infected stuff
     val INFECTED_NOTIFICATION_CHANNEL_ID = "infected_channel"
