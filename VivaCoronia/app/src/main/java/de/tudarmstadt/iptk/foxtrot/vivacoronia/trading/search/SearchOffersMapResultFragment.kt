@@ -1,6 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.widget.PopupMenu
@@ -36,11 +37,13 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
     private lateinit var mClusterManager: ClusterManager<OfferClusterItem>
     private lateinit var mRenderer: CustomClusterRenderer
     private var currentViewedCluster: List<OfferClusterItem>? = null
+    private var currentRadiusCircle: Circle? = null
 
     private val callback = OnMapReadyCallback { googleMap ->
-
         userLocation = LocationUtility.getLastKnownLocation(requireActivity()) ?: LatLng(0.0, 0.0)
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15F)) // TODO set Zoom level to previous zoom level or to selected location
+
+        parent.viewModel.searchQuery.observe(viewLifecycleOwner, Observer { drawRadius(googleMap)})
 
         mClusterManager = ClusterManager(requireContext(), googleMap)
         mClusterManager.algorithm = NonHierarchicalDistanceBasedAlgorithm<OfferClusterItem>().apply {
@@ -55,7 +58,8 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
             true
         }
         parent.viewModel.searchResults.observe(viewLifecycleOwner, Observer<List<Offer>> { initialOffers ->
-            mGoogleMap?.clear()
+            mGoogleMap?.clear()         // TODO Bei Suche ausführen -> karte anzeigen -> filtern -> radius einstellen -> anwenden wird ein Marker verschluckt
+            drawRadius(googleMap)
             mClusterManager.clearItems()
             markers = mutableMapOf()
             for (offer in initialOffers) {
@@ -77,6 +81,24 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
             onInfoWindowClick(offerItem)
         }
         mGoogleMap = googleMap
+    }
+
+    private fun drawRadius(googleMap: GoogleMap?) {
+        if (googleMap == null)
+            return
+
+        currentRadiusCircle?.remove()
+        val location = parent.viewModel.searchQuery.value?.location
+        val radiusInKm = parent.viewModel.searchQuery.value?.radiusInKm
+        if (location == null || location == LatLng(0.0, 0.0) || radiusInKm == null || radiusInKm <= 0)
+            return
+        val circleOptions = CircleOptions()
+            .center(location)
+            .radius(radiusInKm.toDouble() * 1000)
+            .fillColor(Color.parseColor("#447aff85"))
+            .strokeColor(Color.BLACK)
+            .strokeWidth(3F)
+        currentRadiusCircle = googleMap.addCircle(circleOptions)
     }
 
     private fun onInfoWindowClick(offerItem: OfferClusterItem) {

@@ -75,7 +75,7 @@ class OfferDetailFragment : Fragment() {
     }
 
     private fun onSelectLocation() {
-        val intent = LocationPickerActivity.getStartIntent(requireActivity(), viewModel.offer.location)
+        val intent = LocationPickerActivity.getStartIntent(requireActivity(), viewModel.offer.location, null)
         startActivityForResult(intent, LOCATION_PICKER_REQUEST)
     }
 

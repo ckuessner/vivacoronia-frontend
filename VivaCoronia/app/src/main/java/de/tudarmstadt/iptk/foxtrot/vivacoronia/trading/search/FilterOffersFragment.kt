@@ -20,6 +20,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentFilterOffersB
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.LocationPickerActivity
+import kotlinx.android.synthetic.main.fragment_spread_map.*
 
 private const val LOCATION_PICKER_REQUEST = 1
 
@@ -64,7 +65,8 @@ class FilterOffersFragment(internal var callback: OnApplyQueryListener) : Fragme
 
     private fun onSelectLocation() {
         val initialLocation = viewModel.searchQuery.value!!.location ?: LatLng(0.0, 0.0)
-        val intent = LocationPickerActivity.getStartIntent(requireActivity(), initialLocation)
+        val initialRadius = viewModel.searchQuery.value!!.radiusInKm
+        val intent = LocationPickerActivity.getStartIntent(requireActivity(), initialLocation, initialRadius)
         startActivityForResult(intent, LOCATION_PICKER_REQUEST)
     }
 
@@ -72,7 +74,10 @@ class FilterOffersFragment(internal var callback: OnApplyQueryListener) : Fragme
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == LOCATION_PICKER_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             val latLngResult = LocationPickerActivity.getLatLngResult(data) ?: return
+            val radiusResult = LocationPickerActivity.getRadiusResult(data)
             viewModel.searchQuery.value!!.location = latLngResult
+            viewModel.searchQuery.value!!.radiusInKm = radiusResult
+            binding.radiusSeekbar.progress = radiusResult
         }
     }
 
