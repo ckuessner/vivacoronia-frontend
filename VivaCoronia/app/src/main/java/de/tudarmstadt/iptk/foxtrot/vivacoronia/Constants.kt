@@ -39,6 +39,8 @@ object Constants {
     val NULL_QUEUE = -1
     val NO_INTERNET = -2
     val VOLLEY_ERROR = -3
+    val SERVER_ERROR = -4
+    val FIREWALL_ERROR = -5
 
 
     val DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS"

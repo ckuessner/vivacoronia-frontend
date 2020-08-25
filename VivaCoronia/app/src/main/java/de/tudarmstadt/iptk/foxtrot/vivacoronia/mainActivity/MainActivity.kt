@@ -35,12 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     private lateinit var navView: NavigationView
-
-    private fun checkAdminJWT(ctx : Context) : Boolean{
-        val settings = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
-        val adminJWT = settings.getString(Constants.adminJWT, null)
-        return adminJWT != null
-    }
+    
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

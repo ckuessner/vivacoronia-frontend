@@ -2,8 +2,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
 import android.content.Context
 import android.widget.Toast
-import com.android.volley.NoConnectionError
-import com.android.volley.VolleyError
+import com.android.volley.*
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import java.util.concurrent.ExecutionException
 
@@ -32,14 +31,12 @@ object RequestUtility : ApiBaseClient(){
         fun catchException(e : ExecutionException, isAdmin: Boolean = false) : Int{
             var toReturn = Constants.VOLLEY_ERROR
             if (VolleyError::class.java.isAssignableFrom(e.cause!!::class.java)){
-                val error = e.cause as VolleyError
-                if(error.networkResponse != null && isAdmin){
-                    if(error.networkResponse.statusCode == 401){
-                        toReturn = Constants.AUTH_ERROR
-                    }
-                }
-                else if (NoConnectionError::class.java.isAssignableFrom(e.cause!!::class.java)){
-                    toReturn = Constants.NO_INTERNET
+                when(e.cause as VolleyError){
+                    is AuthFailureError -> toReturn = Constants.AUTH_ERROR
+                    is ServerError -> toReturn = Constants.SERVER_ERROR
+                    //https://stackoverflow.com/questions/31802105/what-exactly-does-volley-volleyerror-networkerror-mean-in-android
+                    is NoConnectionError -> toReturn = Constants.NO_INTERNET
+                    is NetworkError -> toReturn = Constants.FIREWALL_ERROR
                 }
             }
             return toReturn

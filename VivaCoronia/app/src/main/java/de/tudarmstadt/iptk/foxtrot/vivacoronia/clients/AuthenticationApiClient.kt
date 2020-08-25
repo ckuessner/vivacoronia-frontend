@@ -1,8 +1,10 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
 import android.content.Context
+import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.RequestFuture
+import com.android.volley.toolbox.Volley
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import org.json.JSONObject
 import java.util.*
