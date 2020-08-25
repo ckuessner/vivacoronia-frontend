@@ -120,7 +120,7 @@ class StatusCheckFragment : Fragment() {
             //give user possibility to login as admin, after we have received news that he can get adminJWT
             val builder = AlertDialog.Builder(ctx, R.style.AlertDialogTheme)
             builder.setTitle("Permission update")
-            builder.setMessage("You can login as an admin to access admin features, do you want to do that?")
+            builder.setMessage("You can login as an admin to access admin features, do you want to proceed?")
             //if user wants to use admin, he has to login for admin features
             builder.setPositiveButton(android.R.string.yes){ _, _ ->
                 val intent = Intent(ctx, LoginActivity::class.java)
