@@ -301,7 +301,7 @@ class SpreadMapFragment : Fragment() {
                 val startMarkerLocation = processedList.first().first().getLatLong()
                 val endMarkerLocation = processedList.last().last().getLatLong()
                 val markerColor = FloatArray(3)
-                ColorUtils.colorToHSL(colorFadeForID.lastIndex, markerColor)
+                ColorUtils.colorToHSL(colorFadeForID.last(), markerColor)
                 mMap.addMarker(
                     MarkerOptions().position(startMarkerLocation).title("Start for ID: $key").icon(BitmapDescriptorFactory.defaultMarker(markerColor[0]))
                 )
