@@ -34,7 +34,6 @@ object RequestUtility : ApiBaseClient(){
             var toReturn = Constants.VOLLEY_ERROR
             if (VolleyError::class.java.isAssignableFrom(e.cause!!::class.java)){
                 when(e.cause as VolleyError){
-                    is AuthFailureError -> toReturn = Constants.AUTH_ERROR
                     is ServerError -> toReturn = Constants.SERVER_ERROR
                     //https://stackoverflow.com/questions/31802105/what-exactly-does-volley-volleyerror-networkerror-mean-in-android
                     is NoConnectionError -> toReturn = Constants.NO_INTERNET
@@ -43,6 +42,9 @@ object RequestUtility : ApiBaseClient(){
                 val volleyE = e.cause as VolleyError
                 if(volleyE.networkResponse.statusCode == 403){
                     toReturn == Constants.FORBIDDEN
+                }
+                else if (volleyE is AuthFailureError && volleyE.networkResponse.statusCode == 401){
+                    toReturn = Constants.AUTH_ERROR
                 }
             }
             return toReturn
