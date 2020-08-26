@@ -1,6 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
 import android.content.Context
+import android.util.Log
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.RequestFuture
@@ -22,7 +23,8 @@ object AuthenticationApiClient : ApiBaseClient() {
         queue.add(jsonRequest)
         try {
             val response = responseFuture.get()
-            val newStatus = response.opt("isAdmin")
+            val newStatus = response.opt("isAdmin") as Boolean
+            Log.i("after request", newStatus.toString())
             val savedContent = arrayOf<Any>(newStatus)
             val savedIdentifiers = arrayOf<String>(Constants.IS_ADMIN)
             RequestUtility.saveInPreferencesAny(ctx, savedIdentifiers, savedContent)

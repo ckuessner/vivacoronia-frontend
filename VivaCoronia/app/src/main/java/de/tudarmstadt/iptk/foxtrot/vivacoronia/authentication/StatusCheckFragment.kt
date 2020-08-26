@@ -6,6 +6,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -39,17 +40,7 @@ class StatusCheckFragment : Fragment() {
     }
 
     override fun onResume() {
-        val isAdmin = requireActivity().getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getBoolean(Constants.IS_ADMIN, false)
-        val adminJwt = requireActivity().getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.adminJWT, null)
-        if(isAdmin && adminJwt != null) {
-            view?.findViewById<TextView>(R.id.userStatus)?.text = "Feature permissions: Admin"
-            showExpiry(requireActivity(), view as View)
-        }
-        else if (!isAdmin || adminJwt == null){
-            view?.findViewById<TextView>(R.id.userStatus)?.text = "Feature permissions: User"
-            view?.findViewById<TextView>(R.id.expiryInfo)?.visibility = View.GONE
-            view?.findViewById<TextView>(R.id.expiryTime)?.visibility = View.GONE
-        }
+        showExpiry(requireActivity(), view as View)
         super.onResume()
     }
 
@@ -58,13 +49,14 @@ class StatusCheckFragment : Fragment() {
         //we're after register, so we can safely convert to String
         val userID = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.USER_ID, null) as String
         val statusCheckBtn = view.findViewById<Button>(R.id.statusChecker)
-        val oldIsAdmin = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getBoolean(Constants.IS_ADMIN, false)
         statusCheckBtn.setOnClickListener {
+            val oldIsAdmin = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getBoolean(Constants.IS_ADMIN, false)
+            Log.i("status", "before: "  + oldIsAdmin.toString())
             GlobalScope.launch {
                 val succJWT = AuthenticationApiClient.checkStatus(ctx, userID)
                 requireActivity().runOnUiThread {
                     when (succJWT) {
-                        0 -> checkStatus(ctx, view,oldIsAdmin)
+                        0 ->  checkStatus(ctx, view, oldIsAdmin)
                         else -> RequestUtility.handleErrorShowing(ctx, succJWT)
                         }
                 }
@@ -93,31 +85,10 @@ class StatusCheckFragment : Fragment() {
         val isAdmin = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getBoolean(Constants.IS_ADMIN, false)
         val adminJwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.adminJWT, null)
         //to check whether we actually show something, check whether isAdmin
-        if(!isAdmin || adminJwt == null){
-            view.findViewById<TextView>(R.id.expiryInfo).visibility = View.GONE
-            view.findViewById<TextView>(R.id.expiryTime).visibility = View.GONE
-        }
-        else {
+        if(!isAdmin || adminJwt == null)
+            view.findViewById<TextView>(R.id.userStatus).text = "Feature permissions: User"
+        else
             view.findViewById<TextView>(R.id.userStatus).text = "Feature permissions: Admin"
-            val expiryInfo = view.findViewById<TextView>(R.id.expiryInfo)
-            expiryInfo.visibility = View.VISIBLE
-            expiryInfo.text = "Time left for the current admin session:"
-            val expiry = view.findViewById<TextView>(R.id.expiryTime)
-            expiry.visibility = View.VISIBLE
-
-            //set time to show in expiry, init is 1 day
-            val settings = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
-            val creationTime = settings.getLong(Constants.adminJWT_Time, 0)
-            val currentTime = Calendar.getInstance().time.time
-            val difference = currentTime - creationTime
-            //convert remaining time to hours, minutes and seconds
-            val toShowHour : Int = (difference / 3600.0).toInt()
-            var remainingTime : Long = difference - toShowHour.toLong() * 3600
-            val toShowMinute : Int = (remainingTime / 3600.0).toInt()
-            remainingTime = difference - toShowMinute.toLong() * 60
-            val toShowSeconds : Int = (remainingTime/60.0).toInt()
-            expiry.text = "$toShowHour:$toShowMinute:$toShowSeconds"
-        }
     }
 
     private fun checkStatus(ctx: Context, view: View,oldIsAdmin : Boolean){
@@ -125,7 +96,7 @@ class StatusCheckFragment : Fragment() {
         val currStatus = settings.getBoolean(Constants.IS_ADMIN, false)
         val noAdminJWT = settings.getString(Constants.adminJWT, null) == null
         //if our status changed and we're now admin, we wanna show permission update
-        if(currStatus && noAdminJWT && oldIsAdmin != currStatus){
+        if(currStatus && oldIsAdmin != currStatus){
             //give user possibility to login as admin, after we have received news that he can get adminJWT
             val builder = AlertDialog.Builder(ctx, R.style.AlertDialogTheme)
             builder.setTitle("Permission update")
@@ -147,10 +118,6 @@ class StatusCheckFragment : Fragment() {
         //if our status changed to no admin, but we had an adminJWT and were admin before change fragment to userFragment
         else if(!currStatus && !noAdminJWT && oldIsAdmin != currStatus){
             view.findViewById<TextView>(R.id.userStatus).text = "Feature permissions: User"
-            val expiryInfo = view.findViewById<TextView>(R.id.expiryInfo)
-            expiryInfo.visibility = View.GONE
-            val expiry = view.findViewById<TextView>(R.id.expiryTime)
-            expiry.visibility = View.GONE
         }
         else{
             Toast.makeText(ctx, "Your permissions didn't change", Toast.LENGTH_SHORT).show()
