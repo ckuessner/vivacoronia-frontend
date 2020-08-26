@@ -48,8 +48,8 @@ class WebSocketService : Service() {
         }
         val listener = PushNotificationListener()
         listener.socketService = this
-
-        val request = Request.Builder().url(Constants.SERVER_WEBSOCKET_URL).addHeader("userID", Constants.USER_ID.toString()).build()
+        val userID = getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.USER_ID, null) as String
+        val request = Request.Builder().url(Constants.SERVER_WEBSOCKET_URL).addHeader("userID", userID).build()
 
         client.newWebSocket(request, listener)
     }

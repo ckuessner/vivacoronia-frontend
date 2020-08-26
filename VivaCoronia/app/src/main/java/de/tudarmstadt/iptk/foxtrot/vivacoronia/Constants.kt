@@ -36,6 +36,7 @@ object Constants {
     val SERVER_BASE_URL = BuildConfig.API_SERVER
 
     // for error handling
+    val FORBIDDEN = 403
     val AUTH_ERROR = 401
     val NULL_QUEUE = -1
     val NO_INTERNET = -2

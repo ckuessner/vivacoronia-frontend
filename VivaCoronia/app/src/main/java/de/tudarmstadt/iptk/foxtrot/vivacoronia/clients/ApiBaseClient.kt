@@ -184,8 +184,8 @@ abstract class ApiBaseClient {
      */
     private class ErrorJWTCheck(val ctx : Context, val errorSuper : Response.ErrorListener?, val isAdmin : Boolean) : Response.ErrorListener {
         override fun onErrorResponse(error: VolleyError?) {
-            if (error?.networkResponse != null && !isAdmin) {
-                if(error.networkResponse.statusCode == 401){
+            if (error?.networkResponse != null) {
+                if(error.networkResponse.statusCode == 401 && !isAdmin){
                     val intent = Intent(ctx, LoginActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     intent.putExtra("isAdmin", false)
