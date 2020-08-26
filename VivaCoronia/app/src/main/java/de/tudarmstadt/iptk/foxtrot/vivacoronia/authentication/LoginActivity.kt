@@ -54,6 +54,9 @@ class LoginActivity : AppCompatActivity() {
                         }
                         else {
                             RequestUtility.handleErrorShowing(ctx, succJWT)
+                            //if we don't have admin rights, we don't need to keep the login
+                            if(succJWT == Constants.FORBIDDEN)
+                                finish()
                         }
                     }
                 }
