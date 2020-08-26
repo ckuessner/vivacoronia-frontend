@@ -35,10 +35,9 @@ class LoginActivity : AppCompatActivity() {
     private fun setLoginLogic(ctx: Context, isAdmin : Boolean){
         val loginUser = findViewById<Button>(R.id.authButton)
         val passwordTextView = findViewById<TextView>(R.id.login_pw)
-        val passwordReTextView = findViewById<TextView>(R.id.login_pwRe)
 
         loginUser.setOnClickListener{
-            val canContinue = TextViewUtils.checkMatchingPasswords(passwordTextView, passwordReTextView)
+            val canContinue = TextViewUtils.checkValidInput(passwordTextView)
             if(canContinue){
                 val pw = passwordTextView.text.toString()
                 val userID = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.USER_ID, null) as String

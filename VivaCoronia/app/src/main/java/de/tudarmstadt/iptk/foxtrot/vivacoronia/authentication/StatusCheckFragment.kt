@@ -96,7 +96,7 @@ class StatusCheckFragment : Fragment() {
         val currStatus = settings.getBoolean(Constants.IS_ADMIN, false)
         val noAdminJWT = settings.getString(Constants.adminJWT, null) == null
         //if our status changed and we're now admin, we wanna show permission update
-        if(currStatus && oldIsAdmin != currStatus){
+        if((currStatus && oldIsAdmin != currStatus) || noAdminJWT){
             //give user possibility to login as admin, after we have received news that he can get adminJWT
             val builder = AlertDialog.Builder(ctx, R.style.AlertDialogTheme)
             builder.setTitle("Permission update")
@@ -118,6 +118,8 @@ class StatusCheckFragment : Fragment() {
         //if our status changed to no admin, but we had an adminJWT and were admin before change fragment to userFragment
         else if(!currStatus && !noAdminJWT && oldIsAdmin != currStatus){
             view.findViewById<TextView>(R.id.userStatus).text = "Feature permissions: User"
+            //set adminJWT to zero
+            ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).edit().putString(Constants.adminJWT, null).apply()
         }
         else{
             Toast.makeText(ctx, "Your permissions didn't change", Toast.LENGTH_SHORT).show()
