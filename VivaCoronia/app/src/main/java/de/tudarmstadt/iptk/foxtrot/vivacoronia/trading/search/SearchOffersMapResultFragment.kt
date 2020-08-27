@@ -47,7 +47,7 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
         parent.viewModel.searchQuery.observe(viewLifecycleOwner, Observer {
             drawRadius(googleMap)
         })
-        googleMap.setClustering(ClusteringSettings().minMarkersCount(2))
+        googleMap.setClustering(ClusteringSettings().minMarkersCount(2).clusterOptionsProvider(CustomClusterOptionsProvider(resources)))
         googleMap.setOnCameraMoveListener {
             userLocation = googleMap.cameraPosition.target
             userZoom = googleMap.cameraPosition.zoom
