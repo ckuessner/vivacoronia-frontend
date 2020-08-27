@@ -28,8 +28,8 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
 
     private lateinit var binding: FragmentSearchOffersMapResultBinding
     private var mGoogleMap: GoogleMap? = null
-    private var markers = mutableMapOf<LatLng, Pair<String, OfferClusterItem>>()
-    private var selectedOfferItem: OfferClusterItem? = null
+    private var markers = mutableMapOf<LatLng, Pair<String, Marker>>()
+    private var selectedMarker: Marker? = null
     private var userLocation: LatLng? = null
     private var userZoom: Float = 15F
     private var currentViewedCluster: List<Marker>? = null
@@ -152,7 +152,6 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
         selectedMarker = marker
         if (!marker.isCluster) {
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-            marker.showInfoWindow()
         }
 
         mGoogleMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
@@ -175,57 +174,5 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
             true
         }
         popup.show()
-    }
-}
-
-class OfferClusterItem(latLng: LatLng, title: String, snippet: String) : ClusterItem{
-    private val mPosition: LatLng = latLng
-    private val mTitle: String = title
-    private val mSnippet: String = snippet
-
-    override fun getSnippet(): String {
-        return mSnippet
-    }
-
-    override fun getTitle(): String {
-        return mTitle
-    }
-
-    override fun getPosition(): LatLng {
-        return mPosition
-    }
-
-    override fun equals(other: Any?): Boolean {
-        return if(other is OfferClusterItem){
-            this.hashCode() == other.hashCode()
-        } else{
-            false
-        }
-    }
-
-    override fun hashCode(): Int {
-        var result = mPosition.hashCode()
-        result = 31 * result + mTitle.hashCode()
-        result = 31 * result + mSnippet.hashCode()
-        return result
-    }
-}
-
-class CustomClusterRenderer(
-    val context: Context,
-    val map: GoogleMap,
-    clusterManager: ClusterManager<OfferClusterItem>
-): DefaultClusterRenderer<OfferClusterItem>(context, map, clusterManager) {
-    var selectedItem: OfferClusterItem? = null
-
-    override fun onBeforeClusterItemRendered(item: OfferClusterItem, markerOptions: MarkerOptions) {
-        super.onBeforeClusterItemRendered(item, markerOptions)
-        if(selectedItem != null && item == selectedItem){
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-        }
-    }
-
-    override fun shouldRenderAsCluster(cluster: Cluster<OfferClusterItem>): Boolean {
-        return super.shouldRenderAsCluster(cluster) || cluster.size > 1
     }
 }
