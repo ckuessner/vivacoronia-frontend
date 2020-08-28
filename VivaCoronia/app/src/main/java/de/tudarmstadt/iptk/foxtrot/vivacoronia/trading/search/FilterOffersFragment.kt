@@ -43,11 +43,8 @@ class FilterOffersFragment(internal var callback: OnApplyQueryListener) : Fragme
         binding.radiusSeekbar.setOnSeekBarChangeListener(this)
         binding.radiusSeekbar.progress = viewModel.searchQuery.value!!.radiusInKm
 
-        // TODO delete next line
         val categories = Offer.categories.value!!.toMutableList()
         categories.add(0, "Any category")
-        // TODO use next line instead of second to next
-        //val spinnerAdapter =  ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, Offer.categories.value!!)
         val spinnerAdapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, categories)
         binding.categoryInputSpinner.adapter = spinnerAdapter
         binding.categoryInputSpinner.onItemSelectedListener = this

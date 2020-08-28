@@ -97,7 +97,6 @@ class InfectionStatusFragment : Fragment() {
                     val intent = Intent(requireActivity(), ScanQrCodeActivity::class.java).apply {}
                     startActivity(intent)
                 } else {
-                    // TODO Toast is not showing properly (at all)
                     Toast.makeText(requireActivity(), "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show()
                 }
         }

@@ -42,7 +42,7 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
                 LocationUtility.getLastKnownLocation(requireActivity()) ?: LatLng(0.0, 0.0)
         }
         recenterMap = false
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, userZoom)) // TODO set Zoom level to previous zoom level or to selected location
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, userZoom))
 
         parent.viewModel.searchQuery.observe(viewLifecycleOwner, Observer {
             drawRadius(googleMap)

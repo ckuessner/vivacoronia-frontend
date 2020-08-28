@@ -102,11 +102,11 @@ class OffersFragment : Fragment() {
                 fetchMyOffers()
         } catch (e: Exception) {
             Log.e(TAG, "Unable to delete offer with id \"$id\"", e)
-            requireActivity().runOnUiThread {
+            activity?.runOnUiThread {
                 Toast.makeText(requireContext(), "Unable to delete offer", Toast.LENGTH_SHORT).show()
             }
         }
-        requireActivity().runOnUiThread { binding.offersListSwipeRefresh.isRefreshing = false }
+        activity?.runOnUiThread { binding.offersListSwipeRefresh.isRefreshing = false }
     }
 
     private fun editOfferCallback(offer: Offer) {
@@ -140,10 +140,12 @@ class OffersFragment : Fragment() {
 
     private fun fetchMyOffers() {
         try {
-            val offers = TradingApiClient.getMyOffers(requireContext())
-            requireActivity().runOnUiThread { viewModel.setOffers(offers) }
+            activity?.let {
+                val offers = TradingApiClient.getMyOffers(requireContext())
+                it.runOnUiThread { viewModel.setOffers(offers) }
+            }
         } catch (exception: ExecutionException) {
-            if (exception.cause is VolleyError && requireActivity().hasWindowFocus())
+            if (exception.cause is VolleyError && activity != null && requireActivity().hasWindowFocus())
                 requireActivity().runOnUiThread {
                     Toast.makeText(requireActivity(), R.string.server_connection_failed, Toast.LENGTH_LONG).show()
                 }
@@ -151,6 +153,6 @@ class OffersFragment : Fragment() {
                 Log.e(TAG, "Error while fetching or parsing myOffers", exception)
             }
         }
-        requireActivity().runOnUiThread { binding.offersListSwipeRefresh.isRefreshing = false }
+        activity?.runOnUiThread { binding.offersListSwipeRefresh.isRefreshing = false }
     }
 }

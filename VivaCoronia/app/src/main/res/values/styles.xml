@@ -6,7 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:buttonStyle">@style/buttonStyle</item>
+        <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Colored</item>
         <item name="android:textViewStyle">@style/textViewStyle</item>
         <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
         <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar.Fullscreen</item>
@@ -22,8 +22,9 @@
         <item name="android:fontFamily">serif</item>
     </style>
 
-    <style name="buttonStyle" parent="android:Widget.Holo.Button">
-        <item name="android:fontFamily">serif</item>
+    <style name="AccentButton" parent="ThemeOverlay.AppCompat.Light">
+        <item name="colorButtonNormal">#CFCFCF</item>
+        <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
     <style name="AlterDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
