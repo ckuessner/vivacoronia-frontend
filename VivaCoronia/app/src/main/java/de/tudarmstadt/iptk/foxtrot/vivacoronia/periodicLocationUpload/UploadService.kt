@@ -10,32 +10,32 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class UploadService : Service() {
-    private val TAG = "UploadService"
+    private val tag = "UploadService"
 
     override fun onCreate() {
         super.onCreate()
-        Log.i(TAG, "entered onCreate")
+        Log.i(tag, "entered onCreate")
 
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.i(TAG, "started upload Service")
+        Log.i(tag, "started upload Service")
 
         // TODO call LocationUploadCommunicator and check for network connection
         val db = AppDatabase.getDatabase(applicationContext)
         // do uploading unblocking
         GlobalScope.launch {
             val locList = db.coronaDao().getLocations()
-            Log.i(TAG, "locList: " + locList.toString())
-            Log.i(TAG, "locList Length: " + locList.size.toString())
+            Log.i(tag, "locList: $locList")
+            Log.i(tag, "locList Length: " + locList.size.toString())
 
             // if location array is empty, no upload is needed
             if (locList.isNotEmpty()) {
                 // uploads the data and deletes it if upload was successful
-                Log.i(TAG, "upload")
+                Log.i(tag, "upload")
                 LocationApiClient.sendPositionsToServer(applicationContext, locList)
             } else {
-                Log.i(TAG, "no upload")
+                Log.i(tag, "no upload")
             }
 
         }
@@ -46,7 +46,7 @@ class UploadService : Service() {
     }
 
     override fun onDestroy() {
-        Log.i(TAG, "upload service destroyed")
+        Log.i(tag, "upload service destroyed")
         super.onDestroy()
     }
 

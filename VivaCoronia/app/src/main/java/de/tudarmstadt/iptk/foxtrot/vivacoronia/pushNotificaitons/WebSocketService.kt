@@ -21,12 +21,12 @@ import okhttp3.Request
 import javax.net.ssl.X509TrustManager
 
 class WebSocketService : Service() {
-    private val TAG = "WebSocketService"
+    private val tag = "WebSocketService"
 
     private lateinit var client : OkHttpClient
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.i(TAG, "started upload Service")
+        Log.i(tag, "started upload Service")
 
         initWebSocket()
 
@@ -36,8 +36,8 @@ class WebSocketService : Service() {
     //==============================================================================================
     // methods for web sockets
     // for okhttp see license
-    fun initWebSocket(){
-        Log.i(TAG, "init Web Socket")
+    private fun initWebSocket(){
+        Log.i(tag, "init Web Socket")
         if (BuildConfig.DEBUG) {
             val (sslContext, trustManager) = getDevSSLContext(this)
             client = OkHttpClient.Builder()
@@ -75,7 +75,7 @@ class WebSocketService : Service() {
 
 
     fun reconnect() {
-        Log.i(TAG, "reconnect")
+        Log.i(tag, "reconnect")
         tryStartWebSocketService(this)
     }
 

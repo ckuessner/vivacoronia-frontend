@@ -31,5 +31,4 @@
         android:icon="@drawable/ic_admin"
         android:title="@string/check_status" />
 
-
 </menu>

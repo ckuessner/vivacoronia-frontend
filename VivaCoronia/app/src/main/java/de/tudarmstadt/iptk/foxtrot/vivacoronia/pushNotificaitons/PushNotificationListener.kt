@@ -7,14 +7,14 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 
 class PushNotificationListener : WebSocketListener(){
-    private val TAG = "PushListener"
+    private val tag = "PushListener"
 
     //gets set in the init method of websocketservice
     lateinit var socketService : WebSocketService
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         super.onOpen(webSocket, response)
-        Log.i(TAG, "onOpen: " + response)
+        Log.i(tag, "onOpen: $response")
         webSocket.send(Constants.USER_ID.toString())
     }
 
@@ -23,7 +23,7 @@ class PushNotificationListener : WebSocketListener(){
         if(text == "you had contact with an infected person") {
             socketService.makeNotification()
         }
-        Log.i(TAG, "received " + text)
+        Log.i(tag, "received $text")
     }
 
     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
@@ -31,8 +31,8 @@ class PushNotificationListener : WebSocketListener(){
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-        Log.e(TAG, "websocket failure " + t.cause.toString())
-        Log.i(TAG, socketService.toString())
+        Log.e(tag, "websocket failure " + t.cause.toString())
+        Log.i(tag, socketService.toString())
         socketService.reconnect()
     }
 

@@ -14,7 +14,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 
-private val TAG = "LocationStarter"
+private const val TAG = "LocationStarter"
 
 //==============================================================================================
 // methods for starting location tracking service
@@ -69,7 +69,7 @@ fun requestLocationService(context: Context, locationRequest: LocationRequest?, 
     val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
 
     // gps, wifi etc is enabled so location tracking can be started
-    task.addOnSuccessListener { _ ->
+    task.addOnSuccessListener {
         val intent = Intent(context, LocationTrackingService::class.java)
         Log.v(TAG, "start service")
         // version check
@@ -99,7 +99,7 @@ fun requestLocationService(context: Context, locationRequest: LocationRequest?, 
         }
     }
     else {
-        task.addOnFailureListener { _ ->
+        task.addOnFailureListener {
             Toast.makeText(context, context.getString(R.string.location_service_fail_after_boot_message), Toast.LENGTH_LONG).show()
         }
     }

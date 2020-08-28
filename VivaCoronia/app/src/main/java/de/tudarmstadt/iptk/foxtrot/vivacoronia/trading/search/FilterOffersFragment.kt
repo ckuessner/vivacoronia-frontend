@@ -20,7 +20,6 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentFilterOffersB
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.LocationPickerActivity
-import kotlinx.android.synthetic.main.fragment_spread_map.*
 
 private const val LOCATION_PICKER_REQUEST = 1
 

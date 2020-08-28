@@ -76,8 +76,6 @@
     <string name="title_activity_location_picker">Pick a Location</string>
     <string name="use_selection">Use selection</string>
     <string name="product_search_view_hint">Enter Product Name</string>
-    <string name="menu_item_search">Search Offers</string>
-    <string name="location">Location</string>
     <string name="view_on_map">View on map</string>
     <string name="map">Map</string>
     <string name="list">List</string>
@@ -93,6 +91,10 @@
     <string name="my_needs">My Needs</string>
     <string name="loading_categories">Testing your internet connection\n and loading some things ....</string>
     <string name="loading_categories_failed">Internet connection failed. Please ensure you have a working internet connection and try again</string>
+    <string name="done">Done</string>
+    <string name="sort_by">Sort by:</string>
+    <string name="spreadmap">Spreadmap</string>
+    <string name="filter">Filter</string>
 
     <!-- Register process -->
     <string name="register">Register</string>

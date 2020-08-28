@@ -9,22 +9,22 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploa
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.WebSocketService
 
 class AlarmBroadcastReceiver : BroadcastReceiver() {
-    private val TAG = "MyBroadcastReceiver"
+    private val tag = "MyBroadcastReceiver"
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        Log.i(TAG, "Broadcast received")
+        Log.i(tag, "Broadcast received")
         // register the alarm after the phone has booted
         if (intent?.action.equals(Intent.ACTION_BOOT_COMPLETED)) {
             // TODO
-            Log.i(TAG, "Boot completed")
+            Log.i(tag, "Boot completed")
             if (context != null) {
                 setupUploadAlarm(context)
                 WebSocketService.tryStartWebSocketService(context)
                 checkPermissionsAndStartTracking(context, false)
-                Log.i(TAG, "alarm registered")
+                Log.i(tag, "alarm registered")
             }
             else {
-                Log.e(TAG, "couldnt register alarm because context was null")
+                Log.e(tag, "couldnt register alarm because context was null")
             }
         }
     }

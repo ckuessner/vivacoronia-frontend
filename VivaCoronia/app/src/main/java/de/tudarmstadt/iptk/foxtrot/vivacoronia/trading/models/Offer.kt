@@ -5,7 +5,6 @@ import android.os.Parcelable
 import androidx.lifecycle.MutableLiveData
 import com.beust.klaxon.Json
 import com.google.android.gms.maps.model.LatLng
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import java.util.*
 
 class Offer(

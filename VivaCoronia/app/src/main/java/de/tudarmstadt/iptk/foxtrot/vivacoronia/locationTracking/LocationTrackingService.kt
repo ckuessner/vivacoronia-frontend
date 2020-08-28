@@ -24,7 +24,7 @@ import java.util.*
 class LocationTrackingService : Service() {
     // used this link as a hint
     // https://bitbucket.org/tiitha/backgroundserviceexample/src/master/app/src/main/java/com/geoape/backgroundlocationexample/BackgroundService.java
-    private val TAG = "LocationTrackingService"
+    private val tag = "LocationTrackingService"
 
     lateinit var context: Context
     private lateinit var locManager: LocationManager
@@ -32,11 +32,11 @@ class LocationTrackingService : Service() {
     private lateinit var notification: Notification
 
     // TODO type should be changed according to the Rest api
-    lateinit var db: AppDatabase
+    private lateinit var db: AppDatabase
 
     override fun onCreate() {
         super.onCreate()
-        Log.i(TAG, "startet location tracking service")
+        Log.i(tag, "startet location tracking service")
         notification = NotificationHelper.getNotification(
             this,
             Constants.LOCATION_NOTIFICATION_CHANNEL_ID,
@@ -76,7 +76,7 @@ class LocationTrackingService : Service() {
             )
         }
         catch (se: SecurityException){
-            Log.e(TAG, "SecurityException")
+            Log.e(tag, "SecurityException", se)
         }
 
         return START_STICKY
@@ -84,23 +84,20 @@ class LocationTrackingService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.e(TAG, "Location Tracking Service destroyed :(")
+        Log.e(tag, "Location Tracking Service destroyed :(")
     }
 
     suspend fun addLocationToDatabase(location: Location){
         coroutineScope {
             val sdf = SimpleDateFormat(Constants.DATETIME_FORMAT, Locale.GERMANY) // "yyyy-MM-dd'T'HH:mm:ss.SSS"
             val date = sdf.format(Date())
-            Log.i(TAG, date)
+            Log.i(tag, date)
             db.coronaDao().addLocation(DBLocation(date, location.longitude, location.latitude))
-            Log.i(TAG, "new Location added at <" + date + ">: " + location.longitude.toString() + ", " + location.latitude.toString())
+            Log.i(tag, "new Location added at <" + date + ">: " + location.longitude.toString() + ", " + location.latitude.toString())
         }
     }
 
     inner class MyLocationListener: LocationListener {
-
-        private val TAG = "MyLocationListener"
-
         override fun onLocationChanged(p0: Location?) {
             if (p0 != null) {
                 // database write has to be asynchronous because this service runs in main thread
@@ -111,16 +108,11 @@ class LocationTrackingService : Service() {
             }
         }
 
-        override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
-            Log.i(TAG, "onStatusChanged: " + p0 + ", " + p1)
-        }
+        override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {}
 
-        override fun onProviderEnabled(p0: String?) {
-            Log.i(TAG, "onProviderEnabled:" + p0)
-        }
+        override fun onProviderEnabled(p0: String?) {}
 
         override fun onProviderDisabled(p0: String?) {
-            Log.i(TAG, "onProviderDisabled: " + p0)
             // TODO evt user informieren
         }
 

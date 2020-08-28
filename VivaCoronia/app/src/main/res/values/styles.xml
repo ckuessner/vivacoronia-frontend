@@ -22,11 +22,6 @@
         <item name="android:fontFamily">serif</item>
     </style>
 
-    <style name="AccentButton" parent="ThemeOverlay.AppCompat.Light">
-        <item name="colorButtonNormal">#CFCFCF</item>
-        <item name="colorAccent">@color/colorPrimary</item>
-    </style>
-
     <style name="AlterDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/colorPrimary</item>
     </style>

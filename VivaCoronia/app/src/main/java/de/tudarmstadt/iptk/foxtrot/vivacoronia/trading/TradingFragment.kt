@@ -8,7 +8,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
-import com.android.volley.VolleyError
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.TradingApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentTradingBinding

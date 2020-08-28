@@ -29,7 +29,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploa
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.WebSocketService
 
 class MainActivity : AppCompatActivity() {
-    private var TAG = "MainActivity"
+    private val tag = "MainActivity"
     // TODO check wheter google play services has the right version
     // TODO add licencing for location api
 
@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity() {
         this.doubleBackToExitPressedOnce = true
         Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()
 
-        Handler().postDelayed(Runnable { doubleBackToExitPressedOnce = false }, 2000)
+        Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
     }
 
     //==============================================================================================
@@ -185,13 +185,13 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        Log.i(TAG, "onRequestPermissionResult")
+        Log.i(tag, "onRequestPermissionResult")
         when (requestCode) {
             // handle location permission requests
             Constants.LOCATION_ACCESS_PERMISSION_REQUEST_CODE -> {
                 // request permissions again if location permission not granted
                 if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_DENIED)) {
-                    Log.v(TAG, "Location Access Denied")
+                    Log.v(tag, "Location Access Denied")
 
                     // not called after "Deny and dont ask again"
                     if (Build.VERSION.SDK_INT >= 23 && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -212,7 +212,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 // permission was granted so start foreground service
                 else {
-                    Log.v(TAG, "start location service")
+                    Log.v(tag, "start location service")
                     requestLocationService(this, createBackgroundLocationRequest(), true)
                 }
             }
