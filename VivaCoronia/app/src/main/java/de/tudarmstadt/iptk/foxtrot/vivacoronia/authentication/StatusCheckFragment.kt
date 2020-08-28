@@ -67,7 +67,7 @@ class StatusCheckFragment : Fragment() {
     private fun setUserIDShowLogic(ctx: Context, view: View){
         val userIDShower = view.findViewById<Button>(R.id.showUserID)
         userIDShower.setOnClickListener{
-            var userID = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.USER_ID, null)
+            val userID = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.USER_ID, null)
             requireActivity().runOnUiThread {
                 Toast.makeText(
                     ctx,
@@ -86,9 +86,9 @@ class StatusCheckFragment : Fragment() {
         val adminJwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.adminJWT, null)
         //to check whether we actually show something, check whether isAdmin
         if(!isAdmin || adminJwt == null)
-            view.findViewById<TextView>(R.id.userStatus).text = "Feature permissions: User"
+            view.findViewById<TextView>(R.id.userStatus).text = getString(R.string.feature_permissions_user)
         else
-            view.findViewById<TextView>(R.id.userStatus).text = "Feature permissions: Admin"
+            view.findViewById<TextView>(R.id.userStatus).text = getString(R.string.feature_permission_admin)
     }
 
     private fun checkStatus(ctx: Context, view: View,oldIsAdmin : Boolean){
@@ -117,7 +117,7 @@ class StatusCheckFragment : Fragment() {
         }
         //if our status changed to no admin, but we had an adminJWT and were admin before change fragment to userFragment
         else if(!currStatus && !noAdminJWT && oldIsAdmin != currStatus){
-            view.findViewById<TextView>(R.id.userStatus).text = "Feature permissions: User"
+            view.findViewById<TextView>(R.id.userStatus).text = getString(R.string.feature_permissions_user)
             //set adminJWT to zero
             ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).edit().putString(Constants.adminJWT, null).apply()
         }

@@ -1,4 +1,4 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication
 
 import android.app.Activity
 import android.content.Context
@@ -8,8 +8,9 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.RequestUtility
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.TextViewUtils
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.AuthenticationApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.MainActivity
 import kotlinx.coroutines.GlobalScope
@@ -53,7 +54,8 @@ class RegisterActivity : AppCompatActivity() {
                     var jwtDone = 0
                     if(creationSucc == 0) {
                         //since we only get useriD == 0 if everything was ok, we can safely cast to string
-                        val userID = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.USER_ID, null) as String
+                        val userID = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(
+                            Constants.USER_ID, null) as String
                         jwtDone = AuthenticationApiClient.makeNewJWT(ctx, pw, userID)
                         runOnUiThread {
                             if (jwtDone == 0) finishRegister(ctx)

@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.RegisterActivity
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.RegisterActivity
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.LoginActivity
 
 class StartActivity : AppCompatActivity() {

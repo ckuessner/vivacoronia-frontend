@@ -20,10 +20,10 @@ class LoginActivity : AppCompatActivity() {
         val isAdmin = intent.getBooleanExtra("isAdmin", false)
         val noAdminJWT = getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.adminJWT, null) == null
         if(isAdmin && noAdminJWT){
-            findViewById<TextView>(R.id.loginInfo).text = "Login to use admin features"
+            findViewById<TextView>(R.id.loginInfo).text = getString(R.string.admin_login_prompt)
         }
         else if (isAdmin && !noAdminJWT){
-            findViewById<TextView>(R.id.loginInfo).text = "Login to renew admin access"
+            findViewById<TextView>(R.id.loginInfo).text = getString(R.string.renew_admin_login_prompt)
         }
         setLoginLogic(this, isAdmin)
     }
