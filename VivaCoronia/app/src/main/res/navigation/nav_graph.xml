@@ -17,16 +17,10 @@
         android:label="Achievements"
         tools:layout="@layout/fragment_achievements" />
     <fragment
-        android:id="@+id/tradingOverviewFragment"
-        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OffersFragment"
+        android:id="@+id/tradingFragmentNav"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.TradingFragmentNav"
         android:label="Trading"
-        tools:layout="@layout/fragment_trading_overview" />
-    <!-- TODO remove/merge -->
-    <fragment
-        android:id="@+id/searchOffersFragment"
-        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search.SearchOffersFragment"
-        android:label="Search Offers"
-        tools:layout="@layout/fragment_search_offers" />
+        tools:layout="@layout/fragment_trading_nav" />
     <fragment
         android:id="@+id/infectionStatusFragment"
         android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus.InfectionStatusFragment"

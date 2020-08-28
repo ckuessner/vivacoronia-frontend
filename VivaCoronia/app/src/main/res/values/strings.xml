@@ -87,6 +87,13 @@
     <string name="filter_radius_distance_text">\u0020%dm\u0020</string>
     <string name="distance">Distance</string>
 
+    <string name="retry">Retry connection</string>
+    <string name="search">Search</string>
+    <string name="my_offers">My Offers</string>
+    <string name="my_needs">My Needs</string>
+    <string name="loading_categories">Testing your internet connection\n and loading some things ....</string>
+    <string name="loading_categories_failed">Internet connection failed. Please ensure you have a working internet connection and try again</string>
+
     <!-- Register process -->
     <string name="register">Register</string>
     <string name="tag_reg">Join our big corona community to save the world</string>

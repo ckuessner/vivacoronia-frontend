@@ -54,10 +54,7 @@ class OffersFragment : Fragment() {
 
         binding.offersListSwipeRefresh.setOnRefreshListener {
             GlobalScope.launch { fetchMyOffers() }
-            GlobalScope.launch { fetchCategories() }
         }
-
-        GlobalScope.launch { fetchCategories() }
 
         binding.add.setOnClickListener { SubmitOfferActivity.start(requireContext(), null) }
 
@@ -111,31 +108,6 @@ class OffersFragment : Fragment() {
 
     private fun editOfferCallback(offer: Offer) {
         SubmitOfferActivity.start(requireContext(), offer)
-    }
-
-    private fun fetchCategories() {
-        try {
-            val categories = TradingApiClient.getAllCategories(requireContext()).toMutableList()
-            requireActivity().runOnUiThread {
-                Offer.categories.value = categories
-            }
-        } catch (e: Exception) {
-            // Don't care if we already have categories
-            if (!Offer.categories.value.isNullOrEmpty())
-                return
-
-            if (requireActivity().hasWindowFocus())
-                requireActivity().runOnUiThread {
-                    activity?.let {
-                        AlertDialog.Builder(it, R.style.AlterDialogTheme)
-                            .setMessage("Please make sure you have a working Internet connection and try again.")
-                            .setTitle("No Internet")
-                            .setCancelable(false)
-                            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
-                            .show()
-                    }
-                }
-        }
     }
 
     private fun fetchMyOffers() {

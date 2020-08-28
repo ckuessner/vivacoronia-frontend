@@ -15,11 +15,6 @@
         android:id="@+id/menu_item_trading"
         android:icon="@drawable/ic_trading"
         android:title="@string/menu_item_trading" />
-    <!-- TODO remove/merge -->
-    <item
-        android:id="@+id/menu_item_search"
-        android:icon="@drawable/ic_trading"
-        android:title="@string/menu_item_search" />
 
     <item
         android:id="@+id/menu_item_achievements"

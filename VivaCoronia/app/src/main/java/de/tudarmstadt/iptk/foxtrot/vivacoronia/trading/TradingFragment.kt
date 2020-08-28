@@ -1,0 +1,112 @@
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
+import com.android.volley.VolleyError
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.TradingApiClient
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentTradingBinding
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentTradingNavBinding
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OffersFragment
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search.SearchOffersFragment
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+
+
+class TradingFragment : Fragment() {
+    private lateinit var binding: FragmentTradingBinding
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_trading, container, false)
+        GlobalScope.launch { fetchCategories() }
+        binding.retryConnection.setOnClickListener { onConnectionRetry() }
+        return binding.root
+    }
+
+    private fun fetchCategories() {
+        try {
+            val categories = TradingApiClient.getAllCategories(requireContext()).toMutableList()
+            activity?.runOnUiThread {
+                Offer.categories.value = categories
+            } ?: showRetry()
+        } catch (e: Exception) {
+            showRetry()
+        }
+    }
+
+    private fun showRetry() {
+        activity?.runOnUiThread {
+            binding.loadingProgressBar.visibility = View.INVISIBLE
+            binding.loadingText.visibility = View.INVISIBLE
+            binding.connectionFailedIcon.visibility = View.VISIBLE
+            binding.connectionFailedText.visibility = View.VISIBLE
+            binding.retryConnection.isEnabled = true
+        }
+    }
+
+    private fun onConnectionRetry() {
+        activity?.runOnUiThread {
+            binding.loadingProgressBar.visibility = View.VISIBLE
+            binding.loadingText.visibility = View.VISIBLE
+            binding.connectionFailedIcon.visibility = View.INVISIBLE
+            binding.connectionFailedText.visibility = View.INVISIBLE
+            binding.retryConnection.isEnabled = false
+        }
+        GlobalScope.launch { fetchCategories() }
+    }
+}
+
+class TradingFragmentNav : Fragment(), Observer<MutableList<String>> {
+    private lateinit var binding : FragmentTradingNavBinding
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_trading_nav, container, false)
+        binding.bottomNavView.selectedItemId = R.id.search_offers
+        if (Offer.categories.value == null){
+            binding.bottomNavView.isEnabled = false
+            Offer.categories.observe(viewLifecycleOwner, this)
+        } else {
+            loadFragment(R.id.search_offers)
+        }
+        binding.bottomNavView.setOnNavigationItemSelectedListener { loadFragment(it.itemId) }
+        return binding.root
+    }
+
+    private fun loadFragment(item: Int): Boolean {
+        if (!binding.bottomNavView.isEnabled)
+            return false
+
+        val fragment = when (item) {
+            R.id.search_offers -> SearchOffersFragment()
+            R.id.my_offers -> OffersFragment()
+            R.id.my_needs -> null
+            else -> null
+        }
+
+        if (fragment != null) {
+            childFragmentManager
+                .beginTransaction()
+                .replace(R.id.nav_host_fragment, fragment)
+                .commit()
+            return true
+        }
+        return false
+    }
+
+    override fun onChanged(newList: MutableList<String>?) {
+        binding.bottomNavView.isEnabled = true
+        binding.bottomNavView.selectedItemId = R.id.search_offers
+        binding.navHostFragment.findNavController().navigate(R.id.search_offers)
+        Offer.categories.removeObserver(this)
+    }
+}

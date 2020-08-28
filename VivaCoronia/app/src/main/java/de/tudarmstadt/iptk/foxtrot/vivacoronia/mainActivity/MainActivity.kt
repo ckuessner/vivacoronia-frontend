@@ -69,9 +69,7 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.locationHistoryFragment,
-                R.id.tradingOverviewFragment,
-                // TODO Merge/Remove
-                R.id.searchOffersFragment,
+                R.id.tradingFragmentNav,
                 R.id.achievementsFragment,
                 R.id.infectionStatusFragment,
                 R.id.spreadMapFragment,
@@ -98,11 +96,7 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.infectionStatusFragment)
                 }
                 R.id.menu_item_trading -> {
-                    navController.navigate(R.id.tradingOverviewFragment)
-                }
-                // TODO Merge/Remove
-                R.id.menu_item_search -> {
-                    navController.navigate(R.id.searchOffersFragment)
+                    navController.navigate(R.id.tradingFragmentNav)
                 }
                 R.id.menu_item_achievements -> {
                     navController.navigate(R.id.achievementsFragment)

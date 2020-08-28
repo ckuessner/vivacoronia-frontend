@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/my_offers"
+        android:icon="@drawable/ic_give"
+        android:title="@string/my_offers"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/search_offers"
+        android:icon="@drawable/ic_search"
+        android:title="@string/search"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/my_needs"
+
+        android:icon="@drawable/ic_take"
+        android:title="@string/my_needs"
+        app:showAsAction="always"/>
+</menu>

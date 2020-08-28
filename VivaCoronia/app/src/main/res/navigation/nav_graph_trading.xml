@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_trading"
+    app:startDestination="@id/trading_overview">
+
+    <fragment
+        android:id="@+id/my_offers"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OffersFragment"
+        android:label="OffersFragment" />
+    <fragment
+        android:id="@+id/search_offers"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search.SearchOffersFragment"
+        android:label="SearchOffersFragment" />
+    <fragment
+        android:id="@+id/my_needs"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search.SearchOffersFragment"
+        android:label="SearchOffersFragment" />
+    <fragment
+        android:id="@+id/trading_overview"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.TradingFragment"
+        android:label="fragment_trading"
+        tools:layout="@layout/fragment_trading_nav" >
+        <action
+            android:id="@+id/action_trading_overview_to_my_offers"
+            app:destination="@id/my_offers" />
+        <action
+            android:id="@+id/action_trading_overview_to_search_offers"
+            app:destination="@id/search_offers" />
+        <action
+            android:id="@+id/action_trading_overview_to_my_needs"
+            app:destination="@id/my_needs"/>
+    </fragment>
+</navigation>
