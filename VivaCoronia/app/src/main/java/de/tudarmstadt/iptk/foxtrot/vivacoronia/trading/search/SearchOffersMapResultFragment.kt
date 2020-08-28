@@ -37,9 +37,8 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
     private var recenterMap = true
 
     private val callback = OnMapReadyCallback { googleMap ->
-        if(recenterMap) {
-            userLocation =
-                LocationUtility.getLastKnownLocation(requireActivity()) ?: LatLng(0.0, 0.0)
+        if (recenterMap) {
+            userLocation = LocationUtility.getLastKnownLocation(requireActivity()) ?: LatLng(0.0, 0.0)
         }
         recenterMap = false
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, userZoom))
@@ -47,57 +46,61 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
         parent.viewModel.searchQuery.observe(viewLifecycleOwner, Observer {
             drawRadius(googleMap)
         })
-        googleMap.setClustering(ClusteringSettings().minMarkersCount(2).clusterOptionsProvider(CustomClusterOptionsProvider(resources)))
+        val clusteringSettings = ClusteringSettings()
+            .minMarkersCount(2)
+            .clusterOptionsProvider(CustomClusterOptionsProvider(resources))
+        googleMap.setClustering(clusteringSettings)
+
         googleMap.setOnCameraMoveListener {
             userLocation = googleMap.cameraPosition.target
             userZoom = googleMap.cameraPosition.zoom
         }
-        parent.viewModel.searchResults.observe(
-            viewLifecycleOwner,
-            Observer<List<Offer>> { initialOffers ->
-                currentViewedCluster = null
-                selectedMarker = null
-                googleMap.clear()
-                markers = mutableMapOf()
-                for (offer in initialOffers) {
-                    if (offer.location.latitude == 0.0 && offer.location.longitude == 0.0)
-                        continue
-                    val marker = googleMap.addMarker(
-                        MarkerOptions().position(
-                            offer.location
-                        ).title(offer.product).snippet(offer.details)
-                    )
-                    markers[offer.location] = Pair(offer.id, marker)
-                }
-                drawRadius(googleMap)
-            })
+
         googleMap.setOnMapClickListener {
-            if(selectedMarker != null && !selectedMarker!!.isCluster){
+            if (selectedMarker != null && !selectedMarker!!.isCluster) {
                 selectedMarker!!.setIcon(BitmapDescriptorFactory.defaultMarker())
             }
             selectedMarker = null
         }
 
-        googleMap.setOnMarkerClickListener { marker ->
-            if(selectedMarker != null && !selectedMarker!!.isCluster){
-                selectedMarker!!.setIcon(BitmapDescriptorFactory.defaultMarker())
-            }
-            selectedMarker = marker
-            if(marker.isCluster){
-                showPopup(binding.anchorMenu, marker.markers)
-            }
-            else {
-                selectedMarker!!.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                marker.showInfoWindow()
-                selectedMarker = marker
-            }
-            true
-        }
-
-        googleMap.setOnInfoWindowClickListener { marker ->
-            onInfoWindowClick(marker)
-        }
+        googleMap.setOnMarkerClickListener { onMarkerClick(it) }
+        googleMap.setOnInfoWindowClickListener { onInfoWindowClick(it) }
         mGoogleMap = googleMap
+
+        parent.viewModel.searchResults.observe(viewLifecycleOwner, Observer<List<Offer>> { populateMap(googleMap, it) })
+    }
+
+    private fun onMarkerClick(marker: Marker): Boolean {
+        if (selectedMarker != null && !selectedMarker!!.isCluster) {
+            selectedMarker!!.setIcon(BitmapDescriptorFactory.defaultMarker())
+        }
+        selectedMarker = marker
+        if (marker.isCluster) {
+            showPopup(binding.anchorMenu, marker.markers)
+        } else {
+            selectedMarker!!.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+            marker.showInfoWindow()
+            selectedMarker = marker
+        }
+        return true
+    }
+
+    private fun populateMap(googleMap: GoogleMap, initialOffers: List<Offer>) {
+        currentViewedCluster = null
+        selectedMarker = null
+        googleMap.clear()
+        markers = mutableMapOf()
+        for (offer in initialOffers) {
+            if (offer.location.latitude == 0.0 && offer.location.longitude == 0.0)
+                continue
+            val markerOptions = MarkerOptions()
+                .position(offer.location)
+                .title(offer.product)
+                .snippet(offer.details)
+            val marker = googleMap.addMarker(markerOptions)
+            markers[offer.location] = Pair(offer.id, marker)
+        }
+        drawRadius(googleMap)
     }
 
     private fun drawRadius(googleMap: GoogleMap?) {
@@ -128,12 +131,7 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_search_offers_map_result,
-            container,
-            false
-        )
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search_offers_map_result, container,false)
         return binding.root
     }
 
@@ -149,7 +147,7 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
             return false
         val marker = markerPair.second
         selectedMarker = marker
-        if(!marker.isCluster){
+        if (!marker.isCluster) {
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
         }
         mGoogleMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
@@ -162,11 +160,11 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
         currentViewedCluster = offerItems
 
         popup.inflate(R.menu.search_item_cluster_info_window)
-        for(i in offerItems.indices){
+        for(i in offerItems.indices) {
             popup.menu.add(1, i, 1, offerItems[i].title)
         }
         popup.setOnMenuItemClickListener { item ->
-            if(currentViewedCluster != null) {
+            if (currentViewedCluster != null) {
                 onInfoWindowClick(currentViewedCluster!![item.itemId])
             }
             true

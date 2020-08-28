@@ -21,17 +21,17 @@ class CustomClusterOptionsProvider(resources: Resources) :
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val bounds = Rect()
     private val clusterOptions = ClusterOptions().anchor(0.5f, 0.5f)
+
     override fun getClusterOptions(markers: List<Marker>): ClusterOptions {
         val markersCount = markers.size
         val cachedIcon: BitmapDescriptor? = cache.get(markersCount)
         if (cachedIcon != null) {
             return clusterOptions.icon(cachedIcon)
         }
-        var base: Bitmap?
-        var i = 0
-        do {
-            base = baseBitmaps[i]
-        } while (markersCount >= forCounts[i++])
+
+        val sizeIndex = clusterSizeGradations.indexOfLast { it <= markersCount } + 1
+        val base = baseBitmaps[sizeIndex]
+
         val bitmap = base!!.copy(Bitmap.Config.ARGB_8888, true)
         val text = markersCount.toString()
         paint.getTextBounds(text, 0, text.length, bounds)
@@ -45,17 +45,16 @@ class CustomClusterOptionsProvider(resources: Resources) :
     }
 
     companion object {
-        private val res =
-            intArrayOf(R.drawable.cluster1, R.drawable.cluster2, R.drawable.cluster3, R.drawable.cluster4)
-        private val forCounts = intArrayOf(5, 15, 30, Int.MAX_VALUE)
+        private val clusterSizeDrawables = intArrayOf(R.drawable.cluster1, R.drawable.cluster2, R.drawable.cluster3, R.drawable.cluster4)
+        private val clusterSizeGradations = intArrayOf(5, 15, 30, Int.MAX_VALUE)
     }
 
     init {
-        baseBitmaps = arrayOfNulls(res.size)
-        for (i in res.indices) {
+        baseBitmaps = arrayOfNulls(clusterSizeDrawables.size)
+        for (i in clusterSizeDrawables.indices) {
             baseBitmaps[i] = BitmapFactory.decodeResource(
                 resources,
-                res[i]
+                clusterSizeDrawables[i]
             )
         }
         paint.color = Color.WHITE
