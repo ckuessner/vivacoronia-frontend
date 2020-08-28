@@ -133,10 +133,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.menu_item_trading -> {
                     navController.navigate(R.id.tradingFragmentNav)
                 }
-                // TODO Merge/Remove
-                R.id.menu_item_search -> {
-                    navController.navigate(R.id.searchOffersFragment)
-                }
                 R.id.menu_item_achievements -> {
                     navController.navigate(R.id.achievementsFragment)
                 }
