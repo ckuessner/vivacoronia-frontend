@@ -3,7 +3,6 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models
 import android.os.Parcel
 import android.os.Parcelable
 import com.google.android.gms.maps.model.LatLng
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import java.util.*
 
 class Offer(
