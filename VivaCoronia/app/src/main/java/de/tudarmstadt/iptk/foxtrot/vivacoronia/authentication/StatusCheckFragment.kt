@@ -96,7 +96,7 @@ class StatusCheckFragment : Fragment() {
         val currStatus = settings.getBoolean(Constants.IS_ADMIN, false)
         val noAdminJWT = settings.getString(Constants.adminJWT, null) == null
         //if our status changed and we're now admin, we wanna show permission update
-        if((currStatus && oldIsAdmin != currStatus) || noAdminJWT){
+        if((currStatus && oldIsAdmin != currStatus) || (currStatus && noAdminJWT)){
             //give user possibility to login as admin, after we have received news that he can get adminJWT
             val builder = AlertDialog.Builder(ctx, R.style.AlertDialogTheme)
             builder.setTitle("Permission update")

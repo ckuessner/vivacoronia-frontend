@@ -2,7 +2,6 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity
 
 import android.Manifest
 import android.app.NotificationManager
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -69,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.achievementsFragment,
                 R.id.infectionStatusFragment,
                 R.id.spreadMapFragment,
-                R.id.adminLoginFragment
+                R.id.statusCheckFragment
             ),
             findViewById<DrawerLayout>(R.id.drawer_layout)
         )
@@ -102,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.spreadMapFragment)
                 }
                 R.id.menu_item_statusCheck -> {
-                    navController.navigate(R.id.adminLoginFragment)
+                    navController.navigate(R.id.statusCheckFragment)
                 }
             }
             findViewById<DrawerLayout>(R.id.drawer_layout).closeDrawer(navView)

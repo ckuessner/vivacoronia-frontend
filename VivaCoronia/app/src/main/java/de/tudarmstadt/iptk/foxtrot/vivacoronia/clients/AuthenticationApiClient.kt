@@ -16,10 +16,10 @@ object AuthenticationApiClient : ApiBaseClient() {
     fun checkStatus(ctx: Context, userID: String) : Int {
         val queue = RequestUtility.getRequestQueue(ctx) ?: return Constants.NULL_QUEUE
         val baseUrl = Constants.SERVER_BASE_URL
-        var url = "$baseUrl/admin/$userID/login/"
+        var url = "$baseUrl/user/$userID/"
 
         val responseFuture: RequestFuture<JSONObject> = RequestFuture.newFuture()
-        val jsonRequest = object : JsonObjectRequest(url, null,responseFuture, responseFuture){}
+        val jsonRequest = JsonObjectJWT(url, null,responseFuture, responseFuture, ctx)
         queue.add(jsonRequest)
         try {
             val response = responseFuture.get()

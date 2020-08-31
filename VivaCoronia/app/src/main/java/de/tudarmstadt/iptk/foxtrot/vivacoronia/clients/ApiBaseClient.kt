@@ -1,6 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -9,6 +10,8 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
+import androidx.navigation.findNavController
 import com.android.volley.NetworkResponse
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -29,6 +32,7 @@ import org.json.JSONObject
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.LoginActivity
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.*
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.StatusCheckFragment
 
 
 abstract class ApiBaseClient {
@@ -199,6 +203,18 @@ abstract class ApiBaseClient {
                     ctx.startActivity(intent)
                     errorSuper?.onErrorResponse(error)
                 }
+                else if (error.networkResponse.statusCode == 403 && isAdmin){
+                    //delete admin stuff, since this error only occurs if user doesn't have admin permissions anymore
+                    ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).edit().putBoolean(Constants.IS_ADMIN, false).apply()
+                    ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).edit().putString(Constants.adminJWT, null).apply()
+                    Toast.makeText(ctx, "You don't have the permission to use admin features anymore", Toast.LENGTH_SHORT).show()
+                    //navigate to status to show user that he isn't admin anymore
+                    val act = ctx as FragmentActivity
+                    val navController = act.findNavController(R.id.nav_fragment)
+                    navController.setGraph(R.navigation.nav_graph)
+                    navController.navigate(R.id.statusCheckFragment)
+                    errorSuper?.onErrorResponse(error)
+                    }
             }
         }
     }

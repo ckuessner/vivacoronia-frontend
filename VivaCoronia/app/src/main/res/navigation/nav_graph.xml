@@ -32,7 +32,7 @@
         android:label="Spread Map"
         tools:layout="@layout/fragment_spread_map" />
     <fragment
-        android:id="@+id/adminLoginFragment"
+        android:id="@+id/statusCheckFragment"
         android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.StatusCheckFragment"
         android:label="Check Status"
         tools:layout="@layout/fragment_status"
