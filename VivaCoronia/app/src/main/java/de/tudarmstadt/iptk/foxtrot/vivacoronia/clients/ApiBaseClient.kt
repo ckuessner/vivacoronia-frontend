@@ -207,7 +207,7 @@ abstract class ApiBaseClient {
                     //delete admin stuff, since this error only occurs if user doesn't have admin permissions anymore
                     ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).edit().putBoolean(Constants.IS_ADMIN, false).apply()
                     ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).edit().putString(Constants.adminJWT, null).apply()
-                    Toast.makeText(ctx, "You don't have the permission to use admin features anymore", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(ctx, "You don't have the permission to use admin features anymore", Toast.LENGTH_LONG).show()
                     //navigate to status to show user that he isn't admin anymore
                     val act = ctx as FragmentActivity
                     val navController = act.findNavController(R.id.nav_fragment)

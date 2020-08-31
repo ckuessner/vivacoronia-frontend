@@ -233,15 +233,7 @@ class SpreadMapFragment : Fragment() {
 
     private fun onFetchErrorCallback(exception: VolleyError) {
         binding.progressHorizontal.visibility = View.GONE
-        if (requireActivity().hasWindowFocus())
-            Toast.makeText(
-                requireActivity(),
-                R.string.server_connection_failed,
-                Toast.LENGTH_LONG
-            ).show()
-        else {
-            Log.e("SpreadMapFragment", "Error while fetching location data from server", exception)
-        }
+        Log.e("SpreadMapFragment", "Error while fetching location data from server", exception)
     }
 
     /**
