@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.android.volley.VolleyError
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.TradingApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentSearchOffersBinding
@@ -20,7 +19,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterOffersFragment.OnApplyQueryListener {
-    private val _tag = "SearchOffersFragment"
+    companion object {
+        private const val TAG = "SearchOffersFragment"
+    }
 
     lateinit var viewModel: SearchOffersViewModel
     private lateinit var binding: FragmentSearchOffersBinding
@@ -94,11 +95,11 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
                 requireActivity().runOnUiThread {
                     viewModel.searchResults.value = offers
                 }
-            } catch (e: VolleyError) {
+            } catch (e: Exception) {
                 requireActivity().runOnUiThread {
                     Toast.makeText(requireContext(), R.string.server_connection_failed, Toast.LENGTH_SHORT).show()
                 }
-                Log.e(_tag, "Error while trying to fetch offers", e)
+                Log.e(TAG, "Error while trying to fetch offers", e)
             }
             requireActivity().runOnUiThread {
                 binding.progressHorizontal.visibility = View.INVISIBLE

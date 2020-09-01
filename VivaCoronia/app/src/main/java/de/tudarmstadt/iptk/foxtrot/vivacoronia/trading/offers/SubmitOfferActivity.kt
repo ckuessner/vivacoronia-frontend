@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
@@ -44,6 +45,7 @@ class SubmitOfferActivity : AppCompatActivity() {
                             submitButton.isEnabled = true
                         }
                 } catch (e: Exception) {
+                    Log.e(TAG, "Error editing or adding offer: ", e)
                     runOnUiThread {
                         Toast.makeText(this@SubmitOfferActivity, R.string.unknown_error, Toast.LENGTH_SHORT).show()
                         submitButton.isEnabled = true
@@ -69,6 +71,7 @@ class SubmitOfferActivity : AppCompatActivity() {
     }
 
     companion object {
+        private const val TAG = "SubmitOfferActivity"
         @JvmStatic
         fun start(context: Context, offer: Offer?) {
             val intent = Intent(context, SubmitOfferActivity::class.java)

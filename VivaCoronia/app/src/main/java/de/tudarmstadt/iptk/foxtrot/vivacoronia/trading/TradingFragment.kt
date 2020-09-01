@@ -1,6 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,8 +19,11 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search.SearchOffersFragme
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-
 class TradingFragment : Fragment() {
+    companion object {
+        private const val TAG = "Trading Fragment"
+    }
+
     private lateinit var binding: FragmentTradingBinding
 
     override fun onCreateView(
@@ -39,6 +43,7 @@ class TradingFragment : Fragment() {
                 Offer.categories.value = categories
             } ?: showRetry()
         } catch (e: Exception) {
+            Log.e(TAG, "Error fetching categories!", e)
             showRetry()
         }
     }
