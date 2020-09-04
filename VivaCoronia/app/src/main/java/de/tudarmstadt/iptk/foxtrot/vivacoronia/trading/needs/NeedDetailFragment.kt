@@ -27,7 +27,7 @@ class NeedDetailFragment : ProductDetailFragment<NeedViewModel>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // TODO get current location
-        viewModelFactory = NeedViewModelFactory(Need("", "", LatLng(0.0, 0.0), ""))
+        viewModelFactory = NeedViewModelFactory(Need("", "", 0, LatLng(0.0, 0.0), ""))
         viewModel = ViewModelProvider(this, viewModelFactory).get(NeedViewModel::class.java)
     }
 

@@ -7,6 +7,7 @@ import com.google.android.gms.maps.model.LatLng
 abstract class BaseProduct (
     open var product: String,
     open var productCategory: String,
+    open var amount: Int,
     open var location: LatLng,
     @Json(name="_id") open var id: String
 ) {

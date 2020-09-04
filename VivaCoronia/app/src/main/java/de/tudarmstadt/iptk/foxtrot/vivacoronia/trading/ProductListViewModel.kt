@@ -44,6 +44,12 @@ open class ProductViewModel(var baseProduct: BaseProduct) : ViewModel(){
             baseProduct.productCategory = value
         }
 
+    var amount: String
+        get() = if (baseProduct.amount == 0) "" else baseProduct.amount.toString()
+        set(value){
+            baseProduct.amount = if (value == "") 0 else value.toInt()
+        }
+
 }
 
 class NeedViewModel(var need: Need) : ProductViewModel(need as BaseProduct)
@@ -102,12 +108,6 @@ class OfferViewModel(var offer: Offer) : ProductViewModel(offer as BaseProduct) 
         get() = offer.details
         set(value){
             offer.details = value
-        }
-
-    var amount: String
-        get() = if (offer.amount == 0) "" else offer.amount.toString()
-        set(value){
-            offer.amount = if (value == "") 0 else value.toInt()
         }
 
     var phoneNumber: String

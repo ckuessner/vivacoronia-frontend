@@ -9,12 +9,14 @@ import java.util.*
 class Need(
     override var product: String,
     override var productCategory: String,
+    override var amount: Int,
     override var location: LatLng,
     @Json(name="_id") override var id: String
-) : BaseProduct(product, productCategory, location, id), Parcelable {
+) : BaseProduct(product, productCategory, amount, location, id), Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readString()!!,
+        parcel.readInt(),
         parcel.readParcelable(LatLng::class.java.classLoader)!!,
         parcel.readString()!!
     )
