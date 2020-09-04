@@ -183,7 +183,7 @@ abstract class ApiBaseClient {
 
 
     /*
-    this class catches 401 authentication error and tries to create a new jwt for access by logging in
+    this class catches 401 and 403 authentication error and handles it depending on whether the calling request is an admin request
 
      */
     private class ErrorJWTCheck(val ctx : Context, val errorSuper : Response.ErrorListener?, val isAdmin : Boolean) : Response.ErrorListener {

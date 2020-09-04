@@ -17,8 +17,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class RegisterActivity : AppCompatActivity() {
-    companion object {
-        fun finishRegister(ctx : Context){
+    private fun finishRegister(ctx : Context){
             val duration = Toast.LENGTH_SHORT
             Toast.makeText(ctx, "You successfully registered to save the world from corona!", duration).show()
             val ctxActivity = ctx as Activity
@@ -27,7 +26,6 @@ class RegisterActivity : AppCompatActivity() {
             ctx.startActivity(intent)
 
         }
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)

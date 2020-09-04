@@ -51,7 +51,6 @@ class StatusCheckFragment : Fragment() {
         val statusCheckBtn = view.findViewById<Button>(R.id.statusChecker)
         statusCheckBtn.setOnClickListener {
             val oldIsAdmin = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getBoolean(Constants.IS_ADMIN, false)
-            Log.i("status", "before: "  + oldIsAdmin.toString())
             GlobalScope.launch {
                 val succJWT = AuthenticationApiClient.checkStatus(ctx, userID)
                 requireActivity().runOnUiThread {
@@ -99,8 +98,8 @@ class StatusCheckFragment : Fragment() {
         if((currStatus && oldIsAdmin != currStatus) || (currStatus && noAdminJWT)){
             //give user possibility to login as admin, after we have received news that he can get adminJWT
             val builder = AlertDialog.Builder(ctx, R.style.AlertDialogTheme)
-            builder.setTitle("Permission update")
-            builder.setMessage("You can login as an admin to access admin features, do you want to proceed?")
+            builder.setTitle(getString(R.string.permissionUpdate))
+            builder.setMessage(getString(R.string.permissionUpdateAlert))
             //if user wants to use admin, he has to login for admin features
             builder.setPositiveButton(android.R.string.yes){ _, _ ->
                 val intent = Intent(ctx, LoginActivity::class.java)
@@ -110,7 +109,7 @@ class StatusCheckFragment : Fragment() {
 
             }
             builder.setNegativeButton(android.R.string.no){_, _ ->
-                Toast.makeText(ctx, "If you wanna upgrade your access, reload status again and then click OK", Toast.LENGTH_SHORT).show()
+                Toast.makeText(ctx, getString(R.string.remindPermissionUpdate), Toast.LENGTH_SHORT).show()
             }
             val alertDialog = builder.create()
             alertDialog.show()
@@ -122,7 +121,7 @@ class StatusCheckFragment : Fragment() {
             ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).edit().putString(Constants.adminJWT, null).apply()
         }
         else{
-            Toast.makeText(ctx, "Your permissions didn't change", Toast.LENGTH_SHORT).show()
+            Toast.makeText(ctx, getString(R.string.samePermission), Toast.LENGTH_SHORT).show()
         }
     }
 }

@@ -93,4 +93,8 @@
     <string name="feature_permission_admin">Feature permissions: Admin</string>
     <string name="admin_login_prompt">Login to use admin features</string>
     <string name="renew_admin_login_prompt">Login to renew admin access</string>
+    <string name="permissionUpdate">"Possible Permission Update"</string>
+    <string name="permissionUpdateAlert">"You can login again to use admin features, do you want to proceed?"</string>
+    <string name="remindPermissionUpdate">"To use admin features, reload status again and login afterwards"</string>
+    <string name="samePermission">"Your permissions didn't change"</string>
 </resources>
