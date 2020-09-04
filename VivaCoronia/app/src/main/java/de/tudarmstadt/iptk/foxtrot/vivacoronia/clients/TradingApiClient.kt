@@ -6,6 +6,7 @@ import com.android.volley.*
 import com.android.volley.toolbox.RequestFuture
 import com.beust.klaxon.*
 import com.google.android.gms.maps.model.LatLng
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Need
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
@@ -90,23 +91,6 @@ object TradingApiClient : ApiBaseClient() {
 
 
     fun deleteOffer(id: String, sold: Boolean, context: Context): Boolean {
-        return delete(id, sold, null, context)
-    }
-
-    fun deleteNeed(id: String, fulfilled: Boolean, context: Context): Boolean {
-        return delete(id, null, fulfilled, context)
-    }
-
-    private fun delete(id: String, sold: Boolean?, fulfilled: Boolean?, context: Context): Boolean {
-        var endpoint = ""
-        if (fulfilled == null){ // only needs can be fulfilled
-            endpoint = getOffersEndpoint()
-        }
-        else if(sold == null){ // only offers can be sold
-            endpoint = getNeedsEndpoint()
-        }
-        if (endpoint == "") return false
-
         val queue = getRequestQueue(context) ?: return false
         val url = joinPaths(getOffersEndpoint(), id)
         val deactivatedAt = OffsetDateTime.now()
@@ -122,33 +106,24 @@ object TradingApiClient : ApiBaseClient() {
                 && OffsetDateTime.parse(result["deactivatedAt"].toString()).isEqual(deactivatedAt)
     }
 
+    fun deleteNeed(id: String, fulfilled: Boolean, context: Context): Boolean {
+        val queue = getRequestQueue(context) ?: return false
+        val url = joinPaths(getNeedsEndpoint(), id)
+        val deactivatedAt = OffsetDateTime.now()
+        val body = JSONObject()
+        body.put("fulfilled", fulfilled)
+        body.put("deactivatedAt", deactivatedAt)
+        val future = RequestFuture.newFuture<JSONObject>()
+        val request = JsonObjectJWT(Request.Method.DELETE, url, body, future, future)
+
+        queue.add(request)
+        val result = future.get()
+        return result.has("deactivatedAt")
+                && OffsetDateTime.parse(result["deactivatedAt"].toString()).isEqual(deactivatedAt)
+    }
+
     fun putOffer(offer: Offer, context: Context): Offer? {
-        return put(offer, null, context) as Offer?
-    }
-
-    fun putNeed(need: Need, context: Context): Need?{
-        return put(null, need, context) as Need?
-    }
-
-    private fun put(offer: Offer?, need: Need?, context: Context) : BaseProduct?{
-        var endpoint = ""
-        var jsonString = ""
-        var product: BaseProduct? = null
-        if (need == null) {
-            endpoint = getOffersEndpoint()
-            jsonString = productConverter.toJsonString(offer)
-            product = offer
-            Log.i(TAG, "offer: " + jsonString)
-        }
-        else if(offer == null) {
-            endpoint = getNeedsEndpoint()
-            jsonString = productConverter.toJsonString(need)
-            product = need
-            Log.i(TAG, "need: " + jsonString)
-        }
-        Log.i(TAG, "put: " + endpoint)
-        if (endpoint == "") return null
-
+        val jsonString = productConverter.toJsonString(offer)
         val jsonObject = JSONObject(jsonString)
         jsonObject.put("userId", getUserId(context)) // TODO should be done/verified @ server
         val url = joinPaths(getOffersEndpoint(), offer.id)
@@ -156,15 +131,25 @@ object TradingApiClient : ApiBaseClient() {
         val future = RequestFuture.newFuture<JSONObject>()
 
         val method = if (offer.id.isEmpty()) Request.Method.POST else Request.Method.PATCH // if id is not set, this is a new offer and should be posted
-        val request = JsonObjectJWT(method, url, jsonObject, future, future, context)
+        val request = JsonObjectJWT(method, url, jsonObject, future, future)
         queue.add(request)
         val result = future.get()
-        if (need == null) {
-            val res = productConverter.parse(result.toString()) as Offer?
-            return res
-        }
-        else if (offer == null) return productConverter.parse(result.toString()) as Need?
-        else return null
+        return productConverter.parse(result.toString())
+    }
+
+    fun putNeed(need: Need, context: Context): Need?{
+        val jsonString = productConverter.toJsonString(need)
+        val jsonObject = JSONObject(jsonString)
+        jsonObject.put("userId", getUserId()) // TODO should be done/verified @ server
+        val url = joinPaths(getNeedsEndpoint(), need.id)
+        val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
+        val future = RequestFuture.newFuture<JSONObject>()
+
+        val method = Request.Method.POST // no distinction between POST and PATCH like with offers, because needs cannot be edited
+        val request = JsonObjectRequest(method, url, jsonObject, future, future)
+        queue.add(request)
+        val result = future.get()
+        return productConverter.parse(result.toString())
     }
 }
 

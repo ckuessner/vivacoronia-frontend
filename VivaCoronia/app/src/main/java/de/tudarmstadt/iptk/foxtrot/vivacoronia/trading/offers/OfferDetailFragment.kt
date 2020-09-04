@@ -1,7 +1,5 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,16 +7,12 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentOfferDetailBinding
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.OfferViewModel
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.OfferViewModelFactory
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.ProductDetailFragment
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct.Companion.categories
 
 private const val ARG_OFFER = "offer"
 
@@ -58,7 +52,7 @@ class OfferDetailFragment : ProductDetailFragment<OfferViewModel>() {
         binding.categoryInputSpinner.adapter = spinnerAdapter
         binding.categoryInputSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                viewModel.baseProduct.productCategory = parent?.getItemAtPosition(position) as String
+                viewModel.offer.productCategory = parent?.getItemAtPosition(position) as String
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {

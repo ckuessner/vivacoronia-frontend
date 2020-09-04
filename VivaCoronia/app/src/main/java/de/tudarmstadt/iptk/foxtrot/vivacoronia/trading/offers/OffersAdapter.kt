@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.animation.collapse
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.animation.expand
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.ListItemOfferBinding
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.OfferViewModel
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 
 class OffersAdapter(

@@ -1,59 +1,36 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.ProductViewModel
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Need
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import java.lang.IllegalArgumentException
 import java.text.NumberFormat
 import java.util.*
 
-open class ProductListViewModel : ViewModel() {
-    val offers = MutableLiveData<MutableList<OfferViewModel>>()
-    val needs = MutableLiveData<MutableList<NeedViewModel>>()
-
+class OfferListViewModel : ViewModel() {
+    val offersList = MutableLiveData<MutableList<OfferViewModel>>()
 
     fun setOffers(list: List<Offer>) {
-        offers.value = MutableList(list.size) { index ->
+        offersList.value = MutableList(list.size) { index ->
             OfferViewModel(
                 list[index]
             )
         }
     }
 
-    fun setNeeds(list: List<Need>) {
-        needs.value = MutableList(list.size) { index ->
-            NeedViewModel(list[index])
-        }
+    fun add(list: List<Offer>) {
+        val value = this.offersList.value ?: mutableListOf()
+        value.addAll(List(list.size) { index ->
+            OfferViewModel(
+                list[index]
+            )
+        })
+        offersList.value = value
     }
 }
-
-open class ProductViewModel(var baseProduct: BaseProduct) : ViewModel(){
-
-    var product: String
-        get() = baseProduct.product
-        set(value){
-            baseProduct.product = value
-        }
-
-    var productCategory: String
-        get() = baseProduct.productCategory
-        set(value){
-            baseProduct.productCategory = value
-        }
-
-    var amount: String
-        get() = if (baseProduct.amount == 0) "" else baseProduct.amount.toString()
-        set(value){
-            baseProduct.amount = if (value == "") 0 else value.toInt()
-        }
-
-}
-
-class NeedViewModel(var need: Need) : ProductViewModel(need as BaseProduct)
-
 
 class OfferViewModel(var offer: Offer) : ProductViewModel(offer as BaseProduct) {
     object CurrencyFormatter {
@@ -83,10 +60,6 @@ class OfferViewModel(var offer: Offer) : ProductViewModel(offer as BaseProduct) 
             return currencyFormatter.parse(amount)!!.toDouble()
         }
     }
-
-    var rotation = 0L
-    val isExpanded: Boolean
-        get() = rotation != 0L
 
     var rawPrice: String
         get() {
@@ -124,13 +97,5 @@ class OfferViewModelFactory(private val offer: Offer): ViewModelProvider.Factory
         }
         throw IllegalArgumentException("Unknown OfferViewModel class")
     }
-}
 
-class NeedViewModelFactory(private val need: Need): ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(NeedViewModel::class.java)) {
-            return NeedViewModel(need) as T
-        }
-        throw IllegalArgumentException("Unknown NeedViewModel class")
-    }
 }

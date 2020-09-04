@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.beust.klaxon.Json
 import com.google.android.gms.maps.model.LatLng
 
-abstract class BaseProduct (
+open class BaseProduct (
     open var product: String,
     open var productCategory: String,
     open var amount: Int,

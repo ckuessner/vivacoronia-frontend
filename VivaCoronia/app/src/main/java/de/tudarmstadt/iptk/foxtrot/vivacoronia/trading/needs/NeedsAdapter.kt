@@ -2,12 +2,13 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.needs
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.TableLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.animation.collapse
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.animation.expand
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.ListItemNeedBinding
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.NeedViewModel
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.ProductViewModel
 
 class NeedsAdapter(
     private val deleteProductCallback: (id: String) -> Unit
@@ -21,6 +22,9 @@ class NeedsAdapter(
         val holder = NeedDetailsViewHolder.from(parent, deleteProductCallback)
         holder.binding.clear.setOnClickListener {
             holder.onDeleteClick()
+        }
+        holder.itemView.setOnClickListener {
+            holder.onExpandClick()
         }
         return holder
     }
@@ -53,12 +57,24 @@ class NeedDetailsViewHolder private constructor(
         }
     }
 
+    fun onExpandClick() {
+        var rotation = binding.need?.rotation
+        rotation = if (rotation == 0L) 90L else 0L
+        binding.expandArrow.animate().rotation(rotation.toFloat()).setDuration(200).start()
+        if (binding.need!!.isExpanded)
+            binding.listItemDetails.collapse()
+        else
+            binding.listItemDetails.expand()
+        binding.need?.rotation = rotation
+    }
+
     fun onDeleteClick(){
         deleteProductCallback(binding.need!!.baseProduct.id)
     }
 
-    fun bind(item: ProductViewModel) {
+    fun bind(item: NeedViewModel) {
         binding.need = item
+        binding.listItemDetails.visibility = if (item.isExpanded) TableLayout.VISIBLE else TableLayout.GONE
         binding.executePendingBindings()
     }
 }

@@ -16,13 +16,15 @@
         android:label="Achievements"
         tools:layout="@layout/fragment_achievements" />
     <fragment
-        android:id="@+id/needsAndOffersFragment"
-        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.ProductOverviewFragment"
-        android:label="{title}">
-        <argument
-            android:name="title"
-            app:argType="string" />
-    </fragment>
+        android:id="@+id/offerOverviewFragment"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OfferOverviewFragment"
+        android:label="@string/menu_item_product_offers"
+        android:layout="@layout/fragment_offer_overview"/>
+    <fragment
+        android:id="@+id/needOverviewFragment"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.needs.NeedOverviewFragment"
+        android:label="@string/menu_item_product_needs"
+        android:layout="@layout/fragment_need_overview"/>
     <fragment
         android:id="@+id/tradingFragmentNav"
         android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.TradingFragmentNav"

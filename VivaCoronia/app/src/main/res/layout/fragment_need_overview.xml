@@ -6,22 +6,22 @@
     <data>
 
         <variable
-            name="offersViewModel"
-            type="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OfferListViewModel" />
+            name="needsViewModel"
+            type="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.needs.NeedListViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".trading.offers.OfferOverviewFragment">
+        tools:context=".trading.needs.NeedOverviewFragment">
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/offers_list_swipe_refresh"
+            android:id="@+id/needs_list_swipe_refresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/offers_list"
+                android:id="@+id/needs_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />

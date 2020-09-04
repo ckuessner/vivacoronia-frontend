@@ -11,13 +11,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.model.LatLng
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentNeedDetailBinding
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.NeedViewModel
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.NeedViewModelFactory
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.ProductDetailFragment
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Need
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OfferDetailFragment
 
 class NeedDetailFragment : ProductDetailFragment<NeedViewModel>() {
 
@@ -27,7 +23,10 @@ class NeedDetailFragment : ProductDetailFragment<NeedViewModel>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // TODO get current location
-        viewModelFactory = NeedViewModelFactory(Need("", "", 0, LatLng(0.0, 0.0), ""))
+        viewModelFactory =
+            NeedViewModelFactory(
+                Need("", "", 0, LatLng(0.0, 0.0), "")
+            )
         viewModel = ViewModelProvider(this, viewModelFactory).get(NeedViewModel::class.java)
     }
 
@@ -42,7 +41,7 @@ class NeedDetailFragment : ProductDetailFragment<NeedViewModel>() {
         binding.categoryInputSpinner.adapter = spinnerAdapter
         binding.categoryInputSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                viewModel.baseProduct.productCategory = parent?.getItemAtPosition(position) as String
+                viewModel.need.productCategory = parent?.getItemAtPosition(position) as String
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {

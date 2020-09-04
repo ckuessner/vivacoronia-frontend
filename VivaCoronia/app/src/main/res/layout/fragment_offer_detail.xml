@@ -4,7 +4,7 @@
     <data>
         <variable
             name="offer"
-            type="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.OfferViewModel" />
+            type="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OfferViewModel" />
     </data>
 
     <ScrollView

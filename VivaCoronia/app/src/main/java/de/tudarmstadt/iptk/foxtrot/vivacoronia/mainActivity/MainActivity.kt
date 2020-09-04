@@ -104,15 +104,11 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.tradingFragmentNav)
                 R.id.menu_item_product_needs -> {
                     val extra = Bundle()
-                    extra.putBoolean("offers", false)
-                    extra.putString("title", getString(R.string.menu_item_product_needs))
-                    navController.navigate(R.id.needsAndOffersFragment, extra)
+                    navController.navigate(R.id.needOverviewFragment, extra)
                 }
                 R.id.menu_item_product_offers -> {
                     val extra = Bundle()
-                    extra.putBoolean("offers", true)
-                    extra.putString("title", getString(R.string.menu_item_product_offers))
-                    navController.navigate(R.id.needsAndOffersFragment, extra)
+                    navController.navigate(R.id.offerOverviewFragment, extra)
                 }
                 R.id.menu_item_achievements -> {
                     navController.navigate(R.id.achievementsFragment)
