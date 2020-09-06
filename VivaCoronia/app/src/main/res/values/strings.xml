@@ -75,11 +75,13 @@
     <string name="tag_reg">Join our big corona community to save the world</string>
     <string name="password">Password</string>
     <string name="re_type_password">Re-type Password</string>
+    <string name="succRegister">"You successfully registered to save the world from corona!"</string>
     <!-- Login process -->
     <string name="login_info">"Login to keep tracking</string>
     <string name="login_pw">"Enter your password"</string>
     <string name="login_pwRe">"Reenter your password"</string>
     <string name="authBtn">"Login"</string>
+    <string name="succLogin">"Successful login"</string>
 
     <string name="spreadmap">Spreadmap</string>
 
@@ -97,4 +99,11 @@
     <string name="permissionUpdateAlert">"You can login again to use admin features, do you want to proceed?"</string>
     <string name="remindPermissionUpdate">"To use admin features, reload status again and login afterwards"</string>
     <string name="samePermission">"Your permissions didn't change"</string>
+
+    <!-- Error Showing -->
+    <string name="noInternet">"No internet, check your connection and try again"</string>
+    <string name="wrongPassword">"Password was wrong, try again"</string>
+    <string name="serverError">"Something went wrong with the server, oops"</string>
+    <string name="firewallError">"Your network doesn't allow connection to the server"</string>
+    <string name="forbiddenError">"You're not admin anymore, please reload your status"</string>
 </resources>

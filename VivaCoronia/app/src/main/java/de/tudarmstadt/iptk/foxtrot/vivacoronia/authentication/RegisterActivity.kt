@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 class RegisterActivity : AppCompatActivity() {
     private fun finishRegister(ctx : Context){
             val duration = Toast.LENGTH_SHORT
-            Toast.makeText(ctx, "You successfully registered to save the world from corona!", duration).show()
+            Toast.makeText(ctx, getString(R.string.succRegister), duration).show()
             val ctxActivity = ctx as Activity
             ctxActivity.finish()
             val intent = Intent(ctx, MainActivity::class.java)

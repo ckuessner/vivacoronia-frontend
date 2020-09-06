@@ -24,7 +24,6 @@ object AuthenticationApiClient : ApiBaseClient() {
         try {
             val response = responseFuture.get()
             val newStatus = response.opt("isAdmin") as Boolean
-            Log.i("after request", newStatus.toString())
             val savedContent = arrayOf<Any>(newStatus)
             val savedIdentifiers = arrayOf<String>(Constants.IS_ADMIN)
             RequestUtility.saveInPreferencesAny(ctx, savedIdentifiers, savedContent)

@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import com.android.volley.*
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import java.util.concurrent.ExecutionException
 
 object RequestUtility : ApiBaseClient(){
@@ -18,11 +19,11 @@ object RequestUtility : ApiBaseClient(){
          */
         fun handleErrorShowing(ctx: Context, errorCode: Int) {
             when(errorCode){
-                Constants.NO_INTERNET -> Toast.makeText(ctx, "No internet, check your connection and try again", Toast.LENGTH_SHORT).show()
-                Constants.AUTH_ERROR -> Toast.makeText(ctx, "Password was wrong, try again or go back", Toast.LENGTH_SHORT).show()
-                Constants.SERVER_ERROR -> Toast.makeText(ctx, "Something went wrong with the server, oops", Toast.LENGTH_SHORT).show()
-                Constants.FIREWALL_ERROR -> Toast.makeText(ctx, "Your network doesn't allow connection to the server", Toast.LENGTH_SHORT).show()
-                Constants.FORBIDDEN -> Toast.makeText(ctx, "You're not admin anymore, please reload your status", Toast.LENGTH_SHORT).show()
+                Constants.NO_INTERNET -> Toast.makeText(ctx, ctx.getString(R.string.noInternet), Toast.LENGTH_SHORT).show()
+                Constants.AUTH_ERROR -> Toast.makeText(ctx, ctx.getString(R.string.wrongPassword), Toast.LENGTH_SHORT).show()
+                Constants.SERVER_ERROR -> Toast.makeText(ctx, ctx.getString(R.string.serverError), Toast.LENGTH_SHORT).show()
+                Constants.FIREWALL_ERROR -> Toast.makeText(ctx, ctx.getString(R.string.firewallError), Toast.LENGTH_SHORT).show()
+                Constants.FORBIDDEN -> Toast.makeText(ctx, ctx.getString(R.string.forbiddenError), Toast.LENGTH_SHORT).show()
             }
         }
 

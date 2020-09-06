@@ -48,7 +48,7 @@ class LoginActivity : AppCompatActivity() {
                     succJWT = AuthenticationApiClient.makeNewJWT(ctx, pw, userID, isAdmin)
                     runOnUiThread {
                         if(succJWT == 0){
-                            Toast.makeText(ctx, "Successful login", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(ctx, getString(R.string.succLogin), Toast.LENGTH_SHORT).show()
                             finish()
                         }
                         else {
