@@ -2,6 +2,8 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
 import android.content.Context
 import android.widget.Toast
+import androidx.fragment.app.FragmentActivity
+import androidx.navigation.findNavController
 import com.android.volley.*
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
@@ -24,6 +26,21 @@ object RequestUtility : ApiBaseClient(){
                 Constants.SERVER_ERROR -> Toast.makeText(ctx, ctx.getString(R.string.serverError), Toast.LENGTH_SHORT).show()
                 Constants.FIREWALL_ERROR -> Toast.makeText(ctx, ctx.getString(R.string.firewallError), Toast.LENGTH_SHORT).show()
                 Constants.FORBIDDEN -> Toast.makeText(ctx, ctx.getString(R.string.forbiddenError), Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        /*
+        checks whether user is allowed to be in admin features. If not, relocates him to LocationHistory
+        dependent on IS_ADMIN
+         */
+        fun handleForbiddenFragment(ctx: Context){
+            val forbidden = !ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getBoolean(Constants.IS_ADMIN, false)
+            if(forbidden){
+                Toast.makeText(ctx, ctx.getString(R.string.forbiddenFragment), Toast.LENGTH_SHORT).show()
+                val act = ctx as FragmentActivity
+                val navController = act.findNavController(R.id.nav_fragment)
+                navController.setGraph(R.navigation.nav_graph)
+                navController.navigate(R.id.locationHistoryFragment)
             }
         }
 

@@ -106,4 +106,5 @@
     <string name="serverError">"Something went wrong with the server, oops"</string>
     <string name="firewallError">"Your network doesn't allow connection to the server"</string>
     <string name="forbiddenError">"You're not admin anymore, please reload your status"</string>
+    <string name="forbiddenFragment">"You don't have permission to use this feature"</string>
 </resources>

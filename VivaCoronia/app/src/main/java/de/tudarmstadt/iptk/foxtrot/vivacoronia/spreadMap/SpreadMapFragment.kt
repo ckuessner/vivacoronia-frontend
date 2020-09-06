@@ -28,6 +28,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.ContactApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.LocationApiClient
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.RequestUtility
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentSpreadMapBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.createCircleOptions
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.googleMapFunctions.GoogleMapFunctions.generateColors
@@ -69,6 +70,10 @@ class SpreadMapFragment : Fragment() {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
+
+        //this reloactes user if he doesn't have permission
+        RequestUtility.handleForbiddenFragment(requireActivity())
+
         googleMap.uiSettings.isMapToolbarEnabled = false
         binding.progressHorizontal.visibility = View.GONE
         //change in location data for spreadmap calls request for contact data
