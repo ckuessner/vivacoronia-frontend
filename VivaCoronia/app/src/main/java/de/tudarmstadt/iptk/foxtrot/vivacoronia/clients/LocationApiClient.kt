@@ -14,6 +14,7 @@ import com.beust.klaxon.Parser
 import com.google.android.gms.maps.model.LatLng
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.DBLocation
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.DateFormatter.toRFCString
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -196,8 +197,8 @@ object LocationApiClient : ApiBaseClient() {
         val requestQueue = getRequestQueue(context) ?: return ArrayList()
         val responseFuture = RequestFuture.newFuture<JSONArray>()
         val requestUrl = Uri.parse(getUserEndpoint(context)).buildUpon()
-                .appendQueryParameter("start", startTime.toString())
-                .appendQueryParameter("end", endTime.toString())
+                .appendQueryParameter("start", toRFCString(startTime))
+                .appendQueryParameter("end", toRFCString(endTime))
                 .build().toString()
         val request = JsonArrayJWT(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) }, context)
         requestQueue.add(request)
@@ -211,8 +212,8 @@ object LocationApiClient : ApiBaseClient() {
             .appendQueryParameter("latitude", location.latitude.toString())
             .appendQueryParameter("longitude", location.longitude.toString())
             .appendQueryParameter("distance", distance.toString())
-            .appendQueryParameter("start", startTime.toString())
-            .appendQueryParameter("end", endTime.toString())
+            .appendQueryParameter("start", toRFCString(startTime))
+            .appendQueryParameter("end", toRFCString(endTime))
             .build().toString()
 
         val request = JsonArrayJWT(requestUrl, responseFuture, Response.ErrorListener { onErrorCallback(it) }, context, true)
