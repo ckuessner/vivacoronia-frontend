@@ -59,7 +59,7 @@ class LocationHistoryFragment : Fragment() {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
-        val startLocation = LocationUtility.getLastKnownLocation(requireActivity()) ?: LatLng(0.0, 0.0)
+        val startLocation = LocationUtility.getLastKnownLocation(requireActivity()) ?: LatLng(49.877457, 8.654372)
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startLocation, 15F))
 
         val builder = MaterialDatePicker.Builder.dateRangePicker()

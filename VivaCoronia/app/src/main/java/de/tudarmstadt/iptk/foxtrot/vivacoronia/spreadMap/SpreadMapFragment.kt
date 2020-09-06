@@ -92,7 +92,7 @@ class SpreadMapFragment : Fragment() {
             }
         )
 
-        currentCenter = LocationUtility.getLastKnownLocation(requireActivity()) ?: LatLng(0.0, 0.0)
+        currentCenter = LocationUtility.getLastKnownLocation(requireActivity()) ?: LatLng(49.877457, 8.654372)
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentCenter, 15F))
 
