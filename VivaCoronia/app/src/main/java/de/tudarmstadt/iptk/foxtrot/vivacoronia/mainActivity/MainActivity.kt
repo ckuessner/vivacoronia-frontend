@@ -23,10 +23,14 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.NotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.TradingApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.createBackgroundLocationRequest
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.requestLocationService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.WebSocketService
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private val tag = "MainActivity"
@@ -112,7 +116,18 @@ class MainActivity : AppCompatActivity() {
             return@setNavigationItemSelectedListener true
         }
 
+        GlobalScope.launch { fetchCategories() }
+    }
 
+    private fun fetchCategories() {
+        try {
+            val categories = TradingApiClient.getAllCategories(this@MainActivity).toMutableList()
+            runOnUiThread {
+                Offer.categories.value = categories
+            }
+        } catch (e: Exception) {
+            Log.d(tag, "Failed to fetch categories: ", e)
+        }
     }
 
     override fun onResume() {
@@ -130,12 +145,6 @@ class MainActivity : AppCompatActivity() {
             true
         )
     }
-
-    /*override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount != 0) {
-            supportFragmentManager.popBackStack()
-        }
-    }*/
 
     private var doubleBackToExitPressedOnce = false
     override fun onBackPressed() {

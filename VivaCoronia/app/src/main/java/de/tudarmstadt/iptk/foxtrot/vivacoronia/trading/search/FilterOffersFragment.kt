@@ -55,6 +55,7 @@ class FilterOffersFragment(internal var callback: OnApplyQueryListener) : Fragme
     }
 
     private fun onDoneButtonClick() {
+        binding.root.clearFocus()
         parentFragmentManager.popBackStack()
         callback.onApplyQuery(viewModel.searchQuery.value!!)
     }

@@ -56,13 +56,7 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
             userZoom = googleMap.cameraPosition.zoom
         }
 
-        googleMap.setOnMapClickListener {
-            if (selectedMarker != null && !selectedMarker!!.isCluster) {
-                selectedMarker!!.setIcon(BitmapDescriptorFactory.defaultMarker())
-            }
-            selectedMarker = null
-        }
-
+        googleMap.setOnMapClickListener { deselectCurrentMarker() }
         googleMap.setOnMarkerClickListener { onMarkerClick(it) }
         googleMap.setOnInfoWindowClickListener { onInfoWindowClick(it) }
         mGoogleMap = googleMap
@@ -83,6 +77,14 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
             selectedMarker = marker
         }
         return true
+    }
+
+    private fun deselectCurrentMarker() {
+        if (selectedMarker != null && !selectedMarker!!.isCluster) {
+            selectedMarker!!.setIcon(BitmapDescriptorFactory.defaultMarker())
+            selectedMarker!!.hideInfoWindow()
+        }
+        selectedMarker = null
     }
 
     private fun populateMap(googleMap: GoogleMap, initialOffers: List<Offer>) {
@@ -142,6 +144,7 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
     }
 
     fun highlightOfferOnMap(latLng: LatLng): Boolean {
+        deselectCurrentMarker()
         val markerPair = markers[latLng]
         if (mGoogleMap == null || markerPair == null)
             return false
@@ -149,7 +152,9 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
         selectedMarker = marker
         if (!marker.isCluster) {
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+            marker.showInfoWindow()
         }
+
         mGoogleMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
         return true
     }

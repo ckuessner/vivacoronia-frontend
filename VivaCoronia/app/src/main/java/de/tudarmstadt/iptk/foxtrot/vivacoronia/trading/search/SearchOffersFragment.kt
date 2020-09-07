@@ -108,6 +108,7 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
+        viewModel.searchQuery.value?.productName = newText ?: ""
         // TODO do autocompletion
         return false
     }
@@ -117,6 +118,7 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        binding.root.clearFocus()
         val filterFragment = FilterOffersFragment.newInstance(this)
         parentFragmentManager.beginTransaction()
             .replace(this.id, filterFragment)

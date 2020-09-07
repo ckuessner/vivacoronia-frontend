@@ -41,6 +41,9 @@ class SearchResultViewHolder private constructor(val binding: ItemSearchResultBi
             binding.viewOnMap.isEnabled = false
             binding.viewOnMap.setImageResource(R.drawable.ic_no_location)
         }
+        if (item.offer.phoneNumber.isEmpty()) {
+            binding.contactOwner.isEnabled = false
+        }
     }
 }
 
