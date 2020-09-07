@@ -7,16 +7,16 @@ import com.google.android.gms.maps.model.LatLng
 import java.util.*
 
 class Offer(
-    override var product: String,
-    override var amount: Int,
+    product: String,
+    amount: Int,
     var price: Double,
-    override var location: LatLng,
+    location: LatLng,
     var details: String,
-    @Json(name = "_id") var id: String,
-    override var productCategory: String,
+    id: String,
+    productCategory: String,
     var distanceToUser: Double,
     var phoneNumber: String
-) : BaseProduct(product, productCategory, location, id), Parcelable {
+) : BaseProduct(product, productCategory, amount, location, id), Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readInt(),

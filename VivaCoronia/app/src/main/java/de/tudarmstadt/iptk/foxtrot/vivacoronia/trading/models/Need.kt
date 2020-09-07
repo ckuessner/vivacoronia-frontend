@@ -7,11 +7,11 @@ import com.google.android.gms.maps.model.LatLng
 import java.util.*
 
 class Need(
-    override var product: String,
-    override var productCategory: String,
-    override var amount: Int,
-    override var location: LatLng,
-    @Json(name="_id") override var id: String
+    product: String,
+    productCategory: String,
+    amount: Int,
+    location: LatLng,
+    id: String
 ) : BaseProduct(product, productCategory, amount, location, id), Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
@@ -26,6 +26,7 @@ class Need(
             return true
         return other != null
                 && other is Need
+                && other.amount == amount
                 && other.product == product
                 && other.productCategory == productCategory
                 && other.location == location

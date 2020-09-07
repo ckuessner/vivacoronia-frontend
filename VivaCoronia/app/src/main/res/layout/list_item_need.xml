@@ -70,7 +70,8 @@
             android:layout_marginBottom="5dp"
             android:orientation="horizontal"
             android:visibility="gone"
-            android:weightSum="1">
+            android:weightSum="1"
+            android:baselineAligned="false">
 
             <TableLayout
                 android:layout_width="0dp"

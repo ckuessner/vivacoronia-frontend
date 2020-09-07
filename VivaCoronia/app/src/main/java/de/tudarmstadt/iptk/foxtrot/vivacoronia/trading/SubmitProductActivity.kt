@@ -55,7 +55,7 @@ class SubmitProductActivity : AppCompatActivity() {
                         result = TradingApiClient.putOffer(fragment.getProduct() as Offer, this@SubmitProductActivity)
                     }
                     else {
-                        result = TradingApiClient.putNeed(fragment.getProduct() as Need, this@SubmitProductActivity)
+                        result = TradingApiClient.postNeed(fragment.getProduct() as Need, this@SubmitProductActivity)
                     }
                     if (result != null)
                         runOnUiThread { finish() }

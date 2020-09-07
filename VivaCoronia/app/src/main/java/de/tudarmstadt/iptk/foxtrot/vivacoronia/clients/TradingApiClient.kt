@@ -112,7 +112,6 @@ object TradingApiClient : ApiBaseClient() {
         val deactivatedAt = OffsetDateTime.now()
         val body = JSONObject()
         body.put("fulfilled", fulfilled)
-        body.put("deactivatedAt", deactivatedAt)
         val future = RequestFuture.newFuture<JSONObject>()
         val request = JsonObjectJWT(Request.Method.DELETE, url, body, future, future)
 
@@ -137,7 +136,7 @@ object TradingApiClient : ApiBaseClient() {
         return productConverter.parse(result.toString())
     }
 
-    fun putNeed(need: Need, context: Context): Need?{
+    fun postNeed(need: Need, context: Context): Need?{
         val jsonString = productConverter.toJsonString(need)
         val jsonObject = JSONObject(jsonString)
         jsonObject.put("userId", getUserId()) // TODO should be done/verified @ server
@@ -145,7 +144,7 @@ object TradingApiClient : ApiBaseClient() {
         val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
         val future = RequestFuture.newFuture<JSONObject>()
 
-        val method = Request.Method.POST // no distinction between POST and PATCH like with offers, because needs cannot be edited
+        val method = Request.Method.POST
         val request = JsonObjectRequest(method, url, jsonObject, future, future)
         queue.add(request)
         val result = future.get()
