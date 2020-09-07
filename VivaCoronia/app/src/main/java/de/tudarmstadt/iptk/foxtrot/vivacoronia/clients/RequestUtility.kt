@@ -58,10 +58,10 @@ object RequestUtility : ApiBaseClient(){
                     is NetworkError -> toReturn = Constants.FIREWALL_ERROR
                 }
                 val volleyE = e.cause as VolleyError
-                if(volleyE.networkResponse.statusCode == 403){
-                    toReturn == Constants.FORBIDDEN
+                if(volleyE.networkResponse?.statusCode == 403){
+                    toReturn = Constants.FORBIDDEN
                 }
-                else if (volleyE is AuthFailureError && volleyE.networkResponse.statusCode == 401){
+                else if (volleyE is AuthFailureError && volleyE.networkResponse?.statusCode == 401){
                     toReturn = Constants.AUTH_ERROR
                 }
             }
