@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import android.widget.Toast
 import androidx.core.graphics.ColorUtils
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -153,7 +152,7 @@ class SpreadMapFragment : Fragment() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 binding.distanceText.text = getString(R.string.filter_radius_distance_text, seekBar!!.progress)
                 if(currentCenter != null) {
-                    val alertBuilder = AlertDialog.Builder(context, R.style.AlterDialogTheme)
+                    val alertBuilder = AlertDialog.Builder(context, R.style.AlertDialogTheme)
                     alertBuilder.setCancelable(true)
                     alertBuilder.setTitle("Spreadmap")
                     alertBuilder.setMessage("Apply the new radius for the current center?")

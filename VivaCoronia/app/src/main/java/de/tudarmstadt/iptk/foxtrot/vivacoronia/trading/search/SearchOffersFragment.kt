@@ -81,7 +81,7 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        viewModel.searchQuery.value!!.productName = query
+        viewModel.searchQuery.value!!.productName = query ?: ""
         onApplyQuery(viewModel.searchQuery.value!!)
         binding.searchView.clearFocus()
         return true

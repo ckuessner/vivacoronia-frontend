@@ -71,7 +71,7 @@ class OffersFragment : Fragment() {
 
     private fun deleteOfferCallback(id: String) {
         activity?.let {
-            AlertDialog.Builder(it, R.style.AlterDialogTheme)
+            AlertDialog.Builder(it, R.style.AlertDialogTheme)
                 .setCancelable(true)
                 .setPositiveButton(R.string.yes) { _, _ ->
                     binding.offersListSwipeRefresh.isRefreshing = true

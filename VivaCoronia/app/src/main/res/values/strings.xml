@@ -109,8 +109,6 @@
     <string name="authBtn">"Login"</string>
     <string name="succLogin">"Successful login"</string>
 
-    <string name="spreadmap">Spreadmap</string>
-
     <!-- Admin Login -->
     <string name="status_info">"Current status"</string>
     <string name="current_status">"Feature permissions: User"</string>

@@ -45,7 +45,7 @@ object TradingApiClient : ApiBaseClient() {
 
     fun getMyOffers(context: Context): MutableList<Offer> {
         val query = ProductSearchQuery()
-        query.userId = TradingApiClient.getUserId()
+        query.userId = TradingApiClient.getUserId(context)
         return getOffers(context, query)
     }
 

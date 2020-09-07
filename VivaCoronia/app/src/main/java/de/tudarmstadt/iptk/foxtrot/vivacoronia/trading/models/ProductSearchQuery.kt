@@ -10,8 +10,8 @@ class ProductSearchQuery {
         PRICE("price")
     }
 
-    var userId: Int? = null
-    var productName: String? = null
+    var userId: String = ""
+    var productName: String = ""
     var category: String = ""
     var priceMin: String = ""
     var priceMax: String = ""
@@ -21,9 +21,9 @@ class ProductSearchQuery {
 
     override fun toString(): String {
         val builder = Uri.Builder()
-        if (userId != null)
-            builder.appendQueryParameter("userId", userId.toString())
-        if (productName != null)
+        if (userId.isNotEmpty())
+            builder.appendQueryParameter("userId", userId)
+        if (productName.isNotEmpty())
             builder.appendQueryParameter("product", productName)
         if (category.isNotEmpty())
             builder.appendQueryParameter("productCategory", category)
