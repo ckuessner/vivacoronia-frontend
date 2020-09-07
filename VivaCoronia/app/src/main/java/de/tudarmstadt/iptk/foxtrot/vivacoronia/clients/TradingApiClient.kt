@@ -6,7 +6,6 @@ import com.android.volley.*
 import com.android.volley.toolbox.RequestFuture
 import com.beust.klaxon.*
 import com.google.android.gms.maps.model.LatLng
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Need
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
@@ -15,7 +14,6 @@ import org.json.JSONObject
 import org.threeten.bp.OffsetDateTime
 
 object TradingApiClient : ApiBaseClient() {
-    private val TAG = "TradingApiClient"
     private val productConverter : Klaxon = Klaxon()
 
     init {
@@ -75,12 +73,12 @@ object TradingApiClient : ApiBaseClient() {
         val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
         val url = Uri.parse(getNeedsEndpoint())
             .buildUpon()
-            .appendQueryParameter("userId", getUserId(context).toString())
+            .appendQueryParameter("userId", getUserId(context))
             .build()
             .toString()
 
         val future = RequestFuture.newFuture<JSONArray>()
-        val request = JsonArrayJWT(Request.Method.GET, url, null, future, future)
+        val request = JsonArrayJWT(Request.Method.GET, url, null, future, future, context)
         queue.add(request)
         val futureResult = future.get().toString()
 
@@ -111,26 +109,27 @@ object TradingApiClient : ApiBaseClient() {
         val url = joinPaths(getNeedsEndpoint(), id)
         val deactivatedAt = OffsetDateTime.now()
         val body = JSONObject()
+
         body.put("fulfilled", fulfilled)
         val future = RequestFuture.newFuture<JSONObject>()
-        val request = JsonObjectJWT(Request.Method.DELETE, url, body, future, future)
+        val request = JsonObjectJWT(Request.Method.PATCH, url, body, future, future, context)
 
         queue.add(request)
         val result = future.get()
         return result.has("deactivatedAt")
-                && OffsetDateTime.parse(result["deactivatedAt"].toString()).isEqual(deactivatedAt)
+                && OffsetDateTime.parse(result["deactivatedAt"].toString()) >= deactivatedAt
     }
 
     fun putOffer(offer: Offer, context: Context): Offer? {
         val jsonString = productConverter.toJsonString(offer)
         val jsonObject = JSONObject(jsonString)
-        jsonObject.put("userId", getUserId(context)) // TODO should be done/verified @ server
+        jsonObject.put("userId", getUserId(context))
         val url = joinPaths(getOffersEndpoint(), offer.id)
         val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
         val future = RequestFuture.newFuture<JSONObject>()
 
         val method = if (offer.id.isEmpty()) Request.Method.POST else Request.Method.PATCH // if id is not set, this is a new offer and should be posted
-        val request = JsonObjectJWT(method, url, jsonObject, future, future)
+        val request = JsonObjectJWT(method, url, jsonObject, future, future,context)
         queue.add(request)
         val result = future.get()
         return productConverter.parse(result.toString())
@@ -139,13 +138,13 @@ object TradingApiClient : ApiBaseClient() {
     fun postNeed(need: Need, context: Context): Need?{
         val jsonString = productConverter.toJsonString(need)
         val jsonObject = JSONObject(jsonString)
-        jsonObject.put("userId", getUserId()) // TODO should be done/verified @ server
+        jsonObject.put("userId", getUserId(context))
         val url = joinPaths(getNeedsEndpoint(), need.id)
         val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
         val future = RequestFuture.newFuture<JSONObject>()
 
         val method = Request.Method.POST
-        val request = JsonObjectRequest(method, url, jsonObject, future, future)
+        val request = JsonObjectJWT(method, url, jsonObject, future, future, context)
         queue.add(request)
         val result = future.get()
         return productConverter.parse(result.toString())

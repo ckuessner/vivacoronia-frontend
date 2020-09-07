@@ -14,7 +14,11 @@ open class ProductViewModel(var baseProduct: BaseProduct) : ViewModel() {
     var amount: String
         get() = if (baseProduct.amount == 0) "" else baseProduct.amount.toString()
         set(value){
-            baseProduct.amount = if (value == "") 0 else value.toInt()
+            baseProduct.amount = if (value == "") 1 else try {
+                value.toInt()
+            } catch (e: NumberFormatException){
+                1
+            }
         }
 
     var productCategory: String
