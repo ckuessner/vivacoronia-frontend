@@ -1,18 +1,15 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.findNavController
-import com.android.volley.NetworkResponse
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.VolleyError
@@ -20,20 +17,11 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.BuildConfig
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.getDevSSLContext
-import java.io.BufferedInputStream
-import java.io.InputStream
-import java.security.KeyStore
-import java.security.cert.CertificateFactory
-import java.security.cert.X509Certificate
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManagerFactory
 import org.json.JSONArray
 import org.json.JSONObject
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.LoginActivity
-import com.android.volley.Response.Listener;
+import com.android.volley.Response.Listener
 import com.android.volley.toolbox.*
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.StatusCheckFragment
-
 
 abstract class ApiBaseClient {
     private val _tag = "ApiBaseClient"

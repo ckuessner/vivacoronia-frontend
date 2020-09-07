@@ -7,7 +7,6 @@ import android.util.Log
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.VolleyError
-import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.RequestFuture
 import com.beust.klaxon.JsonArray
 import com.beust.klaxon.Parser
@@ -55,8 +54,7 @@ object LocationApiClient : ApiBaseClient() {
         // build a single request
 
         val url = getUserEndpoint(context)
-
-        val jsonStringRequest = JsonArrayJWT(Request.Method.POST, url, locationJSONArray, Response.Listener { response ->
+        val jsonStringRequest = StringRequestJWT(Request.Method.POST, url, Response.Listener { response ->
             Log.i(
                 TAG,
                 "server response: $response"
@@ -73,7 +71,7 @@ object LocationApiClient : ApiBaseClient() {
                     TAG,
                     "upload failed: $error"
                 )
-            },context)
+            }, context, locationJSONArray.toString())
 
 
 
