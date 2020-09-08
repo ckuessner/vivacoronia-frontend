@@ -164,8 +164,7 @@
                 var datax = JSON.stringify(data, Object.keys(data).sort());
                 console.log(datax);
                 var hSig = rsa.sign(datax, "sha256");
-                const sigBase64Encoded = hextob64(hSig)
-                data["signature"] = sigBase64Encoded;
+                data["signature"] = hSig;
             }
         }
 
