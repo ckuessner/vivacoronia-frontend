@@ -2,6 +2,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.DownloadManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -120,7 +121,14 @@ class RegisterActivity : AppCompatActivity() {
                             canContinue = TextViewUtils.checkValidInput(inputEmail, true)
                             if(canContinue){
                                 try {
-                                    finishRegister(ctx)
+                                    //https://stackoverflow.com/questions/2197741/how-to-send-emails-from-my-android-application
+                                    val emailIntent = Intent(Intent.ACTION_SEND)
+                                    emailIntent.setType("message/rfc822");
+                                    emailIntent.putExtra(Intent.EXTRA_EMAIL  , inputEmail.text.toString());
+                                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.Email_Subject));
+                                    emailIntent.putExtra(Intent.EXTRA_TEXT   , "Your UserId is: ${userID.text.toString()}")
+                                    startActivity(Intent.createChooser(emailIntent, "Send email..."))
+                                    //finishRegister(ctx)
                                 }
                                 catch(e: ActivityNotFoundException){
                                     Toast.makeText(ctx, getString(R.string.emailFailInfo), Toast.LENGTH_SHORT).show()
@@ -134,6 +142,9 @@ class RegisterActivity : AppCompatActivity() {
                         }
                         builder.show()
                     }
+                }
+                else {
+                    RequestUtility.handleErrorShowing(ctx, jwtDone)
                 }
             }
         }
