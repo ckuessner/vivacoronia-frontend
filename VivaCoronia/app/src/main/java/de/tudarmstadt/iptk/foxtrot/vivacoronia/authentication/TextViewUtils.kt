@@ -1,5 +1,6 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication
 
+import android.util.Patterns
 import android.widget.TextView
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 
@@ -8,17 +9,22 @@ object TextViewUtils {
     /*
     this only checks whether input isn't empty
      */
-    fun checkValidInput(textView: TextView):Boolean {
+    fun checkValidInput(textView: TextView, isEmail : Boolean = false):Boolean {
         var mode = true
         if (textView.text.isEmpty()) {
             mode = false
         }
+        if(isEmail && mode){
+            val pattern = Patterns.EMAIL_ADDRESS
+            mode = pattern.matcher(textView.text.toString()).matches()
+        }
+
         setModeOnTextView(textView, "Invalid Input", mode)
 
         return mode
     }
 
-    fun setModeOnTextView(textView: TextView, msg:String, mode:Boolean) {
+    private fun setModeOnTextView(textView: TextView, msg:String, mode:Boolean) {
         if (mode) {
             textView.setBackgroundResource(R.drawable.et_custom)
         }
