@@ -70,8 +70,7 @@ class RegisterActivity : AppCompatActivity() {
         }
 
     }
-
-
+    
     private fun doRegisterProcess(ctx: Context) {
         val passwordTextView = findViewById<TextView>(R.id.et_password)
         val passwordReTextView = findViewById<TextView>(R.id.et_repassword)
