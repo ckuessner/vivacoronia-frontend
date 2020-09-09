@@ -164,6 +164,7 @@
                 var datax = JSON.stringify(data, Object.keys(data).sort());
                 console.log(datax);
                 var hSig = rsa.sign(datax, "sha256");
+                // Signature could also be encoded in base64 to reduce size, but requires change in Backend
                 data["signature"] = hSig;
             }
         }
@@ -172,6 +173,7 @@
           return date.toISOString().substring(0,10)
         }
 
+        // Requires change in Frontend, reduces size slightly. Currently not in use.
         function deflate (data) {
           return {ns: data.newStatus, dot: shortDate(data.dateOfTest), ode: shortDate(data.occuredDateEstimation), s: data.signature}
         }
