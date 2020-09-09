@@ -13,8 +13,10 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.TradingApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentTradingBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentTradingNavBinding
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OffersFragment
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.needs.NeedOverviewFragment
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OfferOverviewFragment
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search.SearchOffersFragment
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -40,7 +42,7 @@ class TradingFragment : Fragment() {
         try {
             val categories = TradingApiClient.getAllCategories(requireContext()).toMutableList()
             activity?.runOnUiThread {
-                Offer.categories.value = categories
+                BaseProduct.categories.value = categories
             } ?: showRetry()
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching categories!", e)
@@ -76,9 +78,9 @@ class TradingFragmentNav : Fragment(), Observer<MutableList<String>> {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_trading_nav, container, false)
         binding.bottomNavView.selectedItemId = R.id.search_offers
-        if (Offer.categories.value == null){
+        if (BaseProduct.categories.value == null){
             binding.bottomNavView.isEnabled = false
-            Offer.categories.observe(viewLifecycleOwner, this)
+            BaseProduct.categories.observe(viewLifecycleOwner, this)
         } else {
             loadFragment(R.id.search_offers)
         }
@@ -92,8 +94,8 @@ class TradingFragmentNav : Fragment(), Observer<MutableList<String>> {
 
         val fragment = when (item) {
             R.id.search_offers -> SearchOffersFragment()
-            R.id.my_offers -> OffersFragment()
-            R.id.my_needs -> null
+            R.id.my_offers -> OfferOverviewFragment()
+            R.id.my_needs -> NeedOverviewFragment()
             else -> null
         }
 
@@ -111,6 +113,6 @@ class TradingFragmentNav : Fragment(), Observer<MutableList<String>> {
         binding.bottomNavView.isEnabled = true
         binding.bottomNavView.selectedItemId = R.id.search_offers
         binding.navHostFragment.findNavController().navigate(R.id.search_offers)
-        Offer.categories.removeObserver(this)
+        BaseProduct.categories.removeObserver(this)
     }
 }

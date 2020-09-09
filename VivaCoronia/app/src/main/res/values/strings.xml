@@ -46,6 +46,7 @@
     <string name="menu_item_infection_update">Infection Status</string>
     <string name="menu_item_product_offers">Product Offers</string>
     <string name="menu_item_product_needs">Product Needs</string>
+    <string name="menu_item_trading">Trading</string>
     <string name="menu_item_achievements">Achievements</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -76,7 +77,7 @@
     <string name="unknown_error">"Oops, something went wrong. Please check your input and internet connection."</string>
     <string name="EUR">€</string>
     <string name="yes_offer_sold">Yes, I sold it</string>
-    <string name="yes_need_fulfilled">Yes, I got what I wanted</string>
+    <string name="yes_need_fulfilled">Yes, I got it</string>
     <string name="title_activity_location_picker">Pick a Location</string>
     <string name="use_selection">Use selection</string>
     <string name="product_search_view_hint">Enter Product Name</string>

@@ -112,32 +112,6 @@ class OfferOverviewFragment : Fragment() {
         SubmitProductActivity.start(requireContext(), offer, true)
     }
 
-    private fun fetchCategories() {
-        try {
-            val categories = TradingApiClient.getAllCategories(requireContext()).toMutableList()
-            requireActivity().runOnUiThread {
-                BaseProduct.categories.value = categories
-            }
-        } catch (e: Exception) {
-            // Don't care if we already have categories
-            if (!BaseProduct.categories.value.isNullOrEmpty())
-                return
-
-            if (requireActivity().hasWindowFocus())
-                requireActivity().runOnUiThread {
-                    activity?.let {
-                        val dialog = AlertDialog.Builder(it)
-                            .setMessage("Please make sure you have a working Internet connection and try again.")
-                            .setTitle("No Internet")
-                            .setCancelable(false)
-                            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss()}
-                            .show()
-                        styleDialogButtons(listOf(dialog.getButton(AlertDialog.BUTTON_POSITIVE))) // TODO löschen wenn styling auch ohne so funktioniert wie bei Timo
-                    }
-                }
-        }
-    }
-
     private fun fetchMyOffers() {
         try {
             activity?.let {

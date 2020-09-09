@@ -19,7 +19,8 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentFilterOffersBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.LocationPickerActivity
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.LocationPickerActivity
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
 
 private const val LOCATION_PICKER_REQUEST = 1
 
@@ -42,7 +43,7 @@ class FilterOffersFragment(internal var callback: OnApplyQueryListener) : Fragme
         binding.radiusSeekbar.setOnSeekBarChangeListener(this)
         binding.radiusSeekbar.progress = viewModel.searchQuery.value!!.radiusInKm
 
-        val categories = Offer.categories.value!!.toMutableList()
+        val categories = BaseProduct.categories.value!!.toMutableList()
         categories.add(0, "Any category")
         val spinnerAdapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, categories)
         binding.categoryInputSpinner.adapter = spinnerAdapter

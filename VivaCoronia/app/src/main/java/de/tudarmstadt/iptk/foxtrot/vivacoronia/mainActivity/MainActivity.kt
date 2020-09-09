@@ -29,6 +29,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.createBackground
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.requestLocationService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.WebSocketService
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -75,7 +76,6 @@ class MainActivity : AppCompatActivity() {
             setOf(
                 R.id.locationHistoryFragment,
                 R.id.tradingFragmentNav,
-                R.id.needsAndOffersFragment,
                 R.id.achievementsFragment,
                 R.id.infectionStatusFragment,
                 R.id.spreadMapFragment,
@@ -102,13 +102,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.menu_item_trading -> {
                     navController.navigate(R.id.tradingFragmentNav)
-                R.id.menu_item_product_needs -> {
-                    val extra = Bundle()
-                    navController.navigate(R.id.needOverviewFragment, extra)
-                }
-                R.id.menu_item_product_offers -> {
-                    val extra = Bundle()
-                    navController.navigate(R.id.offerOverviewFragment, extra)
                 }
                 R.id.menu_item_achievements -> {
                     navController.navigate(R.id.achievementsFragment)
@@ -139,7 +132,7 @@ class MainActivity : AppCompatActivity() {
         try {
             val categories = TradingApiClient.getAllCategories(this@MainActivity).toMutableList()
             runOnUiThread {
-                Offer.categories.value = categories
+                BaseProduct.categories.value = categories
             }
         } catch (e: Exception) {
             Log.d(tag, "Failed to fetch categories: ", e)

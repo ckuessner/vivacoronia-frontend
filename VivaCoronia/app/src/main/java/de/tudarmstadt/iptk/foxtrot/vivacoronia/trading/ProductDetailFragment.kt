@@ -17,7 +17,7 @@ abstract class ProductDetailFragment<T : ProductViewModel> : Fragment() {
     }
 
     fun onSelectLocation() {
-        val intent = LocationPickerActivity.getStartIntent(requireActivity(), viewModel.baseProduct.location)
+        val intent = LocationPickerActivity.getStartIntent(requireActivity(), viewModel.baseProduct.location, null)
         startActivityForResult(intent, LOCATION_PICKER_REQUEST)
     }
 

@@ -29,7 +29,7 @@ class SearchOffersListResultFragment(private val parent: SearchOffersFragment) :
         parent.viewModel.searchResults.observe(viewLifecycleOwner, Observer<List<Offer>> {
             binding.offerListViewModel!!.setOffers(it ?: listOf())
         })
-        binding.offerListViewModel!!.offers.observe(viewLifecycleOwner, Observer { it?.let { adapter.submitList(it) } })
+        binding.offerListViewModel!!.offersList.observe(viewLifecycleOwner, Observer { it?.let { adapter.submitList(it) } })
 
         return binding.root
     }

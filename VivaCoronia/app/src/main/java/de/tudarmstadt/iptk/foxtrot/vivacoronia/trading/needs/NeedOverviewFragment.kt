@@ -79,8 +79,8 @@ class NeedOverviewFragment : Fragment() {
     }
 
     private fun deleteNeedCallback(id: String) {
-        val dialog = activity?.let {
-            AlertDialog.Builder(it)
+        activity?.let {
+            AlertDialog.Builder(it, R.style.AlertDialogTheme)
                 .setCancelable(true)
                 .setPositiveButton(R.string.yes) { _, _ ->
                     binding.needsListSwipeRefresh.isRefreshing = true
@@ -99,12 +99,6 @@ class NeedOverviewFragment : Fragment() {
                 .setMessage(R.string.confirm_delete_message_need)
                 .show()
         }?: return
-
-        styleDialogButtons(listOf(
-            dialog.getButton(AlertDialog.BUTTON_NEGATIVE),
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE),
-            dialog.getButton(AlertDialog.BUTTON_NEUTRAL)
-        )) // TODO löschen wenn styling auch ohne so funktioniert wie bei Timo
     }
 
     private fun performDelete(id: String, fulfilled: Boolean) {
