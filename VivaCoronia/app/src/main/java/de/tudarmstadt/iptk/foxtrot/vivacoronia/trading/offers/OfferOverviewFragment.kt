@@ -115,7 +115,7 @@ class OfferOverviewFragment : Fragment() {
     private fun fetchMyOffers() {
         try {
             activity?.let {
-                val offers = TradingApiClient.getMyOffers(requireContext())
+                val offers = TradingApiClient.getMyOffers(it)
                 it.runOnUiThread { viewModel.setOffers(offers) }
             }
         } catch (exception: ExecutionException) {

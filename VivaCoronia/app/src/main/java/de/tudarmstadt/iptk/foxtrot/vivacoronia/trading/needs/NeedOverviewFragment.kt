@@ -107,8 +107,10 @@ class NeedOverviewFragment : Fragment() {
 
     private fun fetchMyNeeds() {
         try {
-            val needs = TradingApiClient.getMyNeeds(requireContext())
-            activity?.runOnUiThread { viewModel.setNeeds(needs) }
+            activity?.let{
+                val needs = TradingApiClient.getMyNeeds(it)
+                it.runOnUiThread { viewModel.setNeeds(needs) }
+            }
         } catch (exception: ExecutionException) {
             if (exception.cause is VolleyError && activity?.hasWindowFocus() == true)
                 activity?.let{ it.runOnUiThread {
