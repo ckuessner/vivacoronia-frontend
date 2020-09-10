@@ -15,10 +15,6 @@ object TextViewUtils {
         if (textView.text.isEmpty()) {
             mode = false
         }
-        if(mode){
-            val pattern = Patterns.EMAIL_ADDRESS
-            mode = pattern.matcher(textView.text.toString()).matches()
-        }
 
         setModeOnTextView(textView, "Invalid Input", mode)
 
