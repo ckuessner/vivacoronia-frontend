@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
@@ -29,6 +30,9 @@ class StatusCheckFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_status, container, false)
+        requireActivity().runOnUiThread {
+            view.findViewById<ProgressBar>(R.id.statusProgress).visibility = View.GONE
+        }
         setStatusButtonLogic(requireActivity(), view)
         setUserIDShowLogic(requireActivity(), view)
         showExpiry(requireActivity(), view)
@@ -48,6 +52,9 @@ class StatusCheckFragment : Fragment() {
         statusCheckBtn.setOnClickListener {
             val oldIsAdmin = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getBoolean(Constants.IS_ADMIN, false)
             GlobalScope.launch {
+                requireActivity().runOnUiThread {
+                    view.findViewById<ProgressBar>(R.id.statusProgress).visibility = View.VISIBLE
+                }
                 val succJWT = AuthenticationApiClient.checkStatus(ctx, userID)
                 requireActivity().runOnUiThread {
                     when (succJWT) {
