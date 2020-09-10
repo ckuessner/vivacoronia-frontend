@@ -21,13 +21,13 @@ object TextViewUtils {
         return mode
     }
 
-    fun checkValidInput(txt: String, view: EditText, isEmail: Boolean) : Boolean{
+    fun checkValidInput(txt: String, isEmail: Boolean) : Boolean{
         var mode = true
-        if(view.text.isEmpty())
+        if(txt.isEmpty())
             mode = false
         if(isEmail && mode){
             val pattern = Patterns.EMAIL_ADDRESS
-            mode = pattern.matcher(view.text.toString()).matches()
+            mode = pattern.matcher(txt).matches()
         }
         return mode
     }

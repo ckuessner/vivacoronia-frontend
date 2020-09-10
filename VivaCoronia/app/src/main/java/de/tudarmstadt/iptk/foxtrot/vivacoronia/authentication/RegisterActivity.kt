@@ -145,7 +145,7 @@ class RegisterActivity : AppCompatActivity() {
         //init positive button to not be clickable until email valid
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
         inputEmail.doAfterTextChanged {txt ->
-            val canContinue = TextViewUtils.checkValidInput(txt.toString(), inputEmail, true)
+            val canContinue = TextViewUtils.checkValidInput(txt.toString(), true)
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = canContinue
 
         }
