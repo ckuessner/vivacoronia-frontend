@@ -10,18 +10,29 @@ object TextViewUtils {
     /*
     this only checks whether input isn't empty
      */
-    fun checkValidInput(textView: TextView, isEmail : Boolean = false):Boolean {
+    fun checkValidInput(textView: TextView):Boolean {
         var mode = true
         if (textView.text.isEmpty()) {
             mode = false
         }
-        if(isEmail && mode){
+        if(mode){
             val pattern = Patterns.EMAIL_ADDRESS
             mode = pattern.matcher(textView.text.toString()).matches()
         }
 
         setModeOnTextView(textView, "Invalid Input", mode)
 
+        return mode
+    }
+
+    fun checkValidInput(txt: String, view: EditText, isEmail: Boolean) : Boolean{
+        var mode = true
+        if(view.text.isEmpty())
+            mode = false
+        if(isEmail && mode){
+            val pattern = Patterns.EMAIL_ADDRESS
+            mode = pattern.matcher(view.text.toString()).matches()
+        }
         return mode
     }
 

@@ -123,27 +123,33 @@ class RegisterActivity : AppCompatActivity() {
         builder.setView(inputEmail)
 
         builder.setPositiveButton(android.R.string.yes) { _, _ ->
-            val canContinue = TextViewUtils.checkValidInput(inputEmail, true)
-            if(canContinue){
-                try {
-                    val subject = getString(R.string.Email_Subject)
-                    val body = Uri.encode( "Your UserId is: $userID")
-                    val data = Uri.parse("mailto:${inputEmail.text}?subject=$subject&body=$body")
-                    val emailIntent = Intent(Intent.ACTION_VIEW)
-                    emailIntent.data = data
-                    startActivityForResult(emailIntent, 0)
-                }
-                catch(e: ActivityNotFoundException){
-                    Toast.makeText(ctx, getString(R.string.emailFailInfo), Toast.LENGTH_SHORT).show()
-                    finishRegister(ctx)
-                }
+            try {
+                val subject = getString(R.string.Email_Subject)
+                val body = Uri.encode( "Your UserId is: $userID")
+                val data = Uri.parse("mailto:${inputEmail.text}?subject=$subject&body=$body")
+                val emailIntent = Intent(Intent.ACTION_VIEW)
+                emailIntent.data = data
+                startActivityForResult(emailIntent, 0)
+            }
+            catch(e: ActivityNotFoundException){
+                Toast.makeText(ctx, getString(R.string.emailFailInfo), Toast.LENGTH_SHORT).show()
+                finishRegister(ctx)
             }
         }
         builder.setNegativeButton(android.R.string.no) {_, _ ->
             Toast.makeText(ctx, getString(R.string.emailNotSendInfo), Toast.LENGTH_SHORT).show()
             finishRegister(ctx)
         }
-        builder.show()
+        val dialog = builder.create()
+        dialog.show()
+        //init positive button to not be clickable until email valid
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+        inputEmail.doAfterTextChanged {txt ->
+            val canContinue = TextViewUtils.checkValidInput(txt.toString(), inputEmail, true)
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = canContinue
+
+        }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
