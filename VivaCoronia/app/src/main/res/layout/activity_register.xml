@@ -67,7 +67,7 @@
 
     <Button
         android:id="@+id/btn_register"
-        android:layout_width="90sp"
+        android:layout_width="100sp"
         android:layout_height="wrap_content"
         android:background="@color/colorAccent"
         android:text="@string/register"

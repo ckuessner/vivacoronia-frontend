@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.text.InputType
 import android.view.View
 import android.widget.*
+import androidx.core.widget.doAfterTextChanged
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.RequestUtility
@@ -108,6 +109,9 @@ class RegisterActivity : AppCompatActivity() {
                     }
             }
         }
+        else {
+            findViewById<ProgressBar>(R.id.registerProgress).visibility = View.GONE
+        }
     }
 
     private fun showEmailDialog(ctx: Context, userID: String){
@@ -169,6 +173,8 @@ class RegisterActivity : AppCompatActivity() {
                 }
             }
         }
+        else
+            findViewById<ProgressBar>(R.id.registerProgress).visibility = View.GONE
     }
 
     private fun setButtonLogic(btn: Button, isRegister: Boolean, ctx: Context){

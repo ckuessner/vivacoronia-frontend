@@ -1,6 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication
 
 import android.util.Patterns
+import android.widget.EditText
 import android.widget.TextView
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 
