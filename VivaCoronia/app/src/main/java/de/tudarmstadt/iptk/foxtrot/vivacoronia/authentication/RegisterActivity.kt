@@ -49,12 +49,11 @@ class RegisterActivity : AppCompatActivity() {
                 val pw = passwordTextView.text.toString()
                 GlobalScope.launch {
                     val creationSucc = AuthenticationApiClient.createAndSaveUser(ctx, pw)
-                    var jwtDone = 0
                     if(creationSucc == 0) {
                         //since we only get useriD == 0 if everything was ok, we can safely cast to string
                         val userID = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(
                             Constants.USER_ID, null) as String
-                        jwtDone = AuthenticationApiClient.makeNewJWT(ctx, pw, userID)
+                        val jwtDone = AuthenticationApiClient.makeNewJWT(ctx, pw, userID)
                         runOnUiThread {
                             if (jwtDone == 0) finishRegister(ctx)
                             else

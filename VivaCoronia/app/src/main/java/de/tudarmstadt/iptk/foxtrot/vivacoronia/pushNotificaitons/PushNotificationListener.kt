@@ -15,7 +15,7 @@ class PushNotificationListener : WebSocketListener(){
     override fun onOpen(webSocket: WebSocket, response: Response) {
         super.onOpen(webSocket, response)
         Log.i(tag, "onOpen: $response")
-        webSocket.send(Constants.USER_ID.toString())
+        webSocket.send(Constants.USER_ID)
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {

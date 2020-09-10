@@ -32,12 +32,12 @@ object TextViewUtils {
  check whether input of both textfelds match and only if they do the register process can continue
   */
     fun checkMatchingPasswords(password : TextView, rePassword : TextView) : Boolean{
-        val validPw = TextViewUtils.checkValidInput(password)
-        val validPwRe = TextViewUtils.checkValidInput(rePassword)
+        val validPw = checkValidInput(password)
+        val validPwRe = checkValidInput(rePassword)
         if (validPw && validPwRe) {
             if (!password.text.toString().contentEquals(rePassword.text.toString())) {
-                TextViewUtils.setModeOnTextView(password, "Password not identical", false)
-                TextViewUtils.setModeOnTextView(rePassword, "Password not identical", false)
+                setModeOnTextView(password, "Password not identical", false)
+                setModeOnTextView(rePassword, "Password not identical", false)
                 return false
             }
             else {

@@ -10,7 +10,6 @@
     <string name="location_service_channel_description">Shows the user that tracking is active</string>
     <string name="location_service_channel_title">Corona Tracking active</string>
 
-    <string name="location_service_toast_started">Location tracking started…</string>
     <string name="location_service_fail_after_boot_message">Please open the app and enable location access.</string>
 
     <!-- location upload service -->
@@ -105,7 +104,6 @@
     <!-- Login process -->
     <string name="login_info">"Login to keep tracking</string>
     <string name="login_pw">"Enter your password"</string>
-    <string name="login_pwRe">"Reenter your password"</string>
     <string name="authBtn">"Login"</string>
     <string name="succLogin">"Successful login"</string>
 

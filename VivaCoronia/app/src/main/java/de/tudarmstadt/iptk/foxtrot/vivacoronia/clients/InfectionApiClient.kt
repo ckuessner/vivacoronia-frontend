@@ -1,13 +1,10 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
 import android.content.Context
-import android.util.Log
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.RequestFuture
-import com.android.volley.toolbox.StringRequest
-import com.beust.klaxon.JsonObject
 import org.json.JSONObject
 
 object InfectionApiClient : ApiBaseClient() {

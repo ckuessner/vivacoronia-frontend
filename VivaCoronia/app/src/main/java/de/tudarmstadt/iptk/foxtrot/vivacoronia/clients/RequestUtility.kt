@@ -14,8 +14,6 @@ object RequestUtility : ApiBaseClient(){
     class MatchingArraySizeException : Exception("The sizes of the arrays aren't the same")
     class UnsupportedTypeException : java.lang.Exception("You tried to save a datatype that isn't supported yet")
 
-        private var TAG = "AuthenticationClient"
-
         /*
         Shows appropriate messages to user for different errors
          */
@@ -78,26 +76,20 @@ object RequestUtility : ApiBaseClient(){
             savedIdentifiers: Array<String>,
             savedContent: Array<Any>
         ) {
-            var settings = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
+            val settings = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
             if (savedIdentifiers.size != savedContent.size) {
                 throw MatchingArraySizeException()
             }
             // inspiration: https://github.com/android/android-ktx/issues/435
             for (i in savedContent.indices) {
                 //this can be extended easily to other classes
-                if (savedContent[i] is String) {
-                    settings.edit().putString(savedIdentifiers[i], savedContent[i] as String)
-                        .apply()
+                when (savedContent[i]) {
+                    is String -> settings.edit().putString(savedIdentifiers[i], savedContent[i] as String).apply()
+                    is Boolean -> settings.edit().putBoolean(savedIdentifiers[i], savedContent[i] as Boolean).apply()
+                    is Int -> settings.edit().putInt(savedIdentifiers[i], savedContent[i] as Int).apply()
+                    is Long -> settings.edit().putLong(savedIdentifiers[i], savedContent[i] as Long).apply()
+                    else -> throw UnsupportedTypeException()
                 }
-                else if (savedContent[i] is Boolean){
-                    settings.edit().putBoolean(savedIdentifiers[i], savedContent[i] as Boolean).apply()
-                }
-                else if (savedContent[i] is Int)
-                    settings.edit().putInt(savedIdentifiers[i], savedContent[i] as Int).apply()
-                else if (savedContent[i] is Long)
-                    settings.edit().putLong(savedIdentifiers[i], savedContent[i] as Long).apply()
-                else
-                    throw UnsupportedTypeException()
             }
         }
 

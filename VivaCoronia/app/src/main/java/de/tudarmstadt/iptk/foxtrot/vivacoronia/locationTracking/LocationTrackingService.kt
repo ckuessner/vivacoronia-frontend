@@ -11,12 +11,10 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.*
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.DBLocation
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.NotificationHelper
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*

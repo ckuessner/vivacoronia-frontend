@@ -1,11 +1,8 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
 import android.content.Context
-import android.util.Log
-import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.RequestFuture
-import com.android.volley.toolbox.Volley
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import org.json.JSONObject
 import java.util.*
@@ -16,7 +13,7 @@ object AuthenticationApiClient : ApiBaseClient() {
     fun checkStatus(ctx: Context, userID: String) : Int {
         val queue = RequestUtility.getRequestQueue(ctx) ?: return Constants.NULL_QUEUE
         val baseUrl = Constants.SERVER_BASE_URL
-        var url = "$baseUrl/user/$userID/"
+        val url = "$baseUrl/user/$userID/"
 
         val responseFuture: RequestFuture<JSONObject> = RequestFuture.newFuture()
         val jsonRequest = JsonObjectJWT(url, null,responseFuture, responseFuture, ctx)
@@ -51,16 +48,16 @@ object AuthenticationApiClient : ApiBaseClient() {
 
 
         val jsonPostRequest =
-            object : JsonObjectRequest(url, jsonPW, responseFuture, responseFuture) {};
+            object : JsonObjectRequest(url, jsonPW, responseFuture, responseFuture) {}
         queue.add(jsonPostRequest)
 
         try {
             val response = responseFuture.get()
             val jwt = response.opt("jwt")
             val savedContent = arrayOf<Any>(jwt, Calendar.getInstance().time.time)
-            var savedIdentifiers = arrayOf<String>(Constants.JWT, Constants.JWT_Time)
+            var savedIdentifiers = arrayOf(Constants.JWT, Constants.JWT_Time)
             if (isAdmin) {
-                savedIdentifiers = arrayOf<String>(Constants.adminJWT, Constants.adminJWT_Time)
+                savedIdentifiers = arrayOf(Constants.adminJWT, Constants.adminJWT_Time)
             }
             //save retrieved jwt with creation time in preferences
             RequestUtility.saveInPreferencesAny(ctx, savedIdentifiers, savedContent)
@@ -82,7 +79,7 @@ object AuthenticationApiClient : ApiBaseClient() {
 
 
         val response : RequestFuture<JSONObject> = RequestFuture.newFuture()
-        val jsonRequest = object : JsonObjectRequest(Method.POST, url, jsonPW, response, response){};
+        val jsonRequest = object : JsonObjectRequest(Method.POST, url, jsonPW, response, response){}
         try {
             queue.add(jsonRequest)
             val responseWithUserID = response.get()

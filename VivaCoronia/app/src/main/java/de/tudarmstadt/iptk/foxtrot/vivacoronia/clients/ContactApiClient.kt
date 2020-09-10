@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import com.android.volley.Response
 import com.android.volley.VolleyError
-import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.RequestFuture
 import com.beust.klaxon.*
 import org.json.JSONArray
