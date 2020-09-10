@@ -6,6 +6,7 @@ import android.app.DownloadManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -92,7 +93,8 @@ class RegisterActivity : AppCompatActivity() {
                     runOnUiThread {
                         if (jwtDone == 0) {
                             findViewById<ProgressBar>(R.id.registerProgress).visibility = View.GONE
-                            finishRegister(ctx)
+                            showEmailDialog(ctx, userID)
+                            //finishRegister(ctx)
                         }
                         else {
                             findViewById<ProgressBar>(R.id.registerProgress).visibility = View.GONE
@@ -108,6 +110,38 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    private fun showEmailDialog(ctx: Context, userID: String){
+        val builder = AlertDialog.Builder(ctx, R.style.AlertDialogTheme)
+        builder.setTitle(getString(R.string.EmailTitle))
+        builder.setMessage(getString(R.string.EmailInfo))
+        val inputEmail = EditText(ctx)
+        inputEmail.setHint(R.string.EmailHint)
+        builder.setView(inputEmail)
+
+        builder.setPositiveButton(android.R.string.yes) { _, _ ->
+            val canContinue = TextViewUtils.checkValidInput(inputEmail, true)
+            if(canContinue){
+                try {
+                    val subject = getString(R.string.Email_Subject)
+                    val body = Uri.encode( "Your UserId is: $userID")
+                    val data = Uri.parse("mailto:${inputEmail.text}?subject=$subject&body=$body")
+                    val emailIntent = Intent(Intent.ACTION_VIEW)
+                    emailIntent.data = data
+                    startActivityForResult(emailIntent, 0)
+                }
+                catch(e: ActivityNotFoundException){
+                    Toast.makeText(ctx, getString(R.string.emailFailInfo), Toast.LENGTH_SHORT).show()
+                    finishRegister(ctx)
+                }
+            }
+        }
+        builder.setNegativeButton(android.R.string.no) {_, _ ->
+            Toast.makeText(ctx, getString(R.string.emailNotSendInfo), Toast.LENGTH_SHORT).show()
+            finishRegister(ctx)
+        }
+        builder.show()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         finishRegister(this)
         super.onActivityResult(requestCode, resultCode, data)
@@ -116,45 +150,15 @@ class RegisterActivity : AppCompatActivity() {
     private fun doLoginProcess(ctx: Context) {
         val userID = findViewById<TextView>(R.id.register_userID)
         val password = findViewById<TextView>(R.id.et_password)
-        var canContinue = TextViewUtils.checkValidInput(password) && TextViewUtils.checkValidInput(userID)
+        val canContinue = TextViewUtils.checkValidInput(password) && TextViewUtils.checkValidInput(userID)
         if(canContinue){
             GlobalScope.launch {
                 val jwtDone = AuthenticationApiClient.makeNewJWT(ctx, password.text.toString(), userID.text.toString())
                 if(jwtDone == 0){
+                    RequestUtility.saveInPreferences(ctx, userID.text.toString())
                     runOnUiThread {
                         findViewById<ProgressBar>(R.id.registerProgress).visibility = View.GONE
-                    }
-                    RequestUtility.saveInPreferences(ctx, userID.text.toString())
-                    val builder = AlertDialog.Builder(ctx, R.style.AlertDialogTheme)
-                    builder.setTitle(getString(R.string.EmailTitle))
-                    builder.setMessage(getString(R.string.EmailInfo))
-                    val inputEmail = EditText(ctx)
-                    inputEmail.setHint(R.string.EmailHint)
-                    builder.setView(inputEmail)
-                    runOnUiThread {
-                        builder.setPositiveButton(android.R.string.yes) { _, _ ->
-                            canContinue = TextViewUtils.checkValidInput(inputEmail, true)
-                            if(canContinue){
-                                try {
-                                    //https://stackoverflow.com/questions/2197741/how-to-send-emails-from-my-android-application
-                                    val emailIntent = Intent(Intent.ACTION_SEND)
-                                    emailIntent.setType("message/rfc822");
-                                    emailIntent.putExtra(Intent.EXTRA_EMAIL  , inputEmail.text.toString());
-                                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.Email_Subject));
-                                    emailIntent.putExtra(Intent.EXTRA_TEXT   , "Your UserId is: ${userID.text.toString()}")
-                                    startActivityForResult(Intent.createChooser(emailIntent, "Send E-Mail..."), 0)
-                                }
-                                catch(e: ActivityNotFoundException){
-                                    Toast.makeText(ctx, getString(R.string.emailFailInfo), Toast.LENGTH_SHORT).show()
-                                    finishRegister(ctx)
-                                }
-                            }
-                        }
-                        builder.setNegativeButton(android.R.string.no) {_, _ ->
-                            Toast.makeText(ctx, getString(R.string.emailNotSendInfo), Toast.LENGTH_SHORT).show()
-                            finishRegister(ctx)
-                        }
-                        builder.show()
+                        finishRegister(ctx)
                     }
                 }
                 else {
