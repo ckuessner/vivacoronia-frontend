@@ -12,12 +12,6 @@ import kotlinx.coroutines.launch
 class UploadService : Service() {
     private val tag = "UploadService"
 
-    override fun onCreate() {
-        super.onCreate()
-        Log.i(tag, "entered onCreate")
-
-    }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.i(tag, "started upload Service")
 
@@ -30,24 +24,12 @@ class UploadService : Service() {
             Log.i(tag, "locList Length: " + locList.size.toString())
 
             // if location array is empty, no upload is needed
-            if (locList.isNotEmpty()) {
-                // uploads the data and deletes it if upload was successful
-                Log.i(tag, "upload")
+            if (locList.isNotEmpty())
                 LocationApiClient.sendPositionsToServer(applicationContext, locList)
-            } else {
-                Log.i(tag, "no upload")
-            }
-
         }
-
         // stop service after uploading
         stopSelf()
         return super.onStartCommand(intent, flags, startId)
-    }
-
-    override fun onDestroy() {
-        Log.i(tag, "upload service destroyed")
-        super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? {

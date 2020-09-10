@@ -3,8 +3,6 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 import android.content.Context
 import android.net.Uri
 import com.android.volley.*
-import com.android.volley.toolbox.JsonArrayRequest
-import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.RequestFuture
 import com.beust.klaxon.*
 import com.google.android.gms.maps.model.LatLng

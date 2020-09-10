@@ -26,6 +26,7 @@ object RequestUtility : ApiBaseClient(){
                 Constants.SERVER_ERROR -> Toast.makeText(ctx, ctx.getString(R.string.serverError), Toast.LENGTH_SHORT).show()
                 Constants.FIREWALL_ERROR -> Toast.makeText(ctx, ctx.getString(R.string.firewallError), Toast.LENGTH_SHORT).show()
                 Constants.FORBIDDEN -> Toast.makeText(ctx, ctx.getString(R.string.forbiddenError), Toast.LENGTH_SHORT).show()
+                else -> Toast.makeText(ctx, ctx.getString(R.string.server_connection_failed), Toast.LENGTH_SHORT).show()
             }
         }
 

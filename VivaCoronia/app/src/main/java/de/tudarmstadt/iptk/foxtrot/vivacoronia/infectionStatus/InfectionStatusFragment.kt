@@ -43,8 +43,6 @@ class InfectionStatusFragment : Fragment() {
             false
         )
 
-        loadCurrentInfectionStatus()
-
         binding.updateInfectionFab.setOnClickListener {
             if (!PermissionHandler.checkCameraPermissions(requireActivity()))
                 PermissionHandler.requestCameraPermissions(this)

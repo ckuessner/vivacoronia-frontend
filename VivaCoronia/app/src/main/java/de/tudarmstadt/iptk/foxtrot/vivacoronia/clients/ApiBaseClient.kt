@@ -182,14 +182,12 @@ abstract class ApiBaseClient {
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     intent.putExtra("isAdmin", false)
                     ctx.startActivity(intent)
-                    errorSuper?.onErrorResponse(error)
                 }
                 else if (error.networkResponse.statusCode == 401 && isAdmin){
                     val intent = Intent(ctx, LoginActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     intent.putExtra("isAdmin", true)
                     ctx.startActivity(intent)
-                    errorSuper?.onErrorResponse(error)
                 }
                 else if (error.networkResponse.statusCode == 403 && isAdmin){
                     //delete admin stuff, since this error only occurs if user doesn't have admin permissions anymore
@@ -201,9 +199,9 @@ abstract class ApiBaseClient {
                     val navController = act.findNavController(R.id.nav_fragment)
                     navController.setGraph(R.navigation.nav_graph)
                     navController.navigate(R.id.statusCheckFragment)
-                    errorSuper?.onErrorResponse(error)
-                    }
+                }
             }
+            errorSuper?.onErrorResponse(error) ?: if (error != null) throw error
         }
     }
 }
