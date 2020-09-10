@@ -3,7 +3,9 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Context
+import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
@@ -17,6 +19,8 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        //set progressbar not visible
+        findViewById<ProgressBar>(R.id.loginProgress).visibility = View.GONE
         val isAdmin = intent.getBooleanExtra("isAdmin", false)
         val noAdminJWT = getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.adminJWT, null) == null
         if(isAdmin && noAdminJWT){
@@ -39,6 +43,9 @@ class LoginActivity : AppCompatActivity() {
         loginUser.setOnClickListener{
             val canContinue = TextViewUtils.checkValidInput(passwordTextView)
             if(canContinue){
+                runOnUiThread {
+                    findViewById<ProgressBar>(R.id.loginProgress).visibility = View.VISIBLE
+                }
                 val pw = passwordTextView.text.toString()
                 val userID = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.USER_ID, null) as String
                 var succJWT = 0
@@ -48,10 +55,12 @@ class LoginActivity : AppCompatActivity() {
                     succJWT = AuthenticationApiClient.makeNewJWT(ctx, pw, userID, isAdmin)
                     runOnUiThread {
                         if(succJWT == 0){
+                            findViewById<ProgressBar>(R.id.loginProgress).visibility = View.GONE
                             Toast.makeText(ctx, getString(R.string.succLogin), Toast.LENGTH_SHORT).show()
                             finish()
                         }
                         else {
+                            findViewById<ProgressBar>(R.id.loginProgress).visibility = View.GONE
                             RequestUtility.handleErrorShowing(ctx, succJWT)
                             //if we don't have admin rights, we don't need to keep the login
                             if(succJWT == Constants.FORBIDDEN)

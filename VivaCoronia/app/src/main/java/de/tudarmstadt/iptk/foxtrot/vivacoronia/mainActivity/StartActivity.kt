@@ -15,6 +15,7 @@ class StartActivity : AppCompatActivity() {
         setContentView(R.layout.activity_start)
         val ctx : Context = this
         val settings = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
+        settings.edit().clear().apply()
         // user is registered if userID is not null
         val userID = settings.getString(Constants.USER_ID, null)
         if (userID == null){

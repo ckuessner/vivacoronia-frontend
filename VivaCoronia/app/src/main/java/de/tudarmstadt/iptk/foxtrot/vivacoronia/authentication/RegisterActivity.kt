@@ -35,6 +35,7 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        findViewById<ProgressBar>(R.id.registerProgress).visibility = View.GONE
         registerUser(this, false)
         loginAccountLogic(this)
 
@@ -89,12 +90,18 @@ class RegisterActivity : AppCompatActivity() {
                         ) as String
                     jwtDone = AuthenticationApiClient.makeNewJWT(ctx, pw, userID)
                     runOnUiThread {
-                        if (jwtDone == 0) finishRegister(ctx)
-                        else
+                        if (jwtDone == 0) {
+                            findViewById<ProgressBar>(R.id.registerProgress).visibility = View.GONE
+                            finishRegister(ctx)
+                        }
+                        else {
+                            findViewById<ProgressBar>(R.id.registerProgress).visibility = View.GONE
                             RequestUtility.handleErrorShowing(ctx, jwtDone)
+                        }
                     }
                 } else
                     runOnUiThread {
+                        findViewById<ProgressBar>(R.id.registerProgress).visibility = View.GONE
                         RequestUtility.handleErrorShowing(ctx, creationSucc)
                     }
             }
@@ -114,6 +121,9 @@ class RegisterActivity : AppCompatActivity() {
             GlobalScope.launch {
                 val jwtDone = AuthenticationApiClient.makeNewJWT(ctx, password.text.toString(), userID.text.toString())
                 if(jwtDone == 0){
+                    runOnUiThread {
+                        findViewById<ProgressBar>(R.id.registerProgress).visibility = View.GONE
+                    }
                     RequestUtility.saveInPreferences(ctx, userID.text.toString())
                     val builder = AlertDialog.Builder(ctx, R.style.AlertDialogTheme)
                     builder.setTitle(getString(R.string.EmailTitle))
@@ -149,6 +159,7 @@ class RegisterActivity : AppCompatActivity() {
                 }
                 else {
                     runOnUiThread {
+                        findViewById<ProgressBar>(R.id.registerProgress).visibility = View.GONE
                         RequestUtility.handleErrorShowing(ctx, jwtDone, true)
                     }
                 }
@@ -159,11 +170,13 @@ class RegisterActivity : AppCompatActivity() {
     private fun setButtonLogic(btn: Button, isRegister: Boolean, ctx: Context){
     if(isRegister){
         btn.setOnClickListener {
+            findViewById<ProgressBar>(R.id.registerProgress).visibility = View.VISIBLE
             doRegisterProcess(ctx)
         }
     }
     else {
         btn.setOnClickListener {
+            findViewById<ProgressBar>(R.id.registerProgress).visibility = View.VISIBLE
             doLoginProcess(ctx)
             }
         }
