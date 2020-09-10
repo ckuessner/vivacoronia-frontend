@@ -108,11 +108,11 @@ class NeedOverviewFragment : Fragment() {
                 fetchMyNeeds()
         } catch (e: Exception) {
             Log.e(TAG, "Unable to delete need with id \"$id\"", e)
-            requireActivity().runOnUiThread {
+            activity?.runOnUiThread {
                 Toast.makeText(requireContext(), "Unable to delete need", Toast.LENGTH_SHORT).show()
             }
         }
-        requireActivity().runOnUiThread { binding.needsListSwipeRefresh.isRefreshing = false }
+        activity?.runOnUiThread { binding.needsListSwipeRefresh.isRefreshing = false }
     }
 
     private fun styleDialogButtons(buttons: List<Button>) {
@@ -132,7 +132,7 @@ class NeedOverviewFragment : Fragment() {
     private fun fetchCategories() {
         try {
             val categories = TradingApiClient.getAllCategories(requireContext()).toMutableList()
-            requireActivity().runOnUiThread {
+            activity?.runOnUiThread {
                 BaseProduct.categories.value = categories
             }
         } catch (e: Exception) {
@@ -140,9 +140,8 @@ class NeedOverviewFragment : Fragment() {
             if (!BaseProduct.categories.value.isNullOrEmpty())
                 return
 
-            if (requireActivity().hasWindowFocus())
-                requireActivity().runOnUiThread {
-                    activity?.let {
+            if (activity?.hasWindowFocus() == true)
+                activity?.let { it.runOnUiThread {
                         val dialog = AlertDialog.Builder(it)
                             .setMessage("Please make sure you have a working Internet connection and try again.")
                             .setTitle("No Internet")
@@ -158,16 +157,16 @@ class NeedOverviewFragment : Fragment() {
     private fun fetchMyNeeds() {
         try {
             val needs = TradingApiClient.getMyNeeds(requireContext())
-            requireActivity().runOnUiThread { viewModel.setNeeds(needs) }
+            activity?.runOnUiThread { viewModel.setNeeds(needs) }
         } catch (exception: ExecutionException) {
-            if (exception.cause is VolleyError && requireActivity().hasWindowFocus())
-                requireActivity().runOnUiThread {
-                    Toast.makeText(requireActivity(), R.string.server_connection_failed, Toast.LENGTH_LONG).show()
-                }
+            if (exception.cause is VolleyError && activity?.hasWindowFocus() == true)
+                activity?.let{ it.runOnUiThread {
+                    Toast.makeText(it, R.string.server_connection_failed, Toast.LENGTH_LONG).show()
+                }}
             else {
                 Log.e(TAG, "Error while fetching or parsing myOffers", exception)
             }
         }
-        requireActivity().runOnUiThread { binding.needsListSwipeRefresh.isRefreshing = false }
+        activity?.runOnUiThread { binding.needsListSwipeRefresh.isRefreshing = false }
     }
 }

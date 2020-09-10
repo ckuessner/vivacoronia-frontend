@@ -53,7 +53,7 @@ class StatusCheckFragment : Fragment() {
                     when (succJWT) {
                         0 ->  checkStatus(ctx, view, oldIsAdmin)
                         else -> RequestUtility.handleErrorShowing(ctx, succJWT)
-                        }
+                    }
                 }
             }
         }

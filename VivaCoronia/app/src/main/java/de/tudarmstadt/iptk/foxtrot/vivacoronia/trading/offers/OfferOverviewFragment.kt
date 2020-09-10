@@ -119,10 +119,10 @@ class OfferOverviewFragment : Fragment() {
                 it.runOnUiThread { viewModel.setOffers(offers) }
             }
         } catch (exception: ExecutionException) {
-            if (exception.cause is VolleyError && activity != null && requireActivity().hasWindowFocus())
-                requireActivity().runOnUiThread {
-                    Toast.makeText(requireActivity(), R.string.server_connection_failed, Toast.LENGTH_LONG).show()
-                }
+            if (exception.cause is VolleyError && activity != null && activity?.hasWindowFocus() == true)
+                activity?.let { it.runOnUiThread {
+                    Toast.makeText(it, R.string.server_connection_failed, Toast.LENGTH_LONG).show()
+                }}
             else {
                 Log.e(TAG, "Error while fetching or parsing myOffers", exception)
             }

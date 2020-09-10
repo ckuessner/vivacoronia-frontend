@@ -92,16 +92,16 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
         GlobalScope.launch {
             try {
                 val offers = TradingApiClient.getOffers(requireContext(), searchQuery)
-                requireActivity().runOnUiThread {
+                activity?.runOnUiThread {
                     viewModel.searchResults.value = offers
                 }
             } catch (e: Exception) {
-                requireActivity().runOnUiThread {
-                    Toast.makeText(requireContext(), R.string.server_connection_failed, Toast.LENGTH_SHORT).show()
-                }
+                activity?.let{ it.runOnUiThread {
+                    Toast.makeText(it, R.string.server_connection_failed, Toast.LENGTH_SHORT).show()
+                }}
                 Log.e(TAG, "Error while trying to fetch offers", e)
             }
-            requireActivity().runOnUiThread {
+            activity?.runOnUiThread {
                 binding.progressHorizontal.visibility = View.INVISIBLE
             }
         }
