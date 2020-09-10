@@ -114,7 +114,7 @@
 
     <!-- Register process -->
     <string name="register">Register</string>
-    <string name="tag_reg">Join our big corona community to save the world</string>
+    <string name="tag_reg">Join our big corona community to save the world!</string>
     <string name="password">Password</string>
     <string name="re_type_password">Re-type Password</string>
     <string name="succRegister">"You successfully registered to save the world from corona!"</string>
@@ -154,6 +154,7 @@
     <!-- Error Showing -->
     <string name="noInternet">"No internet, check your connection and try again"</string>
     <string name="wrongPassword">"Password was wrong, try again"</string>
+    <string name="wrongPwOrID">"Password or UserID was wrong, try again"</string>
     <string name="serverError">"Something went wrong with the server, oops"</string>
     <string name="firewallError">"Your network doesn't allow connection to the server"</string>
     <string name="forbiddenError">"You're not admin anymore, please reload your status"</string>

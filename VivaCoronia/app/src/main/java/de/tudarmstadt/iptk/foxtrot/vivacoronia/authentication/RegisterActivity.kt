@@ -101,6 +101,11 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        finishRegister(this)
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     private fun doLoginProcess(ctx: Context) {
         val userID = findViewById<TextView>(R.id.register_userID)
         val password = findViewById<TextView>(R.id.et_password)
@@ -127,8 +132,7 @@ class RegisterActivity : AppCompatActivity() {
                                     emailIntent.putExtra(Intent.EXTRA_EMAIL  , inputEmail.text.toString());
                                     emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.Email_Subject));
                                     emailIntent.putExtra(Intent.EXTRA_TEXT   , "Your UserId is: ${userID.text.toString()}")
-                                    startActivity(Intent.createChooser(emailIntent, "Send email..."))
-                                    //finishRegister(ctx)
+                                    startActivityForResult(Intent.createChooser(emailIntent, "Send E-Mail..."), 0)
                                 }
                                 catch(e: ActivityNotFoundException){
                                     Toast.makeText(ctx, getString(R.string.emailFailInfo), Toast.LENGTH_SHORT).show()
@@ -144,7 +148,9 @@ class RegisterActivity : AppCompatActivity() {
                     }
                 }
                 else {
-                    RequestUtility.handleErrorShowing(ctx, jwtDone)
+                    runOnUiThread {
+                        RequestUtility.handleErrorShowing(ctx, jwtDone, true)
+                    }
                 }
             }
         }

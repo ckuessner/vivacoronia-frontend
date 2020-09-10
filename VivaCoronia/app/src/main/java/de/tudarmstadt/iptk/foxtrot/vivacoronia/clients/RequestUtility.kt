@@ -17,10 +17,10 @@ object RequestUtility : ApiBaseClient(){
         /*
         Shows appropriate messages to user for different errors
          */
-        fun handleErrorShowing(ctx: Context, errorCode: Int) {
+        fun handleErrorShowing(ctx: Context, errorCode: Int, hasUserId: Boolean = false) {
             when(errorCode){
                 Constants.NO_INTERNET -> Toast.makeText(ctx, ctx.getString(R.string.noInternet), Toast.LENGTH_SHORT).show()
-                Constants.AUTH_ERROR -> Toast.makeText(ctx, ctx.getString(R.string.wrongPassword), Toast.LENGTH_SHORT).show()
+                Constants.AUTH_ERROR -> Toast.makeText(ctx, if(!hasUserId) ctx.getString(R.string.wrongPassword) else ctx.getString(R.string.wrongPwOrID), Toast.LENGTH_SHORT).show()
                 Constants.SERVER_ERROR -> Toast.makeText(ctx, ctx.getString(R.string.serverError), Toast.LENGTH_SHORT).show()
                 Constants.FIREWALL_ERROR -> Toast.makeText(ctx, ctx.getString(R.string.firewallError), Toast.LENGTH_SHORT).show()
                 Constants.FORBIDDEN -> Toast.makeText(ctx, ctx.getString(R.string.forbiddenError), Toast.LENGTH_SHORT).show()
