@@ -1,16 +1,12 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.needs
 
 import android.app.AlertDialog
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.core.view.setMargins
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -58,13 +54,7 @@ class NeedOverviewFragment : Fragment() {
         })
         binding.add.isEnabled = !BaseProduct.categories.value.isNullOrEmpty() // Only allow adding offers if we fetched + received categories
 
-        binding.needsListSwipeRefresh.setOnRefreshListener {
-            GlobalScope.launch { fetchMyNeeds() }
-            GlobalScope.launch { fetchCategories() }
-        }
-
-        GlobalScope.launch { fetchCategories() }
-
+        binding.needsListSwipeRefresh.setOnRefreshListener { GlobalScope.launch { fetchMyNeeds() } }
         binding.add.setOnClickListener { SubmitProductActivity.start(requireContext(), null, false) }
 
         return binding.root
@@ -113,45 +103,6 @@ class NeedOverviewFragment : Fragment() {
             }
         }
         activity?.runOnUiThread { binding.needsListSwipeRefresh.isRefreshing = false }
-    }
-
-    private fun styleDialogButtons(buttons: List<Button>) {
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        params.setMargins(5)
-
-        for (button in buttons) {
-            button.setTextColor(Color.BLACK)
-            button.setBackgroundColor(Color.LTGRAY)
-            button.layoutParams = params
-        }
-    }
-
-    private fun fetchCategories() {
-        try {
-            val categories = TradingApiClient.getAllCategories(requireContext()).toMutableList()
-            activity?.runOnUiThread {
-                BaseProduct.categories.value = categories
-            }
-        } catch (e: Exception) {
-            // Don't care if we already have categories
-            if (!BaseProduct.categories.value.isNullOrEmpty())
-                return
-
-            if (activity?.hasWindowFocus() == true)
-                activity?.let { it.runOnUiThread {
-                        val dialog = AlertDialog.Builder(it)
-                            .setMessage("Please make sure you have a working Internet connection and try again.")
-                            .setTitle("No Internet")
-                            .setCancelable(false)
-                            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss()}
-                            .show()
-                        styleDialogButtons(listOf(dialog.getButton(AlertDialog.BUTTON_POSITIVE))) // TODO löschen wenn styling auch ohne so funktioniert wie bei Timo
-                    }
-                }
-        }
     }
 
     private fun fetchMyNeeds() {
