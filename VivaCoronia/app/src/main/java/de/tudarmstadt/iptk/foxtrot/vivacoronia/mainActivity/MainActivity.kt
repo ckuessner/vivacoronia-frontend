@@ -2,6 +2,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity
 
 import android.Manifest
 import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -119,6 +120,14 @@ class MainActivity : AppCompatActivity() {
         GlobalScope.launch { fetchCategories() }
     }
 
+    fun hideAdminFeatures() {
+        navView.menu.findItem(R.id.menu_item_spreadmap).isVisible = false
+    }
+
+    private fun showAdminFeatures() {
+        navView.menu.findItem(R.id.menu_item_spreadmap).isVisible = true
+    }
+
     private fun fetchCategories() {
         try {
             val categories = TradingApiClient.getAllCategories(this@MainActivity).toMutableList()
@@ -144,6 +153,10 @@ class MainActivity : AppCompatActivity() {
             this,
             true
         )
+
+        val settings = getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
+        val isAdmin = settings.getBoolean(Constants.IS_ADMIN, false)
+        if (isAdmin) showAdminFeatures() else hideAdminFeatures()
     }
 
     private var doubleBackToExitPressedOnce = false

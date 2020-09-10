@@ -17,8 +17,10 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.AuthenticationApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.RequestUtility
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.MainActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+
 
 class StatusCheckFragment : Fragment() {
     override fun onCreateView(
@@ -78,8 +80,11 @@ class StatusCheckFragment : Fragment() {
         val isAdmin = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getBoolean(Constants.IS_ADMIN, false)
         val adminJwt = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.adminJWT, null)
         //to check whether we actually show something, check whether isAdmin
-        if(!isAdmin || adminJwt == null)
-            view.findViewById<TextView>(R.id.userStatus).text = getString(R.string.feature_permissions_user)
+        if(!isAdmin || adminJwt == null) {
+            view.findViewById<TextView>(R.id.userStatus).text =
+                getString(R.string.feature_permissions_user)
+            (activity as MainActivity?)?.hideAdminFeatures()
+        }
         else
             view.findViewById<TextView>(R.id.userStatus).text = getString(R.string.feature_permission_admin)
     }
@@ -113,6 +118,7 @@ class StatusCheckFragment : Fragment() {
             view.findViewById<TextView>(R.id.userStatus).text = getString(R.string.feature_permissions_user)
             //set adminJWT to zero
             ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).edit().putString(Constants.adminJWT, null).apply()
+            (activity as MainActivity?)?.hideAdminFeatures()
         }
         else{
             Toast.makeText(ctx, getString(R.string.samePermission), Toast.LENGTH_SHORT).show()
