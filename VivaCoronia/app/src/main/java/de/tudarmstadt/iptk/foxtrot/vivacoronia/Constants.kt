@@ -2,7 +2,6 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
 object Constants {
 
-    data class DataPoint(val x: Double, val y: Double, val time: String)
     // Location Upload stuff
     const val LOCATION_UPLOAD_INTERVAL = 10000.toLong() // for reallife use could be higher
     const val LOCATION_UPLOAD_REQUEST_CODE = 12
@@ -31,6 +30,8 @@ object Constants {
 
     // infected stuff
     const val INFECTED_NOTIFICATION_CHANNEL_ID = "infected_channel"
+
+    const val PRODUCT_NOTIFICATION_CHANNEL_ID = "product_channel"
 
     const val SERVER_WEBSOCKET_URL = BuildConfig.WEBSOCKET_SERVER
     const val SERVER_BASE_URL = BuildConfig.API_SERVER

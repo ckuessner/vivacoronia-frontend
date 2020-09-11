@@ -14,7 +14,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.TradingApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentTradingBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentTradingNavBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.needs.NeedOverviewFragment
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OfferOverviewFragment
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search.SearchOffersFragment
@@ -35,6 +35,8 @@ class TradingFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_trading, container, false)
         GlobalScope.launch { fetchCategories() }
         binding.retryConnection.setOnClickListener { onConnectionRetry() }
+
+
         return binding.root
     }
 
@@ -75,6 +77,14 @@ class TradingFragment : Fragment() {
 class TradingFragmentNav : Fragment(), Observer<MutableList<String>> {
     private lateinit var binding : FragmentTradingNavBinding
 
+    private var query: ProductSearchQuery? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        query = arguments?.getParcelable("product_query")
+        Log.i("TradingNavFragment", "query: $query")
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_trading_nav, container, false)
         binding.bottomNavView.selectedItemId = R.id.search_offers
@@ -82,27 +92,34 @@ class TradingFragmentNav : Fragment(), Observer<MutableList<String>> {
             binding.bottomNavView.isEnabled = false
             BaseProduct.categories.observe(viewLifecycleOwner, this)
         } else {
-            loadFragment(R.id.search_offers)
+            loadFragment(R.id.search_offers, query)
         }
-        binding.bottomNavView.setOnNavigationItemSelectedListener { loadFragment(it.itemId) }
+        binding.bottomNavView.setOnNavigationItemSelectedListener { loadFragment(it.itemId, null) }
+
         return binding.root
     }
 
-    private fun loadFragment(item: Int): Boolean {
+    private fun loadFragment(item: Int, query: ProductSearchQuery?): Boolean {
         if (!binding.bottomNavView.isEnabled)
             return false
 
         val fragment = when (item) {
-            R.id.search_offers -> SearchOffersFragment()
-            R.id.my_offers -> OfferOverviewFragment()
-            R.id.my_needs -> NeedOverviewFragment()
+            R.id.search_offers -> SearchOffersFragment::class.java
+            R.id.my_offers -> OfferOverviewFragment::class.java
+            R.id.my_needs -> NeedOverviewFragment::class.java
             else -> null
         }
+
+        val b = Bundle()
+        if (fragment == SearchOffersFragment::class.java && query != null) {
+            b.putParcelable("product_query", query)
+        }
+
 
         if (fragment != null) {
             childFragmentManager
                 .beginTransaction()
-                .replace(R.id.nav_host_fragment, fragment)
+                .replace(R.id.nav_host_fragment, fragment, b)
                 .commit()
             return true
         }

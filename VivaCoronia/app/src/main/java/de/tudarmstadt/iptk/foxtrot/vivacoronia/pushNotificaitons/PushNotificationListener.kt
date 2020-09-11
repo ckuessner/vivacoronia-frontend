@@ -1,16 +1,26 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons
 
 import android.util.Log
+import com.beust.klaxon.*
+import com.google.android.gms.maps.model.LatLng
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import kotlin.math.round
 
 class PushNotificationListener : WebSocketListener(){
     private val tag = "PushListener"
 
+    private val productSearchConverter : Klaxon = Klaxon()
+
     //gets set in the init method of websocketservice
     lateinit var socketService : WebSocketService
+
+    init {
+        productSearchConverter.converter(ProductSearchConverter)
+    }
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         super.onOpen(webSocket, response)
@@ -19,11 +29,18 @@ class PushNotificationListener : WebSocketListener(){
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
+        Log.i(tag, "received $text")
         // tell service to make a notification
         if(text == "you had contact with an infected person") {
-            socketService.makeNotification()
+            socketService.makeContactNotification()
+            return
         }
-        Log.i(tag, "received $text")
+        try {
+            val obj = productSearchConverter.parse<ProductSearchQuery>(text)
+            if (obj != null ) socketService.makeProductMatchNotification(obj)
+        } catch (e: KlaxonException) {
+            Log.e(tag, e.message ?: "no error message")
+        }
     }
 
     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
@@ -36,4 +53,35 @@ class PushNotificationListener : WebSocketListener(){
         socketService.reconnect()
     }
 
+
+}
+
+object ProductSearchConverter : Converter {
+    override fun canConvert(cls: Class<*>) = cls == ProductSearchQuery::class.java
+
+    override fun fromJson(jv: JsonValue): Any? {
+        if (!(jv.obj != null
+            && jv.obj!!["location"] is JsonArray<*>
+            && jv.obj!!["product"] is String
+            && jv.obj!!["productCategory"] is String
+            && jv.obj!!["minAmount"] is Int
+            && jv.obj!!["perimeter"] is Int))
+            throw KlaxonException("Couldn't parse product query: $jv")
+        val locationJson = jv.obj!!["location"] as JsonArray<*>
+        return ProductSearchQuery(
+            jv.obj!!["product"] as String,
+            jv.obj!!["productCategory"] as String,
+            LatLng(
+                (locationJson[1] as Number).toDouble(),
+                (locationJson[0] as Number).toDouble()
+            ),
+            // kotlin round function lets websocket fail
+            Math.round(jv.obj!!["perimeter"] as Int / 1000f)  // convert from m to km
+        // TODO amount noch hinzufügen (wird noch nicht von der aktuellen ProductSearchQuery unterstüzt)
+        )
+    }
+
+    override fun toJson(value: Any): String {
+        throw KlaxonException("Creating JSON is not supported!")
+    }
 }

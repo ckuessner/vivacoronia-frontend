@@ -6,9 +6,11 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
+import android.os.*
 import androidx.core.app.NotificationCompat
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.MainActivity
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
+
 
 object NotificationHelper{
 
@@ -47,23 +49,52 @@ object NotificationHelper{
      * @param priority: a Constant from the NoficationCompat class like NotificationCompat.PRIORITY_HIGH
      * @param color: a Constant from the Colors class like Color.RED
      */
-    fun getNotification(context: Context,
-                        channelID: String,
-                        smallIcon: Int,
-                        title: String,
-                        text: String,
-                        priority: Int,
-                        color: Int
+    fun getNormalNotification(context: Context,
+                              channelID: String,
+                              smallIcon: Int,
+                              title: String,
+                              text: String,
+                              priority: Int,
+                              color: Int
                         ) : Notification {
+        return getNotification(context, channelID, smallIcon, title, text, priority, color)
+            .build()
+    }
+
+    fun getProductMatchNotification(
+        context: Context,
+        channelID: String,
+        smallIcon: Int,
+        title: String,
+        text: String,
+        priority: Int,
+        color: Int,
+        product: ProductSearchQuery
+    ) : Notification {
+        val i = Intent(context, MainActivity::class.java)
+        i.putExtra("startFragment", R.id.search_offers)
+        i.putExtra("product", product)
+        // every intent needs his own id because otherwise the previous with this id would be reused
+        val pi = PendingIntent.getActivity(context, SystemClock.elapsedRealtime().hashCode(), i, 0)
+        return getNotification(context, channelID, smallIcon, title, text, priority, color)
+            .setContentIntent(pi)
+            .setAutoCancel(true)
+            .build()
+    }
+
+    private fun getNotification(context: Context,
+                                channelID: String,
+                                smallIcon: Int,
+                                title: String,
+                                text: String,
+                                priority: Int,
+                                color: Int
+    ) : NotificationCompat.Builder {
         return NotificationCompat.Builder(context, channelID)
             .setSmallIcon(smallIcon)
             .setContentTitle(title)
             .setContentText(text)
             .setPriority(priority).setColor(color)
-            .setContentIntent(Intent(context, MainActivity::class.java).let {
-                    notificationIntent ->
-                PendingIntent.getActivity(context, 0, notificationIntent, 0)})
-            .build()
     }
 
 }

@@ -2,7 +2,6 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity
 
 import android.Manifest
 import android.app.NotificationManager
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -14,25 +13,25 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.NotificationHelper
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.PermissionHandler
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.*
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.TradingApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.createBackgroundLocationRequest
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.requestLocationService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.WebSocketService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+
+private const val PRODUCT_QUERY = "product"
 
 class MainActivity : AppCompatActivity() {
     private val tag = "MainActivity"
@@ -42,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     private lateinit var navView: NavigationView
-    
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,13 +62,20 @@ class MainActivity : AppCompatActivity() {
                 NotificationManager.IMPORTANCE_HIGH,
                 Constants.INFECTED_NOTIFICATION_CHANNEL_ID
             )
+            NotificationHelper.createNotificationChannel(
+                this,
+                getString(R.string.product_notification_channel_name),
+                getString(R.string.product_notification_channel_description),
+                NotificationManager.IMPORTANCE_DEFAULT,
+                Constants.PRODUCT_NOTIFICATION_CHANNEL_ID
+            )
         }
 
         // setup navigation
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        val navController = findNavController(R.id.nav_fragment)
+        navController = findNavController(R.id.nav_fragment)
         navController.setGraph(R.navigation.nav_graph)
         // the location history view, trading view and achievements view are all root views
         appBarConfiguration = AppBarConfiguration(
@@ -93,7 +99,17 @@ class MainActivity : AppCompatActivity() {
 
         // add actions for drawer menu item here
         navView.setNavigationItemSelectedListener { item ->
-            when (item.itemId) {
+            navigateToFragment(item.itemId, null)
+            findViewById<DrawerLayout>(R.id.drawer_layout).closeDrawer(navView)
+            return@setNavigationItemSelectedListener true
+        }
+
+        GlobalScope.launch { fetchCategories() }
+
+    }
+
+    private fun navigateToFragment(itemId: Int, query: ProductSearchQuery?) {
+            when (itemId) {
                 R.id.menu_item_location_history -> {
                     navController.navigate(R.id.locationHistoryFragment)
                 }
@@ -112,12 +128,13 @@ class MainActivity : AppCompatActivity() {
                 R.id.menu_item_statusCheck -> {
                     navController.navigate(R.id.statusCheckFragment)
                 }
+                // only needed for notification navigation
+                R.id.search_offers -> {
+                    val b = Bundle()
+                    b.putParcelable("product_query", query)
+                    navController.navigate(R.id.tradingFragmentNav, b)
+                }
             }
-            findViewById<DrawerLayout>(R.id.drawer_layout).closeDrawer(navView)
-            return@setNavigationItemSelectedListener true
-        }
-
-        GlobalScope.launch { fetchCategories() }
     }
 
     fun hideAdminFeatures() {
@@ -153,6 +170,12 @@ class MainActivity : AppCompatActivity() {
             this,
             true
         )
+
+        val startFragment = intent.getIntExtra("startFragment", R.id.menu_item_location_history)
+        if (startFragment != R.id.menu_item_location_history) {
+            val product = intent.getParcelableExtra<ProductSearchQuery>(PRODUCT_QUERY)
+            navigateToFragment(startFragment, product)
+        }
 
         val settings = getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
         val isAdmin = settings.getBoolean(Constants.IS_ADMIN, false)

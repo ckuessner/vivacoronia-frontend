@@ -15,6 +15,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.BuildConfig
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.NotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.getDevSSLContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -56,11 +57,11 @@ class WebSocketService : Service() {
 
 
     // make notification
-    fun makeNotification(){
+    fun makeContactNotification(){
         with(NotificationManagerCompat.from(this)){
             notify(
                 SystemClock.elapsedRealtime().hashCode(), //we want a unique id so that notifications for different contacts overwrite each other
-                NotificationHelper.getNotification(
+                NotificationHelper.getNormalNotification(
                     applicationContext,
                     Constants.INFECTED_NOTIFICATION_CHANNEL_ID,
                     R.drawable.ic_corona,
@@ -68,6 +69,24 @@ class WebSocketService : Service() {
                     getString(R.string.infected_notification_channel_text),
                     NotificationCompat.PRIORITY_HIGH,
                     Color.RED
+                )
+            )
+        }
+    }
+
+    fun makeProductMatchNotification(product: ProductSearchQuery){
+        with(NotificationManagerCompat.from(this)){
+            notify(
+                SystemClock.elapsedRealtime().hashCode(), //we want a unique id so that notifications for different contacts overwrite each other
+                NotificationHelper.getProductMatchNotification(
+                    applicationContext,
+                    Constants.PRODUCT_NOTIFICATION_CHANNEL_ID,
+                    R.drawable.ic_corona,
+                    getString(R.string.product_notification_channel_title) + " " + product.productName,
+                    getString(R.string.product_notification_channel_text),
+                    NotificationCompat.PRIORITY_DEFAULT,
+                    Color.TRANSPARENT,
+                    product
                 )
             )
         }

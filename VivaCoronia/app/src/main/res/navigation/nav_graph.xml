@@ -19,7 +19,11 @@
         android:id="@+id/tradingFragmentNav"
         android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.TradingFragmentNav"
         android:label="Trading"
-        tools:layout="@layout/fragment_trading_nav" />
+        tools:layout="@layout/fragment_trading_nav">
+        <argument
+            android:name="product_query"
+            app:argType="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery" />
+    </fragment>
     <fragment
         android:id="@+id/infectionStatusFragment"
         android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus.InfectionStatusFragment"

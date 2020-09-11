@@ -10,7 +10,11 @@
     <fragment
         android:id="@+id/search_offers"
         android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search.SearchOffersFragment"
-        android:label="SearchOffersFragment" />
+        android:label="SearchOffersFragment">
+        <argument
+            android:name="product_query"
+            app:argType="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery"/>
+    </fragment>
     <fragment
         android:id="@+id/my_needs"
         android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.needs.NeedOverviewFragment"

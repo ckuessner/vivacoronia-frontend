@@ -18,6 +18,8 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.LocationUtility
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+private const val ARG_PRODUCT_QUERY = "product_query"
+
 class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterOffersFragment.OnApplyQueryListener {
     companion object {
         private const val TAG = "SearchOffersFragment"
@@ -28,11 +30,16 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
     private lateinit var listResultFragment: SearchOffersListResultFragment
     private lateinit var mapResultFragment: SearchOffersMapResultFragment
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
+
+        val query = arguments?.getParcelable<ProductSearchQuery>(ARG_PRODUCT_QUERY)
+        Log.i(TAG, "query: $query")
+
 
         // needed on return to this fragment with onApplyQuery, because this method sometimes gets called after onApplyQuery
         val isLoading = this::binding.isInitialized && binding.progressHorizontal.visibility == View.VISIBLE
@@ -42,8 +49,8 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
 
         viewModel = ViewModelProvider(requireActivity()).get(SearchOffersViewModel::class.java)
         if (viewModel.searchQuery.value == null) {
-            viewModel.searchQuery.value = ProductSearchQuery()
-            viewModel.searchQuery.value!!.location = LocationUtility.getLastKnownLocation(requireActivity())
+            viewModel.searchQuery.value = query ?: ProductSearchQuery()
+            viewModel.searchQuery.value!!.location = if (query != null) query.location else LocationUtility.getLastKnownLocation(requireActivity())
         }
 
         binding.searchView.setOnQueryTextListener(this)
@@ -76,6 +83,8 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
                 viewModel.onOfferMarkerClickNavigated()
             }
         })
+
+        if (query != null) onApplyQuery(query)
 
         return binding.root
     }
