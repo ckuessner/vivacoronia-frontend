@@ -37,6 +37,9 @@
                 android:value=".mainActivity.MainActivity" />
         </activity>
 
+            android:name=".trading.supermarketInventory.EditInventoryItemActivity"
+            android:label="@string/title_activity_edit_inventory"
+            android:theme="@style/AppTheme.NoActionBar" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

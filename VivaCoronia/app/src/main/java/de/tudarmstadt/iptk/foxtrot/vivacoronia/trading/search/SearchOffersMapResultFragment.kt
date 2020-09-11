@@ -55,6 +55,25 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
             userLocation = googleMap.cameraPosition.target
             userZoom = googleMap.cameraPosition.zoom
         }
+        parent.viewModel.searchResults.observe(
+            viewLifecycleOwner,
+            Observer<List<Offer>> { initialOffers ->
+                currentViewedCluster = null
+                selectedMarker = null
+                googleMap.clear()
+                markers = mutableMapOf()
+                for (offer in initialOffers) {
+                    if (offer.location.latitude == 0.0 && offer.location.longitude == 0.0)
+                        continue
+                    val marker = googleMap.addMarker(
+                        MarkerOptions().position(
+                            offer.location
+                        ).title(offer.product).snippet(offer.details)
+                    )
+                    markers[offer.location] = Pair(offer.id, marker)
+                }
+                drawRadius(googleMap)
+            })
 
         googleMap.setOnMapClickListener { deselectCurrentMarker() }
         googleMap.setOnMarkerClickListener { onMarkerClick(it) }
@@ -149,6 +168,9 @@ class SearchOffersMapResultFragment(private val parent: SearchOffersFragment) : 
         if (mGoogleMap == null || markerPair == null)
             return false
         val marker = markerPair.second
+        if (selectedMarker != null && !selectedMarker!!.isCluster) {
+            selectedMarker!!.setIcon(BitmapDescriptorFactory.defaultMarker())
+        }
         selectedMarker = marker
         if (!marker.isCluster) {
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))

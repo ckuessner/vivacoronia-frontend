@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="inventoryItem"
+            type="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.supermarketInventory.SupermarketInventoryItemViewModel" />
+        <variable
+            name="clickListener"
+            type="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.supermarketInventory.SupermarketItemListener" />
+    </data>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_top"
+        android:orientation="vertical"
+        android:layout_margin="15dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/product"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@{inventoryItem.name}"
+                android:textAlignment="viewStart"
+                android:textSize="14sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/category"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@{inventoryItem.productCategory}"
+                android:textAlignment="viewStart"
+                android:textSize="14sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/availability_level"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@{inventoryItem.availabilityLevel}"
+                android:textAlignment="viewStart"
+                android:textSize="14sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/availability_choices"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/unavailable"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{() -> clickListener.onEditButtonClick(inventoryItem, 0)}"
+                    app:icon="@drawable/ic_none"
+                    app:iconTint="@null"
+                    app:iconSize="20dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/low"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:onClick="@{() -> clickListener.onEditButtonClick(inventoryItem, 1)}"
+                    app:icon="@drawable/ic_low"
+                    app:iconTint="@null"
+                    app:iconSize="20dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/medium"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:onClick="@{() -> clickListener.onEditButtonClick(inventoryItem, 2)}"
+                    app:icon="@drawable/ic_medium"
+                    app:iconTint="@null"
+                    app:iconSize="20dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/high"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:onClick="@{() -> clickListener.onEditButtonClick(inventoryItem, 3)}"
+                    app:icon="@drawable/ic_high"
+                    app:iconTint="@null"
+                    app:iconSize="20dp"/>
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+        </LinearLayout>
+
+        </LinearLayout>
+</layout>

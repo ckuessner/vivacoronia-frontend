@@ -20,6 +20,10 @@
         android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.needs.NeedOverviewFragment"
         android:label="NeedOverviewFragment" />
     <fragment
+        android:id="@+id/supermarkets"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.supermarketInventory.SupermarketInventoryFragment"
+        android:label="SupermarketInventoryFragment" />
+    <fragment
         android:id="@+id/trading_overview"
         android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.TradingFragment"
         android:label="fragment_trading"
@@ -33,5 +37,8 @@
         <action
             android:id="@+id/action_trading_overview_to_my_needs"
             app:destination="@id/my_needs"/>
+        <action
+            android:id="@+id/action_trading_overview_to_supermarkets"
+            app:destination="@+id/supermarkets" />
     </fragment>
 </navigation>

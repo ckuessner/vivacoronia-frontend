@@ -18,6 +18,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.needs.NeedOverviewFragment
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OfferOverviewFragment
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search.SearchOffersFragment
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.supermarketInventory.SupermarketInventoryFragment
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -99,9 +100,10 @@ class TradingFragmentNav : Fragment(), Observer<MutableList<String>> {
             return false
 
         val fragment = when (item) {
-            R.id.search_offers -> SearchOffersFragment::class.java
-            R.id.my_offers -> OfferOverviewFragment::class.java
-            R.id.my_needs -> NeedOverviewFragment::class.java
+            R.id.search_offers -> SearchOffersFragment()
+            R.id.my_offers -> OfferOverviewFragment()
+            R.id.my_needs -> NeedOverviewFragment()
+            R.id.supermarkets -> SupermarketInventoryFragment()
             else -> null
         }
 

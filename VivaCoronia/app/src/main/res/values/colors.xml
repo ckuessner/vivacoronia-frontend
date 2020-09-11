@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="separatorColor">@android:color/darker_gray</color>
+    <color name="grey">#808080</color>
     <color name="green">#13D613</color>
     <color name="red">#FF0000</color>
 </resources>

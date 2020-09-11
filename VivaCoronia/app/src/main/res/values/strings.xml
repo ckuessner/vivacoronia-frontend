@@ -165,4 +165,20 @@
     <string name="firewallError">"Your network doesn't allow connection to the server"</string>
     <string name="forbiddenError">"You're not admin anymore, please reload your status"</string>
     <string name="forbiddenFragment">"You don't have permission to use this feature"</string>
+    <string name="load_supermarkets">loadSupermarkets</string>
+    <string name="supermarkets">Supermarkets</string>
+    <string name="supermarket">Supermarket</string>
+    <string name="location">Location</string>
+    <string name="inventory">Inventory:</string>
+    <string name="selected_supermarket">Selected Supermarket</string>
+    <string name="edit_supermarket_inventory">editSupermarketInventory</string>
+    <string name="availability_level">Availability</string>
+    <string name="title_activity_edit_inventory">EditInventoryActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="add_inventory_item">Add Item</string>
+    <string name="edit_inventory_item">EditInventoryItem</string>
+    <string name="product_name">Product Name</string>
+    <string name="add_item">Add Item</string>
 </resources>

@@ -4,14 +4,19 @@ import android.content.Context
 import android.net.Uri
 import com.android.volley.*
 import com.android.volley.toolbox.RequestFuture
+import com.android.volley.toolbox.Volley
 import com.beust.klaxon.*
 import com.google.android.gms.maps.model.LatLng
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Need
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.InventoryItem
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Supermarket
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.supermarketInventory.PlacesApiResult
 import org.json.JSONArray
 import org.json.JSONObject
 import org.threeten.bp.OffsetDateTime
+
 
 object TradingApiClient : ApiBaseClient() {
     private val productConverter : Klaxon = Klaxon()
@@ -32,6 +37,10 @@ object TradingApiClient : ApiBaseClient() {
         return joinPaths(getEndpoint(), "needs")
     }
 
+    private fun getSupermarketEndpoint(): String {
+        return joinPaths(getEndpoint(), "supermarket")
+    }
+
     fun getAllCategories(context: Context): List<String> {
         val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
         val url = joinPaths(getEndpoint(), "categories")
@@ -50,6 +59,152 @@ object TradingApiClient : ApiBaseClient() {
         val query = ProductSearchQuery()
         query.userId = TradingApiClient.getUserId(context)
         return getOffers(context, query)
+    }
+
+    fun getSupermarkets(context: Context, location: LatLng, radius: Double): ArrayList<PlacesApiResult> {
+        val queue: RequestQueue = Volley.newRequestQueue(context)
+
+        val future = RequestFuture.newFuture<JSONObject>()
+        val jsObjRequest = JsonObjectRequest(
+            Request.Method.GET,
+            "https://maps.googleapis.com/maps/api/place/search/json?location=${location.latitude},${location.longitude}&sensor=true&rankby=distance&type=grocery_or_supermarket&key=AIzaSyCExEI8en2xFz8pQSIGavdl50U06PIA4Qk",
+            null,
+            future,
+            future)
+        queue.add(jsObjRequest)
+        val response = future.get()
+        return parseSupermarkets(response)
+    }
+
+    private fun parseSupermarkets(json: JSONObject): ArrayList<PlacesApiResult> {
+        val supermarketPairs: ArrayList<PlacesApiResult> = arrayListOf()
+        val resultArray: JSONArray = json.get("results") as JSONArray
+        for(i in 0 until resultArray.length()){
+            val currentResult: JSONObject = resultArray[i] as JSONObject
+            val id: String = currentResult.get("place_id") as String
+            val name: String = currentResult.get("name") as String
+            val location: JSONObject = (currentResult.get("geometry") as JSONObject).get("location") as JSONObject
+            supermarketPairs.add(
+                PlacesApiResult(id, name,
+                    LatLng(
+                        location.get("lat") as Double,
+                        location.get("lng") as Double
+                ))
+            )
+        }
+        return supermarketPairs
+    }
+
+    fun getSupermarketInventoryForID(context: Context, supermarket: PlacesApiResult, onRequestFailed: (error: VolleyError, supermarket: PlacesApiResult) -> Unit): Supermarket {
+        val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue")
+        val url = joinPaths(getSupermarketEndpoint(), supermarket.supermarketPlaceId)
+        val future = RequestFuture.newFuture<JSONObject>()
+        val request = JsonObjectRequest(Request.Method.GET, url, null, future, Response.ErrorListener { error ->
+            onRequestFailed(error, supermarket)
+        })
+        queue.add(request)
+        val result = future.get()
+
+        return parseSupermarket(result)
+    }
+
+    private fun parseSupermarket(supermarket: JSONObject): Supermarket {
+        val locationJson = (supermarket["location"] as JSONObject )["coordinates"] as JSONArray
+        val location = LatLng(locationJson[0] as Double, locationJson[1] as Double)
+        val inventory = supermarket["inventory"] as JSONArray
+        val supermarketId = supermarket["supermarketId"] as String
+        val supermarketName = supermarket["name"] as String
+        return Supermarket(
+            supermarketId,
+            supermarketName,
+            location,
+            parseInventory(inventory, supermarketId, supermarketName, location)
+        )
+    }
+
+    private fun parseInventory(inventoryJson: JSONArray, supermarketId: String, supermarketName: String, supermarketLocation: LatLng): List<InventoryItem> {
+        val inventory = arrayListOf<InventoryItem>()
+        for(i in 0 until inventoryJson.length()){
+            val inventoryItemJson = inventoryJson[i] as JSONObject
+            val id = inventoryItemJson["_id"] as String
+            val name = inventoryItemJson["product"] as String
+            val productCategory = inventoryItemJson["productCategory"] as String
+            val availability = inventoryItemJson["availabilityLevel"] as Int
+            inventory.add(InventoryItem(id, name, productCategory, availability, supermarketId, supermarketName, supermarketLocation))
+        }
+        return inventory
+    }
+
+    fun putInventoryItem(item: InventoryItem, newItem:Boolean, newSupermarket: Boolean, availability: Int, context: Context): Boolean? {
+        val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
+        val future = RequestFuture.newFuture<JSONObject>()
+        val request = when {
+            newSupermarket -> {
+                createPostSupermarketRequest(item, future)
+            }
+            newItem -> {
+                createNewItemRequest(item, future)
+            }
+            else -> {
+                createEditItemRequest(item, availability, future)
+            }
+        }
+        queue.add(request)
+        return true
+    }
+
+    private fun createPostSupermarketRequest(
+        item: InventoryItem,
+        future: RequestFuture<JSONObject>?
+    ): JsonObjectRequest {
+        val url = getSupermarketEndpoint()
+        val method = Request.Method.POST
+        val jsonInventoryItemObject = JSONObject()
+        jsonInventoryItemObject
+            .put("product", item.itemName)
+            .put("productCategory", item.productCategory)
+            .put("availabilityLevel", item.availability)
+        val jsonInventoryArray = JSONArray()
+        jsonInventoryArray.put(jsonInventoryItemObject)
+        val jsonLocationObject = JSONObject()
+        val location = item.supermarket!!.supermarketLocation
+        val coordinatesJSONArray = JSONArray().put(location.latitude).put(location.longitude)
+        jsonLocationObject
+            .put("type", "Point")
+            .put("coordinates", coordinatesJSONArray)
+        val jsonSupermarketPostObject = JSONObject()
+        jsonSupermarketPostObject
+            .put("supermarketId", item.supermarket!!.supermarketId)
+            .put("name", item.supermarket!!.supermarketName)
+            .put("location", jsonLocationObject)
+            .put("inventory", jsonInventoryArray)
+        return JsonObjectRequest(method, url, jsonSupermarketPostObject, future, future)
+    }
+
+    private fun createEditItemRequest(
+        item: InventoryItem,
+        availability: Int,
+        future: RequestFuture<JSONObject>?
+    ): JsonObjectRequest {
+        val url = joinPaths(getSupermarketEndpoint(), item.supermarket!!.supermarketId, item.id)
+        val jsonPatchObject = JSONObject()
+        jsonPatchObject.put("availabilityLevel", availability)
+        val method = Request.Method.PATCH
+        return JsonObjectRequest(method, url, jsonPatchObject, future, future)
+    }
+
+    private fun createNewItemRequest(
+        item: InventoryItem,
+        future: RequestFuture<JSONObject>?
+    ): JsonObjectRequest {
+        val url = joinPaths(getSupermarketEndpoint(), item.supermarket!!.supermarketId)
+        val jsonPostObject = JSONObject()
+        jsonPostObject
+            .put("product", item.itemName)
+            .put("availabilityLevel", item.availability)
+            .put("productCategory", item.productCategory)
+        val method = Request.Method.POST
+        return JsonObjectRequest(method, url, jsonPostObject, future, future)
     }
 
     fun getOffers(context: Context, query: ProductSearchQuery): MutableList<Offer> {

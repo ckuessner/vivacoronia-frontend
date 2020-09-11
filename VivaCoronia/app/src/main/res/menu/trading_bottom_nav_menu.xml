@@ -17,4 +17,10 @@
         android:icon="@drawable/ic_take"
         android:title="@string/my_needs"
         app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/supermarkets"
+
+        android:icon="@drawable/ic_supermarket"
+        android:title="@string/supermarkets"
+        app:showAsAction="ifRoom"/>
 </menu>

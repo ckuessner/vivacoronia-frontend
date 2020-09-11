@@ -3,16 +3,13 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models
 import android.os.Parcel
 import android.os.Parcelable
 import com.google.android.gms.maps.model.LatLng
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.supermarketInventory.SupermarketInventoryItemViewModel
 
 class Supermarket(
-    var supermarketId: String,
-    var supermarketName: String,
-    var supermarketLocation: LatLng,
+    val supermarketId: String,
+    val supermarketName: String,
+    val supermarketLocation: LatLng,
     var inventory: List<InventoryItem>
 ) : Parcelable {
-    var inventoryViewModel: List<SupermarketInventoryItemViewModel> = inventory.map { SupermarketInventoryItemViewModel(it) }
-
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readString()!!,
@@ -43,21 +40,15 @@ class Supermarket(
 }
 
 class InventoryItem : Parcelable {
-    var id: String
-    var productCategory: String
     var supermarket: Supermarket? = null
     var availability: Int
     var itemName: String
 
-    constructor(id: String,
-                itemName: String,
-                productCategory: String,
+    constructor(itemName: String,
                 availability: Int,
-                supermarketId: String?,
                 supermarketName: String?,
+                supermarketId: String?,
                 supermarketLocation: LatLng?){
-        this.id = id
-        this.productCategory = productCategory
         this.itemName = itemName
         this.availability = availability
         if(!supermarketId.isNullOrEmpty() && !supermarketName.isNullOrEmpty() && supermarketLocation!=null){
@@ -67,8 +58,6 @@ class InventoryItem : Parcelable {
 
     constructor(parcel: Parcel): this(
         parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
         parcel.readInt(),
         parcel.readString(),
         parcel.readString(),
@@ -76,13 +65,9 @@ class InventoryItem : Parcelable {
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(id)
         parcel.writeString(itemName)
-        parcel.writeString(productCategory)
         parcel.writeInt(availability)
-        parcel.writeString(supermarket?.supermarketId)
-        parcel.writeString(supermarket?.supermarketName)
-        parcel.writeParcelable(supermarket?.supermarketLocation, flags)
+        parcel.writeParcelable(supermarket, flags)
     }
 
     override fun describeContents(): Int {
