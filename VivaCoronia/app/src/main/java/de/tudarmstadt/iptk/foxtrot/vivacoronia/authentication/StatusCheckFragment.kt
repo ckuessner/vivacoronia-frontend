@@ -89,7 +89,7 @@ class StatusCheckFragment : Fragment() {
             view.findViewById<TextView>(R.id.userStatus).text = getString(R.string.feature_permission_admin)
     }
 
-    private fun checkStatus(ctx: Context, view: View,oldIsAdmin : Boolean){
+    private fun checkStatus(ctx: Context, view: View, oldIsAdmin : Boolean){
         val settings = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
         val currStatus = settings.getBoolean(Constants.IS_ADMIN, false)
         val noAdminJWT = settings.getString(Constants.adminJWT, null) == null
