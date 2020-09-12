@@ -1,14 +1,14 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus
 
 import android.os.Bundle
-import android.view.Gravity
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TableLayout
-import android.widget.TableRow
-import android.widget.TextView
+import android.widget.*
 import androidx.core.content.ContextCompat
+import androidx.core.view.setMargins
+import androidx.core.view.setPadding
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -20,6 +20,8 @@ import org.json.JSONObject
 class InfectionStatusBaseFragment : Fragment() {
     private lateinit var binding: InfectionStatusBaseFragmentBinding
     private lateinit var viewModel: InfectionStatusViewModel
+    private var scale: Float = 0f
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,49 +33,105 @@ class InfectionStatusBaseFragment : Fragment() {
             container,
             false
         )
+        scale = requireContext().resources.displayMetrics.density
 
-        viewModel = ViewModelProvider(parentFragment?: requireActivity()).get(InfectionStatusViewModel::class.java)
-        viewModel.additionalInfo.observe(viewLifecycleOwner, Observer {newValue -> setAdditionalFields(newValue)})
+        viewModel = ViewModelProvider(
+            parentFragment ?: requireActivity()
+        ).get(InfectionStatusViewModel::class.java)
+        viewModel.additionalInfo.observe(
+            viewLifecycleOwner,
+            Observer { newValue -> setAdditionalFields(newValue) })
         binding.lifecycleOwner = viewLifecycleOwner
         binding.infectionStatusData = viewModel
+        viewModel.newStatus.observe(
+            viewLifecycleOwner,
+            Observer { activity?.runOnUiThread { setColor() } })
+        setColor()
 
         return binding.root
     }
 
+    private fun setColor() {
+        val colorId = when (viewModel.newStatus.value) {
+            "infected" -> R.color.red
+            "recovered" -> R.color.green
+            viewModel.unknown -> R.color.separatorColor
+            else -> R.color.separatorColor
+        }
+        binding.textColor = ContextCompat.getColor(requireActivity(), colorId)
+    }
+
     private fun setAdditionalFields(additionalAttributes: JSONObject) {
-        val tableLayout: TableLayout = binding.updateInfectionTableAdditional
-        tableLayout.removeAllViews()
+        val additionalInfoLayout: LinearLayout = binding.additionalInformation
+        additionalInfoLayout.removeAllViews()
 
-        val padding: Int = (3 * resources.displayMetrics.density).toInt()
+        val padding: Int = px(3)
+        val separatorHeight = px(1)
         for (key in additionalAttributes.keys()) {
-            val attributeValue = additionalAttributes.getString(key)
             val separatorView = View(requireActivity())
-            val scale = requireContext().resources.displayMetrics.density
-            val widthPx = (1 * scale + 0.5f).toInt()
-            separatorView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, widthPx)
-            separatorView.setBackgroundColor(ContextCompat.getColor(requireActivity(), R.color.separatorColor))
-            tableLayout.addView(separatorView)
+            val layoutParams =
+                ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, separatorHeight)
+            layoutParams.setMargins(px(10))
+            separatorView.layoutParams = layoutParams
+            separatorView.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireActivity(),
+                    R.color.separatorColor
+                )
+            )
 
-            val row = TableRow(requireActivity())
-            row.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT)
-            row.weightSum = 1f
+            val additionalItemLayout = RelativeLayout(requireActivity())
+            val additionalItemLayoutParams = RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
+            )
+            additionalItemLayout.layoutParams = additionalItemLayoutParams
+
+            val iconDummy = TextView(requireActivity())
+            iconDummy.id = R.id.additional_icon
+            val iconParams = RelativeLayout.LayoutParams(px(40), px(40))
+            iconParams.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+            iconDummy.layoutParams = iconParams
 
             val labelView = TextView(requireActivity())
-            labelView.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 0.5f)
-            labelView.setPadding(padding, padding, padding, padding)
+            labelView.id = R.id.additional_label
+            val labelParams = RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT
+            )
+            labelParams.addRule(RelativeLayout.END_OF, iconDummy.id)
+            labelView.layoutParams = labelParams
+            labelView.setPadding(padding)
             labelView.text = key
-            row.addView(labelView)
+            labelView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f)
 
+            val attributeValue = additionalAttributes.getString(key)
             val valueView = TextView(requireActivity())
-            valueView.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 0.5f)
-            valueView.gravity = Gravity.END
-            labelView.setPadding(padding, padding, padding, padding)
+            val valueParams = RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
+            )
+            valueParams.addRule(RelativeLayout.BELOW, labelView.id)
+            valueParams.addRule(RelativeLayout.END_OF, iconDummy.id)
+            valueView.layoutParams = valueParams
+            valueView.setPadding(padding)
             valueView.text = attributeValue
-            row.addView(valueView)
+            valueView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f)
+            valueView.setTextColor(binding.textColor)
 
-            tableLayout.addView(row, TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT))
+            additionalItemLayout.addView(iconDummy)
+            additionalItemLayout.addView(labelView)
+            additionalItemLayout.addView(valueView)
+
+            additionalInfoLayout.addView(separatorView)
+            additionalInfoLayout.addView(additionalItemLayout)
         }
     }
+
+    /**
+     * Converts dp to px. scale needs to be set.
+     */
+    private fun px(dp: Int): Int {
+        return (dp * scale).toInt()
+    }
 }
-
-

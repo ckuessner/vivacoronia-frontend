@@ -7,7 +7,7 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
-class InfectionStatusViewModel(private val unknown: String): ViewModel() {
+class InfectionStatusViewModel(val unknown: String): ViewModel() {
     private val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault())
     private val formatter: SimpleDateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
 
