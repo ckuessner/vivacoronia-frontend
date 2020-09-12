@@ -36,7 +36,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".mainActivity.MainActivity" />
         </activity>
-
+        <activity
             android:name=".trading.supermarketInventory.EditInventoryItemActivity"
             android:label="@string/title_activity_edit_inventory"
             android:theme="@style/AppTheme.NoActionBar" />

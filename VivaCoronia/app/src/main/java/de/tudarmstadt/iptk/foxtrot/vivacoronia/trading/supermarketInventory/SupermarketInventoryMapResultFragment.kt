@@ -96,7 +96,7 @@ class SupermarketInventoryMapResultFragment(private val parent: SupermarketInven
 
         parent.searchViewModel.errorData.observe(viewLifecycleOwner, Observer {
             if(it != null && showDialog){
-                AlertDialog.Builder(requireContext(), R.style.AlterDialogTheme)
+                AlertDialog.Builder(requireContext(), R.style.AlertDialogTheme)
                     //.setTitle("Create new inventory item")
                     .setCancelable(true)
                     .setMessage("Create new inventory item for the selected supermarket?")

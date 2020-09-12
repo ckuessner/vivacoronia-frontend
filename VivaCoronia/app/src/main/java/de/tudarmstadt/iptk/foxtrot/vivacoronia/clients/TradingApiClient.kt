@@ -65,12 +65,13 @@ object TradingApiClient : ApiBaseClient() {
         val queue: RequestQueue = Volley.newRequestQueue(context)
 
         val future = RequestFuture.newFuture<JSONObject>()
-        val jsObjRequest = JsonObjectRequest(
+        val jsObjRequest = JsonObjectJWT(
             Request.Method.GET,
             "https://maps.googleapis.com/maps/api/place/search/json?location=${location.latitude},${location.longitude}&sensor=true&rankby=distance&type=grocery_or_supermarket&key=AIzaSyCExEI8en2xFz8pQSIGavdl50U06PIA4Qk",
             null,
             future,
-            future)
+            future,
+            context)
         queue.add(jsObjRequest)
         val response = future.get()
         return parseSupermarkets(response)
@@ -99,9 +100,9 @@ object TradingApiClient : ApiBaseClient() {
         val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue")
         val url = joinPaths(getSupermarketEndpoint(), supermarket.supermarketPlaceId)
         val future = RequestFuture.newFuture<JSONObject>()
-        val request = JsonObjectRequest(Request.Method.GET, url, null, future, Response.ErrorListener { error ->
+        val request = JsonObjectJWT(Request.Method.GET, url, null, future, Response.ErrorListener { error ->
             onRequestFailed(error, supermarket)
-        })
+        }, context)
         queue.add(request)
         val result = future.get()
 
@@ -140,13 +141,13 @@ object TradingApiClient : ApiBaseClient() {
         val future = RequestFuture.newFuture<JSONObject>()
         val request = when {
             newSupermarket -> {
-                createPostSupermarketRequest(item, future)
+                createPostSupermarketRequest(item, future, context)
             }
             newItem -> {
-                createNewItemRequest(item, future)
+                createNewItemRequest(item, future, context)
             }
             else -> {
-                createEditItemRequest(item, availability, future)
+                createEditItemRequest(item, availability, future, context)
             }
         }
         queue.add(request)
@@ -155,8 +156,9 @@ object TradingApiClient : ApiBaseClient() {
 
     private fun createPostSupermarketRequest(
         item: InventoryItem,
-        future: RequestFuture<JSONObject>?
-    ): JsonObjectRequest {
+        future: RequestFuture<JSONObject>,
+        context: Context
+    ): JsonObjectJWT {
         val url = getSupermarketEndpoint()
         val method = Request.Method.POST
         val jsonInventoryItemObject = JSONObject()
@@ -178,25 +180,27 @@ object TradingApiClient : ApiBaseClient() {
             .put("name", item.supermarket!!.supermarketName)
             .put("location", jsonLocationObject)
             .put("inventory", jsonInventoryArray)
-        return JsonObjectRequest(method, url, jsonSupermarketPostObject, future, future)
+        return JsonObjectJWT(method, url, jsonSupermarketPostObject, future, future, context)
     }
 
     private fun createEditItemRequest(
         item: InventoryItem,
         availability: Int,
-        future: RequestFuture<JSONObject>?
-    ): JsonObjectRequest {
+        future: RequestFuture<JSONObject>,
+        context: Context
+    ): JsonObjectJWT {
         val url = joinPaths(getSupermarketEndpoint(), item.supermarket!!.supermarketId, item.id)
         val jsonPatchObject = JSONObject()
         jsonPatchObject.put("availabilityLevel", availability)
         val method = Request.Method.PATCH
-        return JsonObjectRequest(method, url, jsonPatchObject, future, future)
+        return JsonObjectJWT(method, url, jsonPatchObject, future, future, context)
     }
 
     private fun createNewItemRequest(
         item: InventoryItem,
-        future: RequestFuture<JSONObject>?
-    ): JsonObjectRequest {
+        future: RequestFuture<JSONObject>,
+        context: Context
+    ): JsonObjectJWT {
         val url = joinPaths(getSupermarketEndpoint(), item.supermarket!!.supermarketId)
         val jsonPostObject = JSONObject()
         jsonPostObject
@@ -204,7 +208,7 @@ object TradingApiClient : ApiBaseClient() {
             .put("availabilityLevel", item.availability)
             .put("productCategory", item.productCategory)
         val method = Request.Method.POST
-        return JsonObjectRequest(method, url, jsonPostObject, future, future)
+        return JsonObjectJWT(method, url, jsonPostObject, future, future, context)
     }
 
     fun getOffers(context: Context, query: ProductSearchQuery): MutableList<Offer> {
