@@ -181,4 +181,5 @@
     <string name="edit_inventory_item">EditInventoryItem</string>
     <string name="product_name">Product Name</string>
     <string name="add_item">Add Item</string>
+    <string name="supermarketLongPressInstruction">Please select a supermarket first by long pressing on the map</string>
 </resources>

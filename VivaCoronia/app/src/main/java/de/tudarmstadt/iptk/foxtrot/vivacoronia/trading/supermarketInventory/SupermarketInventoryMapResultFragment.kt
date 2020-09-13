@@ -57,6 +57,7 @@ class SupermarketInventoryMapResultFragment(private val parent: SupermarketInven
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, userZoom))
 
         googleMap.setOnMapLongClickListener {
+            binding.progressHorizontal.isIndeterminate = true
             GlobalScope.launch {
                 val response: List<PlacesApiResult> =
                     TradingApiClient.getSupermarkets(requireContext(), it, 3000.0)
@@ -91,10 +92,12 @@ class SupermarketInventoryMapResultFragment(private val parent: SupermarketInven
                     val marker = googleMap.addMarker(MarkerOptions().title(supermarket.supermarketName).position(supermarket.supermarketLocation).data(supermarket))
                     markers[supermarket.supermarketPlaceId] = marker
                 }
+                binding.progressHorizontal.isIndeterminate = false
             }
         )
 
         parent.searchViewModel.errorData.observe(viewLifecycleOwner, Observer {
+            binding.progressHorizontal.isIndeterminate = false
             if(it != null && showDialog){
                 AlertDialog.Builder(requireContext(), R.style.AlertDialogTheme)
                     //.setTitle("Create new inventory item")
@@ -131,6 +134,7 @@ class SupermarketInventoryMapResultFragment(private val parent: SupermarketInven
         })
 
         parent.inventoryViewModel.supermarketInventory.observe(viewLifecycleOwner, Observer {
+            binding.progressHorizontal.isIndeterminate = false
             parent.switchFragments(1)
         })
     }
@@ -180,6 +184,7 @@ class SupermarketInventoryMapResultFragment(private val parent: SupermarketInven
     }
 
     private fun onInfoWindowClick(marker: Marker) {
+        binding.progressHorizontal.isIndeterminate = true
         val supermarket = marker.getData<PlacesApiResult>()
         GlobalScope.launch {
             val response: Supermarket =

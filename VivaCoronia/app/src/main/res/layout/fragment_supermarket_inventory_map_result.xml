@@ -15,6 +15,13 @@
             android:layout_height="match_parent"
             tools:context="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.supermarketInventory.SupermarketInventoryMapResultFragment" />
 
+        <ProgressBar
+            android:id="@+id/progress_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+
         <View
             android:id="@+id/anchor_menu"
             android:layout_width="0dp"

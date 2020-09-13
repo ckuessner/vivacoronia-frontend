@@ -34,7 +34,7 @@ class SupermarketInventoryListResultFragment(private val parent: SupermarketInve
             container,
             false
         )
-        binding.supermarketName.text = "Please select a supermarket first by long pressing on the map"
+        binding.supermarketName.text = getString(R.string.supermarketLongPressInstruction)
 
         val adapter = SupermarketInventoryResultAdapter(SupermarketItemListener { item: SupermarketInventoryItemViewModel, availability: Int ->
             editInventoryItem(
@@ -51,6 +51,7 @@ class SupermarketInventoryListResultFragment(private val parent: SupermarketInve
                 binding.supermarketInventoryEditButton.isVisible = true
                 adapter.submitList(it.inventoryViewModel)
             }
+            binding.progressHorizontal.isIndeterminate = false
         })
         binding.viewOnMap.setOnClickListener {
             switchToMap(parent.inventoryViewModel.supermarketInventory.value?.supermarketId)
@@ -69,6 +70,7 @@ class SupermarketInventoryListResultFragment(private val parent: SupermarketInve
     }
 
     private fun editInventoryItem(item: SupermarketInventoryItemViewModel, availability: Int) {
+        binding.progressHorizontal.isIndeterminate = true
         GlobalScope.launch {
             try {
                 requireActivity().runOnUiThread {
@@ -114,6 +116,7 @@ class SupermarketInventoryListResultFragment(private val parent: SupermarketInve
     }
 
     private fun reloadCurrentSupermarket() {
+        binding.progressHorizontal.isIndeterminate = true
         if (parent.inventoryViewModel.supermarketInventory.value != null) {
             GlobalScope.launch {
                 val id = parent.inventoryViewModel.supermarketInventory.value!!.supermarketId
