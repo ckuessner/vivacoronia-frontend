@@ -34,7 +34,7 @@
             android:layout_alignParentEnd="true"
             android:layout_margin="10dp"
             android:contentDescription="@string/reset_date_range"
-            app:icon="@drawable/ic_baseline_undo_24"
+            app:icon="@drawable/ic_resetdaterange"
             app:iconSize="40dp" />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -46,7 +46,7 @@
             android:layout_alignParentStart="true"
             android:layout_margin="10dp"
             android:contentDescription="@string/select_date_range"
-            app:icon="@drawable/ic_pick_date_range"
+            app:icon="@drawable/ic_selectdaterange"
             app:iconSize="40dp" />
 
     </RelativeLayout>
