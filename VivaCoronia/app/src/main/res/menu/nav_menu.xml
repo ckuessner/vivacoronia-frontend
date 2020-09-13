@@ -23,12 +23,12 @@
 
     <item
         android:id="@+id/menu_item_spreadmap"
-        android:icon="@drawable/ic_corona"
+        android:icon="@drawable/ic_spreadmap"
         android:title="@string/spreadmap" />
 
     <item
         android:id="@+id/menu_item_statusCheck"
-        android:icon="@drawable/ic_user"
+        android:icon="@drawable/ic_checkstatus"
         android:title="@string/check_status" />
 
 </menu>
