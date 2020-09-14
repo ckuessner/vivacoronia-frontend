@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.InfectionStatusBaseFragmentBinding
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.ItemInfectionStatusDataBinding
 import org.json.JSONObject
 
 class InfectionStatusBaseFragment : Fragment() {
@@ -43,88 +44,40 @@ class InfectionStatusBaseFragment : Fragment() {
             Observer { newValue -> setAdditionalFields(newValue) })
         binding.lifecycleOwner = viewLifecycleOwner
         binding.infectionStatusData = viewModel
-        viewModel.newStatus.observe(
-            viewLifecycleOwner,
-            Observer { activity?.runOnUiThread { setColor() } })
-        setColor()
+        viewModel.newStatus.observe(viewLifecycleOwner, Observer { activity?.runOnUiThread { setInfectionState() } })
+        setInfectionState()
+        setIcons()
 
         return binding.root
     }
 
-    private fun setColor() {
-        val colorId = when (viewModel.newStatus.value) {
-            "infected" -> R.color.red
-            "recovered" -> R.color.green
-            viewModel.unknown -> R.color.separatorColor
-            else -> R.color.separatorColor
+    private fun setInfectionState() {
+        val infectionStatus = when (viewModel.newStatus.value) {
+            "infected" -> InfectionStateLinearLayout.InfectionState.INFECTED
+            "recovered" -> InfectionStateLinearLayout.InfectionState.RECOVERED
+            viewModel.unknown -> InfectionStateLinearLayout.InfectionState.UNKNOWN
+            else -> InfectionStateLinearLayout.InfectionState.UNKNOWN
         }
-        binding.textColor = ContextCompat.getColor(requireActivity(), colorId)
+        binding.essentialInformation.infectionState = infectionStatus
+    }
+
+    private fun setIcons() {
+        binding.infectionStatus.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_infection_status)
+        binding.infectionDateApprox.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_estimated_date)
+        binding.testDate.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_test_date)
     }
 
     private fun setAdditionalFields(additionalAttributes: JSONObject) {
         val additionalInfoLayout: LinearLayout = binding.additionalInformation
         additionalInfoLayout.removeAllViews()
 
-        val padding: Int = px(3)
-        val separatorHeight = px(1)
-        for (key in additionalAttributes.keys()) {
-            val separatorView = View(requireActivity())
-            val layoutParams =
-                ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, separatorHeight)
-            layoutParams.setMargins(px(10))
-            separatorView.layoutParams = layoutParams
-            separatorView.setBackgroundColor(
-                ContextCompat.getColor(
-                    requireActivity(),
-                    R.color.separatorColor
-                )
-            )
-
-            val additionalItemLayout = RelativeLayout(requireActivity())
-            val additionalItemLayoutParams = RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT
-            )
-            additionalItemLayout.layoutParams = additionalItemLayoutParams
-
-            val iconDummy = TextView(requireActivity())
-            iconDummy.id = R.id.additional_icon
-            val iconParams = RelativeLayout.LayoutParams(px(40), px(40))
-            iconParams.addRule(RelativeLayout.ALIGN_PARENT_TOP)
-            iconDummy.layoutParams = iconParams
-
-            val labelView = TextView(requireActivity())
-            labelView.id = R.id.additional_label
-            val labelParams = RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT
-            )
-            labelParams.addRule(RelativeLayout.END_OF, iconDummy.id)
-            labelView.layoutParams = labelParams
-            labelView.setPadding(padding)
-            labelView.text = key
-            labelView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f)
-
-            val attributeValue = additionalAttributes.getString(key)
-            val valueView = TextView(requireActivity())
-            val valueParams = RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT
-            )
-            valueParams.addRule(RelativeLayout.BELOW, labelView.id)
-            valueParams.addRule(RelativeLayout.END_OF, iconDummy.id)
-            valueView.layoutParams = valueParams
-            valueView.setPadding(padding)
-            valueView.text = attributeValue
-            valueView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f)
-            valueView.setTextColor(binding.textColor)
-
-            additionalItemLayout.addView(iconDummy)
-            additionalItemLayout.addView(labelView)
-            additionalItemLayout.addView(valueView)
-
-            additionalInfoLayout.addView(separatorView)
-            additionalInfoLayout.addView(additionalItemLayout)
+        for (label in additionalAttributes.keys()) {
+            val value = additionalAttributes.getString(label)
+            val binding = DataBindingUtil.inflate<ItemInfectionStatusDataBinding>(layoutInflater, R.layout.item_infection_status_data, additionalInfoLayout, false)
+            binding.label = label
+            binding.value = value
+            binding.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_more)
+            additionalInfoLayout.addView(binding.root)
         }
     }
 

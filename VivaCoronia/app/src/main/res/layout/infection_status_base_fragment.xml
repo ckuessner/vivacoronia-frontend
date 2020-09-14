@@ -8,9 +8,6 @@
             name="infectionStatusData"
             type="de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus.InfectionStatusViewModel" />
 
-        <variable
-            name="textColor"
-            type="int" />
     </data>
 
     <ScrollView xmlns:tools="http://schemas.android.com/tools"
@@ -19,133 +16,35 @@
         android:padding="15dp"
         tools:context=".infectionStatus.InfectionStatusBaseFragment">
 
-        <LinearLayout
+        <de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus.InfectionStateLinearLayout
+            android:id="@+id/essential_information"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:orientation="vertical">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <include layout="@layout/item_infection_status_data"
+                android:id="@+id/infection_status"
+                app:label="@{@string/infection_status}"
+                app:value="@{infectionStatusData.newStatus}"
+                app:hideSeparator="@{true}" />
 
-                <ImageView
-                    android:id="@+id/infection_icon"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:contentDescription="@string/infection_status"
-                    app:srcCompat="@drawable/ic_check" /> <!--TODO icon-->
+            <include layout="@layout/item_infection_status_data"
+                android:id="@+id/infection_date_approx"
+                app:label="@{@string/infection_date_approx}"
+                app:value="@{infectionStatusData.occuredDateEstimationString}" />
 
-                <TextView
-                    android:id="@+id/infection_status_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/infection_icon"
-                    android:padding="3dp"
-                    android:text="@string/infection_status"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/infection_status"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/infection_status_label"
-                    android:layout_toEndOf="@id/infection_icon"
-                    android:padding="3dp"
-                    android:text="@{infectionStatusData.newStatus}"
-                    android:textColor="@{textColor}"
-                    android:textSize="24sp" />
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_margin="10dp"
-                android:background="@android:color/darker_gray" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                    android:id="@+id/approx_icon"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:contentDescription="@string/infection_date_approx"
-                    app:srcCompat="@drawable/ic_check" /> <!--TODO icon-->
-
-                <TextView
-                    android:id="@+id/infection_date_approx_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/approx_icon"
-                    android:padding="3dp"
-                    android:text="@string/infection_date_approx"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/infection_date_approx"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/infection_date_approx_label"
-                    android:layout_toEndOf="@id/approx_icon"
-                    android:padding="3dp"
-                    android:text="@{infectionStatusData.occuredDateEstimationString}"
-                    android:textColor="@{textColor}"
-                    android:textSize="24sp" />
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_margin="10dp"
-                android:background="@android:color/darker_gray" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                    android:id="@+id/test_icon"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:contentDescription="@string/test_date"
-                    app:srcCompat="@drawable/ic_check" /> <!--TODO icon-->
-
-                <TextView
-                    android:id="@+id/test_date_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/test_icon"
-                    android:padding="3dp"
-                    android:text="@string/test_date"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/test_date"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/test_date_label"
-                    android:layout_toEndOf="@id/test_icon"
-                    android:padding="3dp"
-                    android:text="@{infectionStatusData.dateOfTestString}"
-                    android:textColor="@{textColor}"
-                    android:textSize="24sp" />
-            </RelativeLayout>
+            <include layout="@layout/item_infection_status_data"
+                android:id="@+id/test_date"
+                app:label="@{@string/test_date}"
+                app:value="@{infectionStatusData.dateOfTestString}" />
 
             <LinearLayout
                 android:id="@+id/additional_information"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:duplicateParentState="true"
                 android:orientation="vertical" />
-        </LinearLayout>
+        </de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus.InfectionStateLinearLayout>
     </ScrollView>
 </layout>
 

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item app:recovered_state="true" android:color="@color/green"/>
+    <item app:infected_state="true" android:color="@color/red" />
+    <item android:color="@color/separatorColor" />
+</selector>
