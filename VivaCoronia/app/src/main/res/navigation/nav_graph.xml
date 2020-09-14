@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_location_history" />
     <fragment
         android:id="@+id/achievementsFragment"
-        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.AchievementsFragment"
+        android:name="de.tudarmstadt.iptk.foxtrot.vivacoronia.achievements.AchievementsFragment"
         android:label="Achievements"
         tools:layout="@layout/fragment_achievements" />
     <fragment

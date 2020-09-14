@@ -1,4 +1,4 @@
-package de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity
+package de.tudarmstadt.iptk.foxtrot.vivacoronia.achievements
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

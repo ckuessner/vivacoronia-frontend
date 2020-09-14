@@ -22,6 +22,15 @@
     <string name="offerDistance">%s km</string>
     <string name="searchRadius">Radius: %s km</string>
 
+    <!-- achievements -->
+    <string name="infectionScore">Infection Score</string>
+    <string name="achievements">Achievements</string>
+    <string name="zombie">Zombie</string>
+    <string name="superspreader">Superspreader</string>
+    <string name="hamsterbuyer">Hamsterbuyer</string>
+    <string name="moneyboy">Moneyboy</string>
+    <string name="quizmaster">Quizmaster</string>
+
     <!-- infection status -->
     <string name="update_infection_button">Update Infection Status</string>
     <string name="update_infection_label">Update Infection Status</string>
