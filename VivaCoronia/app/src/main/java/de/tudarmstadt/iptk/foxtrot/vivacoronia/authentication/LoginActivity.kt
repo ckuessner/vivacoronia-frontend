@@ -54,13 +54,12 @@ class LoginActivity : AppCompatActivity() {
 
                     succJWT = AuthenticationApiClient.makeNewJWT(ctx, pw, userID, isAdmin)
                     runOnUiThread {
+                        findViewById<ProgressBar>(R.id.loginProgress).visibility = View.GONE
                         if(succJWT == 0){
-                            findViewById<ProgressBar>(R.id.loginProgress).visibility = View.GONE
                             Toast.makeText(ctx, getString(R.string.succLogin), Toast.LENGTH_SHORT).show()
                             finish()
                         }
                         else {
-                            findViewById<ProgressBar>(R.id.loginProgress).visibility = View.GONE
                             RequestUtility.handleErrorShowing(ctx, succJWT)
                             //if we don't have admin rights, we don't need to keep the login
                             if(succJWT == Constants.FORBIDDEN)

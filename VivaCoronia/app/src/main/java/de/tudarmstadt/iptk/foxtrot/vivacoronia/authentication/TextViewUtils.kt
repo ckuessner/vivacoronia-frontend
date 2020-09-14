@@ -1,7 +1,6 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication
 
 import android.util.Patterns
-import android.widget.EditText
 import android.widget.TextView
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 
@@ -16,7 +15,7 @@ object TextViewUtils {
             mode = false
         }
 
-        setModeOnTextView(textView, "Invalid Input", mode)
+        setTextViewBackground(textView, "Invalid Input", mode)
 
         return mode
     }
@@ -32,7 +31,7 @@ object TextViewUtils {
         return mode
     }
 
-    private fun setModeOnTextView(textView: TextView, msg:String, mode:Boolean) {
+    private fun setTextViewBackground(textView: TextView, msg:String, mode:Boolean) {
         if (mode) {
             textView.setBackgroundResource(R.drawable.et_custom)
         }
@@ -50,8 +49,8 @@ object TextViewUtils {
         val validPwRe = checkValidInput(rePassword)
         if (validPw && validPwRe) {
             if (!password.text.toString().contentEquals(rePassword.text.toString())) {
-                setModeOnTextView(password, "Password not identical", false)
-                setModeOnTextView(rePassword, "Password not identical", false)
+                setTextViewBackground(password, "Password not identical", false)
+                setTextViewBackground(rePassword, "Password not identical", false)
                 return false
             }
             else {

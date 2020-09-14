@@ -30,9 +30,6 @@ class StatusCheckFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_status, container, false)
-        requireActivity().runOnUiThread {
-            view.findViewById<ProgressBar>(R.id.statusProgress).visibility = View.GONE
-        }
         setStatusButtonLogic(requireActivity(), view)
         setUserIDShowLogic(requireActivity(), view)
         showExpiry(requireActivity(), view)
