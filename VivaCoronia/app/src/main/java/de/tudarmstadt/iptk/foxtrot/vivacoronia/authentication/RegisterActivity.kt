@@ -37,7 +37,6 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        findViewById<ProgressBar>(R.id.registerProgress).visibility = View.GONE
         registerUser(this, false)
         loginAccountLogic(this)
 

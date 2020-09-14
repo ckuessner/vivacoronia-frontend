@@ -20,7 +20,6 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         //set progressbar not visible
-        findViewById<ProgressBar>(R.id.loginProgress).visibility = View.GONE
         val isAdmin = intent.getBooleanExtra("isAdmin", false)
         val noAdminJWT = getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.adminJWT, null) == null
         if(isAdmin && noAdminJWT){
