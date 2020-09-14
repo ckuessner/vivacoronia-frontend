@@ -9,13 +9,6 @@
         android:orientation="vertical"
         tools:context=".spreadMap.SpreadMapFragment">
 
-        <ProgressBar
-            android:id="@+id/progress_horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
-
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/date_picker_btn"
             style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
@@ -37,6 +30,13 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:context=".spreadMap.SpreadMapFragment"/>
+
+        <ProgressBar
+            android:id="@+id/progress_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
 
         <LinearLayout
             android:layout_width="match_parent"
