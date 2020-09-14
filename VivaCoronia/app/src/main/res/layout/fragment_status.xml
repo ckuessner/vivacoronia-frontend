@@ -38,31 +38,31 @@
 
         <Button
             android:id="@+id/statusChecker"
-            android:layout_width="150sp"
-            android:layout_height="100sp"
+            android:layout_width="160sp"
+            android:layout_height="wrap_content"
             android:background="@drawable/btn_custom"
             android:text="@string/admin_button"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.18"
+            app:layout_constraintHorizontal_bias="0.143"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.735" />
+            app:layout_constraintVertical_bias="0.734" />
 
         <Button
             android:id="@+id/showUserID"
-            android:layout_width="150sp"
-            android:layout_height="100sp"
+            android:layout_width="160sp"
+            android:layout_height="wrap_content"
             android:background="@drawable/btn_custom"
             android:text="@string/userID_info"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.823"
+            app:layout_constraintHorizontal_bias="0.876"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.735" />
+            app:layout_constraintVertical_bias="0.734" />
 
         <ProgressBar
             android:id="@+id/statusProgress"
