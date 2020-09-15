@@ -71,7 +71,6 @@ class SpreadMapFragment : Fragment() {
         RequestUtility.handleForbiddenFragment(requireActivity())
 
         googleMap.uiSettings.isMapToolbarEnabled = false
-        binding.progressHorizontal.visibility = View.GONE
         //change in location data for spreadmap calls request for contact data
         viewModel.spreadMapData.observe(
             this,
@@ -104,7 +103,6 @@ class SpreadMapFragment : Fragment() {
 
         drawCircle(googleMap, selectionStart, selectionEnd)
 
-        binding.progressHorizontal.max = 100
         binding.datePickerBtn.setOnClickListener {
             picker.show(requireActivity().supportFragmentManager, "DATE_PICKER")
         }

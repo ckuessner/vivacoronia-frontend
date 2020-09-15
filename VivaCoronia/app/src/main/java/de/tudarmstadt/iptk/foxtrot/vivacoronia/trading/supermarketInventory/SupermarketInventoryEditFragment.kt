@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentSupermarketInventoryEditBinding
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct.Companion.categories
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.InventoryItem
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer.Companion.categories
 
 private const val ARG_ITEM = "item"
 private const val ARG_NEW = "new"
@@ -88,7 +88,7 @@ class SupermarketInventoryEditFragment : Fragment() {
             if(categoryPos != -1){
                 binding.categoryInputSpinner.setSelection(categoryPos)
             }
-            binding.supermarketName.text = "Item for ${viewModel.supermarket!!.supermarketName}"
+            binding.supermarketName.text = getString(R.string.itemForSupermarket, viewModel.supermarket!!.supermarketName)
             if(viewModel.id != "") {
                 binding.productNameInput.isEnabled = false
             }
