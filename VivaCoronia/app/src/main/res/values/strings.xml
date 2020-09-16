@@ -114,7 +114,7 @@
 
     <!-- Register process -->
     <string name="register">Register</string>
-    <string name="tag_reg">Join our big corona community to save the world!</string>
+    <string name="tag_reg">Join our big corona community\n to save the world!</string>
     <string name="password">Password</string>
     <string name="re_type_password">Re-type Password</string>
     <string name="succRegister">"You successfully registered to save the world from corona!"</string>
@@ -126,6 +126,7 @@
     <string name="EmailTitle">"Send UserID to E-Mail"</string>
     <string name="EmailInfo">"You can send your UserID to yourself, if you want to login to other devices"</string>
     <string name="EmailHint">"Your E-Mail to send to"</string>
+    <string name="EmailText">"Your User ID is: "</string>
     <string name="Email_Subject">"Your UserID for VivaCoronia"</string>
     <string name="emailFailInfo">"Couldn't send UserID to your E-Mail"</string>
     <string name="emailNotSendInfo">"If you still want your UserID, you can view it in the \"Status Check\" menu item"</string>

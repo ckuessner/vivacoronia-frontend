@@ -88,6 +88,7 @@ class StatusCheckFragment : Fragment() {
             view.findViewById<TextView>(R.id.userStatus).text =
                 getString(R.string.feature_permissions_user)
             (activity as MainActivity?)?.hideAdminFeatures()
+            (activity as MainActivity?)?.changeStatusIcon(false)
         }
         else
             view.findViewById<TextView>(R.id.userStatus).text = getString(R.string.feature_permission_admin)
@@ -119,6 +120,7 @@ class StatusCheckFragment : Fragment() {
         }
         //if our status changed to no admin, but we had an adminJWT and were admin before change fragment to userFragment
         else if(!currStatus && !noAdminJWT && oldIsAdmin != currStatus){
+            (activity as MainActivity?)?.changeStatusIcon(currStatus)
             view.findViewById<TextView>(R.id.userStatus).text = getString(R.string.feature_permissions_user)
             //set adminJWT to zero
             ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).edit().putString(Constants.adminJWT, null).apply()

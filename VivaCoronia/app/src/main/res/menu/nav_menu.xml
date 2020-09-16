@@ -28,7 +28,7 @@
 
     <item
         android:id="@+id/menu_item_statusCheck"
-        android:icon="@drawable/ic_admin"
+        android:icon="@drawable/ic_user"
         android:title="@string/check_status" />
 
 </menu>

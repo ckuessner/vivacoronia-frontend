@@ -31,8 +31,8 @@ object TextViewUtils {
         return mode
     }
 
-    private fun setTextViewBackground(textView: TextView, msg:String, mode:Boolean) {
-        if (mode) {
+    private fun setTextViewBackground(textView: TextView, msg:String, isValidInput:Boolean) {
+        if (isValidInput) {
             textView.setBackgroundResource(R.drawable.et_custom)
         }
         else {

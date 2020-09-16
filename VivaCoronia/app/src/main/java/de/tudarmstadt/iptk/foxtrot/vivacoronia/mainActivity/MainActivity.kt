@@ -13,6 +13,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -146,6 +147,13 @@ class MainActivity : AppCompatActivity() {
         navView.menu.findItem(R.id.menu_item_spreadmap).isVisible = true
     }
 
+    fun changeStatusIcon(isAdmin: Boolean){
+        if(isAdmin)
+            navView.menu.findItem(R.id.menu_item_statusCheck).icon = ContextCompat.getDrawable(this, R.drawable.ic_admin)
+        else
+            navView.menu.findItem(R.id.menu_item_statusCheck).icon = ContextCompat.getDrawable(this, R.drawable.ic_user)
+    }
+
     private fun fetchCategories() {
         try {
             val categories = TradingApiClient.getAllCategories(this@MainActivity).toMutableList()
@@ -181,6 +189,9 @@ class MainActivity : AppCompatActivity() {
         val settings = getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
         val isAdmin = settings.getBoolean(Constants.IS_ADMIN, false)
         if (isAdmin) showAdminFeatures() else hideAdminFeatures()
+        val hasAdminJWT = settings.getString(Constants.adminJWT, null) != null
+        val isReallyAdmin = isAdmin && hasAdminJWT
+        changeStatusIcon(isReallyAdmin)
     }
 
     private var doubleBackToExitPressedOnce = false

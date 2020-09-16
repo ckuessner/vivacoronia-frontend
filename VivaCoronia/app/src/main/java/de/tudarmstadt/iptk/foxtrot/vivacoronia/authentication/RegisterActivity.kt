@@ -124,7 +124,7 @@ class RegisterActivity : AppCompatActivity() {
         builder.setPositiveButton(android.R.string.yes) { _, _ ->
             try {
                 val subject = getString(R.string.Email_Subject)
-                val body = Uri.encode( "Your UserId is: $userID")
+                val body = Uri.encode( getString(R.string.EmailText) + userID)
                 val data = Uri.parse("mailto:${inputEmail.text}?subject=$subject&body=$body")
                 val emailIntent = Intent(Intent.ACTION_VIEW)
                 emailIntent.data = data
