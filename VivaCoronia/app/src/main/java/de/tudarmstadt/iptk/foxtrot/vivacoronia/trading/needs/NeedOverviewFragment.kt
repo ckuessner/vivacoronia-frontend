@@ -47,7 +47,10 @@ class NeedOverviewFragment : Fragment() {
         })
 
         binding.needsList.adapter = adapter
-        viewModel.needsList.observe(viewLifecycleOwner, Observer { it?.let { adapter.submitList(it) } })
+        viewModel.needsList.observe(viewLifecycleOwner, Observer { it?.let {
+            adapter.submitList(it)
+            binding.needsHint.visibility = if (it.size > 0) View.INVISIBLE else TextView.VISIBLE
+        } })
 
         BaseProduct.categories.observe(viewLifecycleOwner, Observer {
             if(it.isNotEmpty())
@@ -107,11 +110,9 @@ class NeedOverviewFragment : Fragment() {
     }
 
     private fun fetchMyNeeds() {
-        var textVisibility = TextView.VISIBLE
         try {
             activity?.let{
                 val needs = TradingApiClient.getMyNeeds(it)
-                if (needs.size > 0) textVisibility = TextView.INVISIBLE
                 it.runOnUiThread { viewModel.setNeeds(needs) }
             }
         } catch (exception: ExecutionException) {
@@ -125,7 +126,6 @@ class NeedOverviewFragment : Fragment() {
         }
         activity?.runOnUiThread {
             binding.needsListSwipeRefresh.isRefreshing = false
-            binding.noNeedsFound.visibility = textVisibility
         }
     }
 }

@@ -47,7 +47,10 @@ class OfferOverviewFragment : Fragment() {
         })
 
         binding.offersList.adapter = adapter
-        viewModel.offersList.observe(viewLifecycleOwner, Observer { it?.let { adapter.submitList(it) } })
+        viewModel.offersList.observe(viewLifecycleOwner, Observer { it?.let {
+            adapter.submitList(it)
+            binding.offersHint.visibility = if (it.size > 0) View.INVISIBLE else TextView.VISIBLE
+        } })
 
         BaseProduct.categories.observe(viewLifecycleOwner, Observer {
             if (it.isNotEmpty())
@@ -114,14 +117,10 @@ class OfferOverviewFragment : Fragment() {
     }
 
     private fun fetchMyOffers() {
-        var textVisibility = TextView.VISIBLE
         try {
             activity?.let {
                 val offers = TradingApiClient.getMyOffers(it)
-                it.runOnUiThread {
-                    viewModel.setOffers(offers)
-                    if (offers.size > 0) textVisibility = TextView.INVISIBLE
-                }
+                it.runOnUiThread { viewModel.setOffers(offers) }
             }
         } catch (exception: ExecutionException) {
             if (exception.cause is VolleyError && activity != null && activity?.hasWindowFocus() == true)
@@ -134,7 +133,6 @@ class OfferOverviewFragment : Fragment() {
         }
         activity?.runOnUiThread {
             binding.offersListSwipeRefresh.isRefreshing = false
-            binding.noOffersFound.visibility = textVisibility
         }
     }
 }

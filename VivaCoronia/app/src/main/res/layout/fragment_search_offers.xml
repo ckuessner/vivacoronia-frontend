@@ -8,66 +8,81 @@
             type="de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search.SearchOffersViewModel" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:focusableInTouchMode="true"
-        android:orientation="vertical"
-        android:padding="10dp"
         tools:context=".trading.search.SearchOffersFragment">
 
-        <SearchView
-            android:id="@+id/search_view"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/search_hint"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/border"
-            android:iconifiedByDefault="false"
-            android:queryHint="@string/product_search_view_hint" />
+            android:layout_centerInParent="true"
+            android:layout_margin="15dp"
+            android:text="@string/search_hint"
+            android:textAlignment="center"
+            android:textSize="24sp" />
 
-        <ProgressBar
-            android:id="@+id/progress_horizontal"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:visibility="invisible" />
+            android:layout_height="match_parent"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical"
+            android:padding="10dp">
 
-        <com.google.android.material.button.MaterialButtonToggleGroup
-            android:id="@+id/display_type_toggle_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:checkedButton="@id/list_display"
-            app:selectionRequired="true"
-            app:singleSelection="true">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/list_display"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
+            <SearchView
+                android:id="@+id/search_view"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:backgroundTint="@android:color/transparent"
-                android:gravity="center"
-                android:text="@string/list" />
+                android:background="@drawable/border"
+                android:iconifiedByDefault="false"
+                android:queryHint="@string/product_search_view_hint" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/map_display"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
+            <ProgressBar
+                android:id="@+id/progress_horizontal"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:backgroundTint="@android:color/transparent"
-                android:gravity="center"
-                android:text="@string/map" />
+                android:indeterminate="true"
+                android:visibility="invisible" />
 
-        </com.google.android.material.button.MaterialButtonToggleGroup>
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/display_type_toggle_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:checkedButton="@id/list_display"
+                app:selectionRequired="true"
+                app:singleSelection="true">
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/search_results_pager"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="7dp"
-            android:layout_weight="1" />
-    </LinearLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/list_display"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:backgroundTint="@android:color/transparent"
+                    android:gravity="center"
+                    android:text="@string/list" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/map_display"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:backgroundTint="@android:color/transparent"
+                    android:gravity="center"
+                    android:text="@string/map" />
+
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/search_results_pager"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="7dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+    </RelativeLayout>
 </layout>

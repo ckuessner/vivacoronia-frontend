@@ -28,12 +28,13 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <TextView
-            android:id="@+id/no_offers_found"
+            android:id="@+id/offers_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/no_offers_found"
-            android:textSize="30sp"
-            android:visibility="visible"
+            android:padding="15dp"
+            android:text="@string/offers_hint"
+            android:textAlignment="center"
+            android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

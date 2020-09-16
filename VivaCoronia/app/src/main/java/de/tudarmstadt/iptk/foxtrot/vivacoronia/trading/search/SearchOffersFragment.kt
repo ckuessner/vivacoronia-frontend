@@ -104,6 +104,7 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
                 val offers = TradingApiClient.getOffers(requireContext(), searchQuery)
                 activity?.runOnUiThread {
                     viewModel.searchResults.value = offers
+                    binding.searchHint.visibility = if (offers.size > 0) View.INVISIBLE else View.VISIBLE
                 }
             } catch (e: Exception) {
                 activity?.let{ it.runOnUiThread {

@@ -93,8 +93,10 @@
     <string name="from">From</string>
     <string name="to">To</string>
     <string name="min_amount">Minimum Amount</string>
-    <string name="no_needs_found">No needs found</string>
-    <string name="no_offers_found">No offers found</string>
+    <string name="needs_hint">Really badly looking for something?\nAdd a need and get a notification as soon as someone offers it!</string>
+    <string name="search_hint">Looking for something?\n Search for products or apply filters on your search!</string>
+    <string name="offers_hint">Have something someone else might need in these times?\nPlace an offer to help someone out!</string>
+
 
     <string name="filter_radius_distance_text">\u0020%dm\u0020</string>
     <string name="distance">Distance</string>
