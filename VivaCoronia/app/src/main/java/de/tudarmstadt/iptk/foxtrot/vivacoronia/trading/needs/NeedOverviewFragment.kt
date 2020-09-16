@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -106,9 +107,11 @@ class NeedOverviewFragment : Fragment() {
     }
 
     private fun fetchMyNeeds() {
+        var textVisibility = TextView.VISIBLE
         try {
             activity?.let{
                 val needs = TradingApiClient.getMyNeeds(it)
+                if (needs.size > 0) textVisibility = TextView.INVISIBLE
                 it.runOnUiThread { viewModel.setNeeds(needs) }
             }
         } catch (exception: ExecutionException) {
@@ -120,6 +123,9 @@ class NeedOverviewFragment : Fragment() {
                 Log.e(TAG, "Error while fetching or parsing myOffers", exception)
             }
         }
-        activity?.runOnUiThread { binding.needsListSwipeRefresh.isRefreshing = false }
+        activity?.runOnUiThread {
+            binding.needsListSwipeRefresh.isRefreshing = false
+            binding.noNeedsFound.visibility = textVisibility
+        }
     }
 }

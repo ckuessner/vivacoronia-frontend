@@ -77,22 +77,17 @@ class TradingFragment : Fragment() {
 class TradingFragmentNav : Fragment(), Observer<MutableList<String>> {
     private lateinit var binding : FragmentTradingNavBinding
 
-    private var query: ProductSearchQuery? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        query = arguments?.getParcelable("product_query")
-        Log.i("TradingNavFragment", "query: $query")
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val notificationQuery = arguments?.getParcelable<ProductSearchQuery>("product_query")
+        Log.i("TradingNavFragment", "query: $notificationQuery")
+
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_trading_nav, container, false)
         binding.bottomNavView.selectedItemId = R.id.search_offers
         if (BaseProduct.categories.value == null){
             binding.bottomNavView.isEnabled = false
             BaseProduct.categories.observe(viewLifecycleOwner, this)
         } else {
-            loadFragment(R.id.search_offers, query)
+            loadFragment(R.id.search_offers, notificationQuery)
         }
         binding.bottomNavView.setOnNavigationItemSelectedListener { loadFragment(it.itemId, null) }
 
@@ -110,16 +105,16 @@ class TradingFragmentNav : Fragment(), Observer<MutableList<String>> {
             else -> null
         }
 
-        val b = Bundle()
+        val queryBundle = Bundle()
         if (fragment == SearchOffersFragment::class.java && query != null) {
-            b.putParcelable("product_query", query)
+            queryBundle.putParcelable("product_query", query)
         }
 
 
         if (fragment != null) {
             childFragmentManager
                 .beginTransaction()
-                .replace(R.id.nav_host_fragment, fragment, b)
+                .replace(R.id.nav_host_fragment, fragment, queryBundle)
                 .commit()
             return true
         }

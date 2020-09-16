@@ -8,6 +8,7 @@ import com.google.android.gms.maps.model.LatLng
 class ProductSearchQuery (
                           var productName: String,
                           var category: String,
+                          var amountMin: String,
                           var location: LatLng?,
                           var radiusInKm: Int ) :
     Parcelable {
@@ -15,7 +16,8 @@ class ProductSearchQuery (
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readString()!!,
-        parcel.readParcelable(LatLng::class.java.classLoader)!!,
+        parcel.readString()!!,
+        parcel.readParcelable(LatLng::class.java.classLoader),
         parcel.readInt()
     )
 
@@ -25,7 +27,7 @@ class ProductSearchQuery (
         PRICE("price")
     }
 
-    constructor() : this( "", "", null, 0)
+    constructor() : this( "", "", "", null, 0)
 
     var userId: String = ""
     var priceMin: String = ""
@@ -44,6 +46,8 @@ class ProductSearchQuery (
             builder.appendQueryParameter("priceMin", priceMin.replace(",", "."))
         if (priceMax.isNotEmpty())
             builder.appendQueryParameter("priceMax", priceMax.replace(",", "."))
+        if (amountMin.isNotEmpty())
+            builder.appendQueryParameter("amountMin", amountMin)
         if (location != null) {
             builder.appendQueryParameter("longitude", location!!.longitude.toString())
             builder.appendQueryParameter("latitude", location!!.latitude.toString())
@@ -62,6 +66,7 @@ class ProductSearchQuery (
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeString(productName)
         dest.writeString(category)
+        dest.writeString(amountMin)
         dest.writeParcelable(location, flags)
         dest.writeInt(radiusInKm)
         dest.writeString(priceMin)

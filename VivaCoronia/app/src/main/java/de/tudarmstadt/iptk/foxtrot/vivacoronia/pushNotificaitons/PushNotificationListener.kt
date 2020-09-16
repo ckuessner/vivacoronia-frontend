@@ -35,11 +35,12 @@ class PushNotificationListener : WebSocketListener(){
             socketService.makeContactNotification()
             return
         }
+        // we only get contact or product notifications so if we are here it can only be a product notification
         try {
             val obj = productSearchConverter.parse<ProductSearchQuery>(text)
             if (obj != null ) socketService.makeProductMatchNotification(obj)
         } catch (e: KlaxonException) {
-            Log.e(tag, e.message ?: "no error message")
+            Log.e(tag, "Couldnt parse ProductSearchQuery from notification message or making a notification from it", e)
         }
     }
 
@@ -68,16 +69,20 @@ object ProductSearchConverter : Converter {
             && jv.obj!!["perimeter"] is Int))
             throw KlaxonException("Couldn't parse product query: $jv")
         val locationJson = jv.obj!!["location"] as JsonArray<*>
+        var latlng : LatLng? = null
+        if ((locationJson[1] as Number).toDouble() != 0.0 && (locationJson[0] as Number).toDouble() != 0.0) {
+            latlng = LatLng(
+                (locationJson[1] as Number).toDouble(),
+                (locationJson[0] as Number).toDouble()
+            )
+        }
         return ProductSearchQuery(
             jv.obj!!["product"] as String,
             jv.obj!!["productCategory"] as String,
-            LatLng(
-                (locationJson[1] as Number).toDouble(),
-                (locationJson[0] as Number).toDouble()
-            ),
+            jv.obj!!["minAmount"].toString(),
+            latlng,
             // kotlin round function lets websocket fail
-            Math.round(jv.obj!!["perimeter"] as Int / 1000f)  // convert from m to km
-        // TODO amount noch hinzufügen (wird noch nicht von der aktuellen ProductSearchQuery unterstüzt)
+            if (latlng != null) Math.round(jv.obj!!["perimeter"] as Int / 1000f) else 0 // convert from m to km
         )
     }
 

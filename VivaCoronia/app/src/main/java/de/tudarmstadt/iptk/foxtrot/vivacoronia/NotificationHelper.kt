@@ -49,7 +49,7 @@ object NotificationHelper{
      * @param priority: a Constant from the NoficationCompat class like NotificationCompat.PRIORITY_HIGH
      * @param color: a Constant from the Colors class like Color.RED
      */
-    fun getNormalNotification(context: Context,
+    fun getSimpleNotification(context: Context,
                               channelID: String,
                               smallIcon: Int,
                               title: String,
@@ -58,6 +58,10 @@ object NotificationHelper{
                               color: Int
                         ) : Notification {
         return getNotification(context, channelID, smallIcon, title, text, priority, color)
+            .setContentIntent(Intent(context, MainActivity::class.java).let {
+                    notificationIntent ->
+                PendingIntent.getActivity(context, 0, notificationIntent, 0)}
+            )
             .build()
     }
 

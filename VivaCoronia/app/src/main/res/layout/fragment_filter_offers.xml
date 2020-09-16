@@ -187,6 +187,25 @@
                     android:textSize="24sp" />
             </LinearLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp">
+
+                <EditText
+                    android:id="@+id/amount_min"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:digits="0123456789"
+                    android:hint="@string/min_amount"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:padding="5dp"
+                    android:singleLine="true"
+                    android:text="@={searchOffers.searchQuery.amountMin}"
+                    android:textSize="24sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

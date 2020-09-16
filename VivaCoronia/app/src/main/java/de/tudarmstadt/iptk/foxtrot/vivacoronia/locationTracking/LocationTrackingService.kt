@@ -35,7 +35,7 @@ class LocationTrackingService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.i(tag, "startet location tracking service")
-        notification = NotificationHelper.getNormalNotification(
+        notification = NotificationHelper.getSimpleNotification(
             this,
             Constants.LOCATION_NOTIFICATION_CHANNEL_ID,
             R.drawable.ic_corona,

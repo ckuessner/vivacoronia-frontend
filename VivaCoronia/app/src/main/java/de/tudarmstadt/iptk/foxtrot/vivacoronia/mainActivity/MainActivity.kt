@@ -173,7 +173,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         val startFragment = intent.getIntExtra("startFragment", R.id.menu_item_location_history)
-        if (startFragment != R.id.menu_item_location_history) {
+        if (startFragment == R.id.search_offers) {
             val product = intent.getParcelableExtra<ProductSearchQuery>(PRODUCT_QUERY)
             navigateToFragment(startFragment, product)
         }

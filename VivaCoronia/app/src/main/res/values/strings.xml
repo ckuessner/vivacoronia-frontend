@@ -44,8 +44,8 @@
     <!-- product notification -->
     <string name="product_notification_channel_name">Product Notification Channel</string>
     <string name="product_notification_channel_description">This channel informs you if your needs match with other peoples offers.</string>
-    <string name="product_notification_channel_title">Product Match for</string>
-    <string name="product_notification_channel_text">Click, to open product search.</string>
+    <string name="product_notification_channel_title">Offer found for</string>
+    <string name="product_notification_channel_text">Click to view products</string>
 
     <!-- bottom navigation menu -->
     <string name="menu_item_location_history">History</string>
@@ -92,6 +92,9 @@
     <string name="list">List</string>
     <string name="from">From</string>
     <string name="to">To</string>
+    <string name="min_amount">Minimum Amount</string>
+    <string name="no_needs_found">No needs found</string>
+    <string name="no_offers_found">No offers found</string>
 
     <string name="filter_radius_distance_text">\u0020%dm\u0020</string>
     <string name="distance">Distance</string>

@@ -60,8 +60,8 @@ class WebSocketService : Service() {
     fun makeContactNotification(){
         with(NotificationManagerCompat.from(this)){
             notify(
-                SystemClock.elapsedRealtime().hashCode(), //we want a unique id so that notifications for different contacts overwrite each other
-                NotificationHelper.getNormalNotification(
+                SystemClock.elapsedRealtime().hashCode(), //we want a unique id so that notifications for different contacts dont overwrite each other
+                NotificationHelper.getSimpleNotification(
                     applicationContext,
                     Constants.INFECTED_NOTIFICATION_CHANNEL_ID,
                     R.drawable.ic_corona,

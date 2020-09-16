@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -113,10 +114,14 @@ class OfferOverviewFragment : Fragment() {
     }
 
     private fun fetchMyOffers() {
+        var textVisibility = TextView.VISIBLE
         try {
             activity?.let {
                 val offers = TradingApiClient.getMyOffers(it)
-                it.runOnUiThread { viewModel.setOffers(offers) }
+                it.runOnUiThread {
+                    viewModel.setOffers(offers)
+                    if (offers.size > 0) textVisibility = TextView.INVISIBLE
+                }
             }
         } catch (exception: ExecutionException) {
             if (exception.cause is VolleyError && activity != null && activity?.hasWindowFocus() == true)
@@ -127,6 +132,9 @@ class OfferOverviewFragment : Fragment() {
                 Log.e(TAG, "Error while fetching or parsing myOffers", exception)
             }
         }
-        activity?.runOnUiThread { binding.offersListSwipeRefresh.isRefreshing = false }
+        activity?.runOnUiThread {
+            binding.offersListSwipeRefresh.isRefreshing = false
+            binding.noOffersFound.visibility = textVisibility
+        }
     }
 }

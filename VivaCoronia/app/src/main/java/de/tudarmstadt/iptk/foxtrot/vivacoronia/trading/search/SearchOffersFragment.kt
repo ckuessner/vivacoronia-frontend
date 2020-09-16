@@ -51,6 +51,7 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
         if (viewModel.searchQuery.value == null) {
             viewModel.searchQuery.value = query ?: ProductSearchQuery()
             viewModel.searchQuery.value!!.location = if (query != null) query.location else LocationUtility.getLastKnownLocation(requireActivity())
+            if (query != null) binding.searchView.setQuery(query.productName, true)
         }
 
         binding.searchView.setOnQueryTextListener(this)
