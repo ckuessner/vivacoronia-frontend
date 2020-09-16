@@ -151,6 +151,7 @@
     <string name="permissionUpdateAlert">"You can login again to use admin features, do you want to proceed?"</string>
     <string name="remindPermissionUpdate">"To use admin features, reload status again and login afterwards"</string>
     <string name="samePermission">"Your permissions didn't change"</string>
+    <string name="adminRevoked">"You don't have the permission to use admin features anymore"</string>
 
     <!-- Error Showing -->
     <string name="noInternet">"No internet, check your connection and try again"</string>

@@ -180,12 +180,14 @@ abstract class ApiBaseClient {
                 if(error.networkResponse.statusCode == 401 && !isAdmin){
                     val intent = Intent(ctx, LoginActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     intent.putExtra("isAdmin", false)
                     ctx.startActivity(intent)
                 }
                 else if (error.networkResponse.statusCode == 401 && isAdmin){
                     val intent = Intent(ctx, LoginActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     intent.putExtra("isAdmin", true)
                     ctx.startActivity(intent)
                 }
@@ -193,7 +195,7 @@ abstract class ApiBaseClient {
                     //delete admin stuff, since this error only occurs if user doesn't have admin permissions anymore
                     ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).edit().putBoolean(Constants.IS_ADMIN, false).apply()
                     ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).edit().putString(Constants.adminJWT, null).apply()
-                    Toast.makeText(ctx, "You don't have the permission to use admin features anymore", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, ctx.getString(R.string.adminRevoked), Toast.LENGTH_LONG).show()
                     //navigate to status to show user that he isn't admin anymore
                     val act = ctx as FragmentActivity
                     val navController = act.findNavController(R.id.nav_fragment)

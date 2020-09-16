@@ -190,8 +190,8 @@ class MainActivity : AppCompatActivity() {
         val isAdmin = settings.getBoolean(Constants.IS_ADMIN, false)
         if (isAdmin) showAdminFeatures() else hideAdminFeatures()
         val hasAdminJWT = settings.getString(Constants.adminJWT, null) != null
-        val isReallyAdmin = isAdmin && hasAdminJWT
-        changeStatusIcon(isReallyAdmin)
+        val isAdminActive = isAdmin && hasAdminJWT
+        changeStatusIcon(isAdminActive)
     }
 
     private var doubleBackToExitPressedOnce = false

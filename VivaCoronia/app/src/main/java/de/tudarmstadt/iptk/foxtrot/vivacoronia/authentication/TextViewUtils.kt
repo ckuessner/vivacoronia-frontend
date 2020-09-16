@@ -21,14 +21,14 @@ object TextViewUtils {
     }
 
     fun checkValidInput(txt: String, isEmail: Boolean) : Boolean{
-        var mode = true
+        var isValidInput = true
         if(txt.isEmpty())
-            mode = false
-        if(isEmail && mode){
+            isValidInput = false
+        if(isEmail && isValidInput){
             val pattern = Patterns.EMAIL_ADDRESS
-            mode = pattern.matcher(txt).matches()
+            isValidInput = pattern.matcher(txt).matches()
         }
-        return mode
+        return isValidInput
     }
 
     private fun setTextViewBackground(textView: TextView, msg:String, isValidInput:Boolean) {
