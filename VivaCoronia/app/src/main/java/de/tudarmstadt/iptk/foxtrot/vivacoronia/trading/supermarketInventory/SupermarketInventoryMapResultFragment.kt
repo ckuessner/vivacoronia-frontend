@@ -104,8 +104,6 @@ class SupermarketInventoryMapResultFragment(private val parent: SupermarketInven
                     .setCancelable(true)
                     .setMessage("Create new inventory item for the selected supermarket?")
                     .setPositiveButton("Create") { _, _ ->
-                        Toast.makeText(requireContext(), "Create Item for ${it.supermarketName}", Toast.LENGTH_SHORT)
-                            .show()
                         EditInventoryItemActivity.start(
                             requireContext(),
                             InventoryItem(
