@@ -46,7 +46,6 @@ class EditInventoryItemActivity : AppCompatActivity() {
                         TradingApiClient.putInventoryItem(item, localNewItem, localNewSupermarket, item.availability, this@EditInventoryItemActivity)
                         finish()
                     }
-                    //TODO: Finish item upload
                 }
                 catch (e: Exception) {
                     Log.e(TAG, "Error editing or adding inventory item: ", e)
