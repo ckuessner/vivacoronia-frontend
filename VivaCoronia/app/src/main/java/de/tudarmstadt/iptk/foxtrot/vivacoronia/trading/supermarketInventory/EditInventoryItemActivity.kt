@@ -28,10 +28,10 @@ class EditInventoryItemActivity : AppCompatActivity() {
         val passedItem: InventoryItem = intent.getParcelableExtra(ARG_ITEM)!!
         val newItem: Boolean = intent.getBooleanExtra(ARG_NEW, false)
         val newSupermarket: Boolean = intent.getBooleanExtra(ARG_NEW_SUPERMARKET, false)
+        title = resources.getString(R.string.title_activity_edit_inventory)
 
         val submitButton = findViewById<Button>(R.id.submitInventoryItem)
         submitButton.text = resources.getString(R.string.save)
-        title = "Edit Supermarket Inventory Item"
         val fragment = SupermarketInventoryEditFragment.newInstance(passedItem, newItem, newSupermarket)
 
         submitButton.setOnClickListener {
@@ -56,7 +56,7 @@ class EditInventoryItemActivity : AppCompatActivity() {
                 }
             }
         }
-
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportFragmentManager.beginTransaction().replace(R.id.inventory_detail_container, fragment).commit()
     }
 

@@ -173,7 +173,7 @@
     <string name="selected_supermarket">Selected Supermarket</string>
     <string name="edit_supermarket_inventory">editSupermarketInventory</string>
     <string name="availability_level">Availability</string>
-    <string name="title_activity_edit_inventory">EditInventoryActivity</string>
+    <string name="title_activity_edit_inventory">Set an inventory item</string>
     <!-- Strings used for fragments for navigation -->
     <string name="next">Next</string>
     <string name="previous">Previous</string>

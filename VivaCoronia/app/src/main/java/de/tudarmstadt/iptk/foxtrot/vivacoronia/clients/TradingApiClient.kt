@@ -1,6 +1,8 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.net.Uri
 import com.android.volley.*
 import com.android.volley.toolbox.RequestFuture
@@ -61,13 +63,25 @@ object TradingApiClient : ApiBaseClient() {
         return getOffers(context, query)
     }
 
-    fun getSupermarkets(context: Context, location: LatLng, radius: Double): ArrayList<PlacesApiResult> {
+    private fun getMetadata(context: Context, name: String): String? {
+        try {
+            val appInfo: ApplicationInfo = context.packageManager.getApplicationInfo(
+                context.packageName, PackageManager.GET_META_DATA)
+            return if (appInfo.metaData != null) {
+                appInfo.metaData.getString(name)
+            } else null
+        } catch (e: PackageManager.NameNotFoundException) {}
+        return null
+    }
+
+    fun getSupermarkets(context: Context, location: LatLng): ArrayList<PlacesApiResult> {
         val queue: RequestQueue = Volley.newRequestQueue(context)
 
         val future = RequestFuture.newFuture<JSONObject>()
+        val apiKey = getMetadata(context, "com.google.android.geo.API_KEY")
         val jsObjRequest = JsonObjectJWT(
             Request.Method.GET,
-            "https://maps.googleapis.com/maps/api/place/search/json?location=${location.latitude},${location.longitude}&sensor=true&rankby=distance&type=grocery_or_supermarket&key=AIzaSyCExEI8en2xFz8pQSIGavdl50U06PIA4Qk",
+            "https://maps.googleapis.com/maps/api/place/search/json?location=${location.latitude},${location.longitude}&sensor=true&rankby=distance&type=grocery_or_supermarket&key=$apiKey",
             null,
             future,
             future,
@@ -147,7 +161,7 @@ object TradingApiClient : ApiBaseClient() {
                 createNewItemRequest(item, future, context)
             }
             else -> {
-                createEditItemRequest(item, availability, future, context)
+                createPatchItemRequest(item, availability, future, context)
             }
         }
         queue.add(request)
@@ -183,7 +197,7 @@ object TradingApiClient : ApiBaseClient() {
         return JsonObjectJWT(method, url, jsonSupermarketPostObject, future, future, context)
     }
 
-    private fun createEditItemRequest(
+    private fun createPatchItemRequest(
         item: InventoryItem,
         availability: Int,
         future: RequestFuture<JSONObject>,

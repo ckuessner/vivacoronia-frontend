@@ -60,7 +60,7 @@ class SupermarketInventoryMapResultFragment(private val parent: SupermarketInven
             binding.progressHorizontal.isIndeterminate = true
             GlobalScope.launch {
                 val response: List<PlacesApiResult> =
-                    TradingApiClient.getSupermarkets(requireContext(), it, 3000.0)
+                    TradingApiClient.getSupermarkets(requireContext(), it)
 
                 requireActivity().runOnUiThread {
                     parent.searchViewModel.supermarkets.value = response
