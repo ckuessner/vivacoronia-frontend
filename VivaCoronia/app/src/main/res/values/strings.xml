@@ -3,12 +3,12 @@
 
     <!-- main activity -->
     <string name="main_activity_toast_permission_rationale">If location access is denied, the app can not warn for infections.</string>
-    <string name="main_activity_toast_location_permission_denied">Location access permission denied! Please enable it in the app settings to get warnings about infections.</string>
+    <string name="main_activity_toast_location_permission_denied">Location access permission denied! Please enable it in the app settings and restart the app to get warnings about infections.</string>
 
     <!-- location tracking service -->
     <string name="location_service_channel_name">Location Tracking Channel</string>
     <string name="location_service_channel_description">Shows the user that tracking is active</string>
-    <string name="location_service_channel_title">Corona Tracking active</string>
+    <string name="location_service_channel_title">Corona Tracking or Notifications active</string>
 
     <string name="location_service_fail_after_boot_message">Please open the app and enable location access.</string>
 

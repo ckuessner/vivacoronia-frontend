@@ -115,6 +115,11 @@ class MainActivity : AppCompatActivity() {
 
         GlobalScope.launch { fetchCategories() }
 
+        // start tracking
+        de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.checkPermissionsAndStartTracking(
+            this,
+            true
+        )
     }
 
     private fun navigateToFragment(itemId: Int, query: ProductSearchQuery?) {
@@ -208,12 +213,6 @@ class MainActivity : AppCompatActivity() {
             startService(websocketIntent)
         }
 
-        // start tracking
-        de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.checkPermissionsAndStartTracking(
-            this,
-            true
-        )
-
         val startFragment = intent.getIntExtra("startFragment", R.id.menu_item_location_history)
         if (startFragment == R.id.search_offers) {
             val product = intent.getParcelableExtra<ProductSearchQuery>(PRODUCT_QUERY)
@@ -277,6 +276,9 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Log.i(tag, "onRequestPermissionResult")
+        if (permissions.isEmpty() && grantResults.isEmpty()) {
+            return
+        }
         when (requestCode) {
             // handle location permission requests
             Constants.LOCATION_ACCESS_PERMISSION_REQUEST_CODE -> {
