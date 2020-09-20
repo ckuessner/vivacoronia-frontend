@@ -24,11 +24,13 @@
 
     <!-- achievements -->
     <string name="infectionScore">Infection Score</string>
+    <string name="infectionScoreDefault">0.0/1</string>
     <string name="achievements">Achievements</string>
     <string name="zombie">Zombie</string>
     <string name="superspreader">Superspreader</string>
     <string name="hamsterbuyer">Hamsterbuyer</string>
     <string name="moneyboy">Moneyboy</string>
+    <string name="foreveralone">Forever alone</string>
     <string name="quizmaster">Quizmaster</string>
 
     <!-- infection status -->
