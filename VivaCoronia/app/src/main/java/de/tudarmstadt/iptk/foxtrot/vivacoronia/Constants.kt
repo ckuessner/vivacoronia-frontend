@@ -2,6 +2,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
 object Constants {
 
+
     // Location Upload stuff
     const val LOCATION_UPLOAD_INTERVAL = 10000.toLong() // for reallife use could be higher
     const val LOCATION_UPLOAD_REQUEST_CODE = 12
@@ -27,6 +28,8 @@ object Constants {
     const val adminJWT_Time = "adminTime"
     const val JWT_Time = "jwtTime"
     const val IS_ADMIN = "adminStatus"
+    const val ENDPOINT_ACHIEVEMENT = "achievements"
+    const val ENDPOINT_SCORE = "infectionScore"
 
     // infected stuff
     const val INFECTED_NOTIFICATION_CHANNEL_ID = "infected_channel"
