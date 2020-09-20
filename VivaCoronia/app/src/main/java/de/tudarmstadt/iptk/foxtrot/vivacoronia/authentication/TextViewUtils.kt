@@ -10,14 +10,14 @@ object TextViewUtils {
     this only checks whether input isn't empty
      */
     fun checkValidInput(textView: TextView):Boolean {
-        var mode = true
+        var isValidInput = true
         if (textView.text.isEmpty()) {
-            mode = false
+            isValidInput = false
         }
 
-        setTextViewBackground(textView, "Invalid Input", mode)
+        setTextViewBackground(textView, "Invalid Input", isValidInput)
 
-        return mode
+        return isValidInput
     }
 
     fun checkValidInput(txt: String, isEmail: Boolean) : Boolean{

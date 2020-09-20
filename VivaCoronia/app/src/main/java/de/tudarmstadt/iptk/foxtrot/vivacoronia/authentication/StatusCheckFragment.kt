@@ -54,6 +54,8 @@ class StatusCheckFragment : Fragment() {
                 }
                 val succJWT = AuthenticationApiClient.checkStatus(ctx, userID)
                 requireActivity().runOnUiThread {
+                    view.findViewById<ProgressBar>(R.id.statusProgress).visibility = View.GONE
+                    view.findViewById<ImageView>(R.id.iconInfo).visibility = View.VISIBLE
                     when (succJWT) {
                         0 ->  checkStatus(ctx, view, oldIsAdmin)
                         else -> RequestUtility.handleErrorShowing(ctx, succJWT)

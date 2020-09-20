@@ -31,6 +31,15 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            app:menu="@menu/nav_menu" />
+            app:menu="@menu/nav_menu" >
+
+            <Button
+                android:id="@+id/btn_sing_out"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/btn_custom"
+                android:text="@string/sign_out" />
+        </com.google.android.material.navigation.NavigationView>
     </androidx.drawerlayout.widget.DrawerLayout>
 </RelativeLayout>

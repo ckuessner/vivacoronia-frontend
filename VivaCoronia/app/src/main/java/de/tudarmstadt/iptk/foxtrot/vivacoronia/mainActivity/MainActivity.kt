@@ -1,6 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity
 
 import android.Manifest
+import android.app.AlertDialog
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
@@ -10,6 +11,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -72,6 +74,9 @@ class MainActivity : AppCompatActivity() {
                 Constants.PRODUCT_NOTIFICATION_CHANNEL_ID
             )
         }
+
+        //setup logout button logic
+        setUpLogoutLogic()
 
         // setup navigation
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -137,6 +142,27 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.tradingFragmentNav, b)
                 }
             }
+    }
+
+    private fun setUpLogoutLogic(){
+        val logoutBtn = findViewById<Button>(R.id.btn_sing_out)
+        logoutBtn.setOnClickListener {
+            //make alert dialog to make sure user actually wants to logout
+            val builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+            builder.setTitle(getString(R.string.sign_out_warn))
+            builder.setMessage(getString(R.string.sign_out_conf))
+            //if user wants to use admin, he has to login for admin features
+            builder.setPositiveButton(android.R.string.yes){ _, _ ->
+                getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).edit().clear().apply()
+                val startIntent = Intent(this, StartActivity::class.java)
+                startActivity(startIntent)
+                finish()
+            }
+            //need to include this or else the cancel button won't be visible
+            builder.setNegativeButton(android.R.string.no){_, _ -> }
+            val alertDialog = builder.create()
+            alertDialog.show()
+        }
     }
 
     fun hideAdminFeatures() {
