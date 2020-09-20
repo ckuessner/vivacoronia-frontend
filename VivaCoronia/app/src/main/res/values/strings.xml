@@ -117,6 +117,7 @@
 
     <!-- Register process -->
     <string name="register">Welcome!</string>
+    <string name="register_btn_info">Register</string>
     <string name="tag_reg">Join our big corona community\n to save the world!</string>
     <string name="password">Password</string>
     <string name="re_type_password">Re-type Password</string>

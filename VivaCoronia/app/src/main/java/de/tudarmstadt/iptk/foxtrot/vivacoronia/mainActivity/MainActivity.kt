@@ -1,6 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity
 
 import android.Manifest
+import android.app.ActivityManager
 import android.app.AlertDialog
 import android.app.NotificationManager
 import android.content.Context
@@ -154,6 +155,8 @@ class MainActivity : AppCompatActivity() {
             //if user wants to use admin, he has to login for admin features
             builder.setPositiveButton(android.R.string.yes){ _, _ ->
                 getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).edit().clear().apply()
+                //https://stackoverflow.com/questions/6134103/clear-applications-data-programmatically
+                (getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).clearApplicationUserData()
                 val startIntent = Intent(this, StartActivity::class.java)
                 startActivity(startIntent)
                 finish()
