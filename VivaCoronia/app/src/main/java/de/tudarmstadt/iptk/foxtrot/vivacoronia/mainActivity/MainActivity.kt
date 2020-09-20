@@ -101,6 +101,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.achievementsFragment,
                 R.id.infectionStatusFragment,
                 R.id.spreadMapFragment,
+                R.id.quizFragment,
                 R.id.statusCheckFragment
             ),
             findViewById<DrawerLayout>(R.id.drawer_layout))
@@ -146,6 +147,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.menu_item_spreadmap -> {
                     navController.navigate(R.id.spreadMapFragment)
                 }
+                R.id.menu_item_quiz -> navController.navigate(R.id.quizFragment)
                 R.id.menu_item_statusCheck -> {
                     navController.navigate(R.id.statusCheckFragment)
                 }

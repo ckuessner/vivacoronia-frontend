@@ -4,4 +4,10 @@
         <attr name="infected_state" format="boolean" />
         <attr name="recovered_state" format="boolean" />
     </declare-styleable>
+    <declare-styleable name="GameStatus">
+        <attr name="won_game" format="boolean" />
+        <attr name="lost_game" format="boolean" />
+        <attr name="draw_game" format="boolean" />
+        <attr name="open_game" format="boolean" />"
+    </declare-styleable>
 </resources>

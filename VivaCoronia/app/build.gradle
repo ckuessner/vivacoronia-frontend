@@ -108,4 +108,7 @@ dependencies {
 
     // websockets (see license) https://github.com/square/okhttp
     implementation('com.squareup.okhttp3:okhttp:4.8.0')
+
+    // fake names for quiz
+    implementation 'com.github.javafaker:javafaker:1.0.2'
 }

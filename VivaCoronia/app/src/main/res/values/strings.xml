@@ -211,4 +211,9 @@
     <string name="itemForSupermarket">Item for %s</string>
     <string name="supermarket_offer">Supermarket Offer</string>
     <string name="go_to">go to</string>
+
+    <!-- Quiz -->
+    <string name="against_player">Against %s</string>
+    <string name="opponent_distance">(%.1f km away)</string>
+    <string name="quiz">Quiz</string>
 </resources>

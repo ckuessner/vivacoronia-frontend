@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="quizGame"
+            type="de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.QuizGameViewModel" />
+
+        <variable
+            name="onClickListener"
+            type="de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.OnQuizGameItemClickListener" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_round"
+        android:backgroundTint="#20000000"
+        android:padding="15dp"
+        android:layout_marginVertical="5dp"
+        android:duplicateParentState="true"
+        android:onClick="@{() -> onClickListener.onClick()}">
+
+        <ImageView
+            android:id="@+id/status_icon"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="15dp"
+            android:contentDescription="game status"
+            android:duplicateParentState="true"
+            android:src="@drawable/ic_quiz_game_state" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/player_turn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your turn" /> <!-- Their turn -->
+
+            <TextView
+                android:id="@+id/opponent_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{@string/against_player(quizGame.opponentName)}" />
+
+            <TextView
+                android:id="@+id/distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{@string/opponent_distance(quizGame.opponentDistanceInKm)}" />
+
+            <LinearLayout
+                android:id="@+id/question_result_bars"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="15dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="1dp"
+                    android:layout_weight="0.25"
+                    android:background="@drawable/border_round_3dp"
+                    android:backgroundTint="@android:color/darker_gray"
+                    android:contentDescription="result of question" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="15dp"
+                    android:layout_marginHorizontal="1dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="0.25"
+                    android:background="@drawable/border_round_3dp"
+                    android:backgroundTint="@android:color/darker_gray"
+                    android:contentDescription="result of question" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="15dp"
+                    android:layout_marginHorizontal="1dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="0.25"
+                    android:background="@drawable/border_round_3dp"
+                    android:backgroundTint="@android:color/darker_gray"
+                    android:contentDescription="result of question" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="1dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="0.25"
+                    android:background="@drawable/border_round_3dp"
+                    android:backgroundTint="@android:color/darker_gray"
+                    android:contentDescription="result of question" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/go_to_game"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="10dp"
+            android:contentDescription="go to game"
+            android:scaleType="fitEnd"
+            android:src="@drawable/ic_expand_arrow" />
+    </LinearLayout>
+</layout>
