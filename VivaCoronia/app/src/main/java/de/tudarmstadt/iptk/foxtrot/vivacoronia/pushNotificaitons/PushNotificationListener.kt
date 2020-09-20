@@ -18,6 +18,8 @@ class PushNotificationListener : WebSocketListener(){
     //gets set in the init method of websocketservice
     lateinit var socketService : WebSocketService
 
+    var webSocket: WebSocket? = null
+
     init {
         productSearchConverter.converter(ProductSearchConverter)
     }
@@ -26,6 +28,7 @@ class PushNotificationListener : WebSocketListener(){
         super.onOpen(webSocket, response)
         Log.i(tag, "onOpen: $response")
         webSocket.send(Constants.USER_ID)
+        this.webSocket = webSocket
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
@@ -45,6 +48,7 @@ class PushNotificationListener : WebSocketListener(){
     }
 
     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+        Log.i(tag, "close listener")
         socketService.reconnect()
     }
 

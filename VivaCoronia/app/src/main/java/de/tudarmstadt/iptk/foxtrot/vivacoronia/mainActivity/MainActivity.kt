@@ -35,6 +35,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.net.ConnectException
 
 private const val PRODUCT_QUERY = "product"
 
@@ -196,9 +197,16 @@ class MainActivity : AppCompatActivity() {
         // setup upload alarm
         setupUploadAlarm(applicationContext)
 
-        //start websocket to listen for push notifications
-        val websocketIntent = Intent(this, WebSocketService::class.java)
-        startService(websocketIntent)
+        // ping the server to see if my websocket is online or whether to create a new one
+        try {
+            Log.i(tag, "test websocket")
+            WebSocketService.testConnection()
+        }
+        catch (e: ConnectException) {
+            Log.i(tag, "websocket test failed")
+            val websocketIntent = Intent(this, WebSocketService::class.java)
+            startService(websocketIntent)
+        }
 
         // start tracking
         de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.checkPermissionsAndStartTracking(

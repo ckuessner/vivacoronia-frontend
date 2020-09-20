@@ -19,6 +19,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.getDevSSLContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.net.ConnectException
 import javax.net.ssl.X509TrustManager
 
 class WebSocketService : Service() {
@@ -47,12 +48,12 @@ class WebSocketService : Service() {
         } else {
             client = OkHttpClient()
         }
-        val listener = PushNotificationListener()
-        listener.socketService = this
+        listener = PushNotificationListener()
+        listener!!.socketService = this
         val userID = getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.USER_ID, null) as String
         val request = Request.Builder().url(Constants.SERVER_WEBSOCKET_URL).addHeader("userID", userID).build()
 
-        client.newWebSocket(request, listener)
+        client.newWebSocket(request, listener!!)
     }
 
 
@@ -99,6 +100,8 @@ class WebSocketService : Service() {
     }
 
     companion object{
+        private var listener: PushNotificationListener? = null
+
         fun tryStartWebSocketService(context: Context){
             // alarmmanager because this shall also be triggered if the app is not running but the
             // connection to the websocket is lost
@@ -112,6 +115,15 @@ class WebSocketService : Service() {
                 Log.i("WebSocketService", "start pending websocket service start")
                 alarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+10000, pendingIntent)
             }
+        }
+
+        fun testConnection(){
+            if (listener != null && listener!!.webSocket != null){
+                Log.i("WebSocketService", "send ping")
+                listener!!.webSocket!!.send("Ping")
+                return
+            }
+            throw ConnectException()
         }
     }
 
