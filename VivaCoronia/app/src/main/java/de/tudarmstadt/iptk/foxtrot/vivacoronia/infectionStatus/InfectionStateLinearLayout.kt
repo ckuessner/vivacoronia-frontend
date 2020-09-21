@@ -3,7 +3,6 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.infectionStatus
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 
 val INFECTED_STATE = intArrayOf(R.attr.infected_state)

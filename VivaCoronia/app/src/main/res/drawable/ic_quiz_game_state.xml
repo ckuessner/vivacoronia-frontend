@@ -3,5 +3,5 @@
     <item app:won_game="true" android:drawable="@drawable/ic_check_circle_green_24dp"/>
     <item app:lost_game="true" android:drawable="@drawable/ic_failed_red_24dp"/>
     <item app:draw_game="true" android:drawable="@drawable/ic_infection_unknown"/> <!-- TODO -->
-    <item app:open_game="true" android:drawable="@drawable/ic_infection_unknown"/> <!-- TODO -->
+    <item app:open_game="true" android:drawable="@drawable/ic_more"/>
 </selector>

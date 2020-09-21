@@ -2,7 +2,6 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.beust.klaxon.Json
 import com.google.android.gms.maps.model.LatLng
 import java.util.*
 

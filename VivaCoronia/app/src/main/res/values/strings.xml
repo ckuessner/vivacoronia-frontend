@@ -214,6 +214,21 @@
 
     <!-- Quiz -->
     <string name="against_player">Against %s</string>
-    <string name="opponent_distance">(%.1f km away)</string>
+    <string name="opponent_distance">km away</string>
     <string name="quiz">Quiz</string>
+    <string name="correct">Correct: %d</string>
+    <string name="opponent">Opponent</string>
+    <string name="you">You</string>
+    <string name="play">Play</string>
+    <string name="quiz_welcome">Welcome to the quiz section!\nBattle it out against other users to brag about your Corona knowledge!</string>
+    <string name="start_new_game">Start a new game</string>
+    <string name="active_games">Active Games</string>
+    <string name="no_active_games">No current active games</string>
+    <string name="finished_games">Finished Games</string>
+    <string name="no_finished_games">No games finished yet</string>
+    <string name="game_status">game status</string>
+    <string name="your_turn">Your turn</string>
+    <string name="opponents_turn">%s\'s turn</string>
+    <string name="question_result">result of question</string>
+    <string name="go_to_game">go to game</string>
 </resources>

@@ -1,7 +1,9 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
-import com.google.android.gms.maps.model.LatLng
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.QuizGameViewModel
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.models.Answer
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.models.OpponentInfo
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.models.Question
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.models.QuizGameDto
 
 object QuizClient {
@@ -9,38 +11,38 @@ object QuizClient {
         TODO("Initialize new game")
     }
 
-    fun getGame(gameId: String, location: LatLng): QuizGameViewModel {
+    fun getGame(gameId: String): QuizGameViewModel {
         TODO("Not yet implemented")
     }
 
     fun getFinishedGamesDummy(gameIds: List<String>): List<QuizGameViewModel> {
-        val finishedGames = listOf(
-            QuizGameViewModel("1", "1", 3f, -1),
-            QuizGameViewModel("2", "2", 5f, -1),
-            QuizGameViewModel("3", "3", 7f, -1),
-            QuizGameViewModel("4", "2", 9f, -1),
-            QuizGameViewModel("5", "1", 11f, -1)
-
-        )
-        finishedGames[0].gameState = QuizGameViewModel.GameState.DRAW
-        finishedGames[1].gameState = QuizGameViewModel.GameState.WON
-        finishedGames[2].gameState = QuizGameViewModel.GameState.WON
-        finishedGames[3].gameState = QuizGameViewModel.GameState.LOST
-        finishedGames[4].gameState = QuizGameViewModel.GameState.DRAW
-        return finishedGames
+        /*val questions = listOf(Question("Was ist das für eine Frage?", listOf("Eine gute Frage", "Das ist keine Frage", "Frag was anderes", "Du bist doof"), "Du bist doof"))
+        val answers = listOf<Answer>()
+        return listOf(
+            QuizGameViewModel(QuizGameDto("1", questions, answers, OpponentInfo("2", 300)))
+        )*/
+        return listOf()
     }
 
     fun getGames(gameIds: List<String>): List<QuizGameViewModel> {
-        val openGames = listOf(
-            QuizGameViewModel("1", "1", 3f, -1),
-            QuizGameViewModel("2", "2", 5f, -1),
-            QuizGameViewModel("3", "3", 7f, -1),
-            QuizGameViewModel("4", "2", 9f, -1),
-            QuizGameViewModel("5", "1", 11f, -1)
-
+        val questions = listOf(
+            Question("Was ist das für eine Frage?", listOf("Eine gute Frage", "Das ist keine Frage", "Frag was anderes", "Du bist doof"), "Du bist doof"),
+            Question("Was ist das für eine Frage?", listOf("Eine gute Frage", "Das ist keine Frage", "Frag was anderes", "Du bist doof"), "Du bist doof"),
+            Question("Was ist das für eine Frage?", listOf("Eine gute Frage", "Das ist keine Frage", "Frag was anderes", "Du bist doof"), "Du bist doof"),
+            Question("Was ist das für eine Frage?", listOf("Eine gute Frage", "Das ist keine Frage", "Frag was anderes", "Du bist doof"), "Du bist doof")
         )
-        openGames.forEach { it.gameState = QuizGameViewModel.GameState.OPEN }
-        return openGames
+        val answers = listOf(
+            Answer("1", 0, "Frag was anderes", false),
+            Answer("2", 0, "Du bist doof", true),
+            Answer("1", 1, "Du bist doof", true),
+            Answer("2", 1, "Du bist doof", true),
+            Answer("1", 2, "Du bist doof", true),
+            Answer("2", 2, "Frag was anderes", false),
+            Answer("1", 3, "Frag was anderes", false)
+        )
+        return listOf(
+            QuizGameViewModel(QuizGameDto("1", questions, answers, OpponentInfo("2", 300)))
+        )
     }
 
     fun postAnswer(gameId: String, questionIndex: Int, answer: String) {}

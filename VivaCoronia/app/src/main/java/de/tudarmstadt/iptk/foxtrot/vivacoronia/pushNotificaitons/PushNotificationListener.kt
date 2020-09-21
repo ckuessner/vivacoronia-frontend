@@ -8,7 +8,6 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import kotlin.math.round
 
 class PushNotificationListener : WebSocketListener(){
     private val tag = "PushListener"

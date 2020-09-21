@@ -17,10 +17,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.model.LatLng
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentFilterOffersBinding
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.LocationPickerActivity
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 
 private const val LOCATION_PICKER_REQUEST = 1
 

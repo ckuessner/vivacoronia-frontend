@@ -1,11 +1,11 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.ItemQuizGameOverviewBinding
@@ -30,10 +30,21 @@ class QuizGameOverviewItem : LinearLayout {
     init {
         val inflater = LayoutInflater.from(context)
         binding = DataBindingUtil.inflate(inflater, R.layout.item_quiz_game_overview, this, true)
+        colorResultBars()
     }
 
-    fun onClick() {
-        Log.d("Quiz Item", "CLICKED CLICKED CLICKED")
+    fun colorResultBars() {
+        val bars = arrayOf(binding.resultBar0, binding.resultBar1, binding.resultBar2, binding.resultBar3)
+        for ((idx, bar) in bars.withIndex()) {
+            val result = binding.quizGame?.getResult(idx) ?: return
+            bar.backgroundTintList = when (result) {
+                GameState.OPEN -> ColorStateList.valueOf(ContextCompat.getColor(context, android.R.color.darker_gray))
+                GameState.WON -> ColorStateList.valueOf(ContextCompat.getColor(context, R.color.green))
+                GameState.LOST -> ColorStateList.valueOf(ContextCompat.getColor(context, R.color.red))
+                else -> ColorStateList.valueOf(ContextCompat.getColor(context, android.R.color.holo_orange_light))
+            }
+
+        }
     }
 
     override fun onCreateDrawableState(extraSpace: Int): IntArray {
@@ -49,6 +60,8 @@ class QuizGameOverviewItem : LinearLayout {
     }
 }
 
-class OnQuizGameItemClickListener(private val quizGame: QuizGameViewModel) {
-    fun onClick() {}
+class OnQuizGameItemClickListener(private val quizGame: QuizGameViewModel, private val context: Context) {
+    fun onClick() {
+        QuizActivity.start(context, quizGame)
+    }
 }

@@ -1,97 +1,87 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz
 
-import android.os.Parcel
 import android.os.Parcelable
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.github.javafaker.Faker
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.QuizGame
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.models.Answer
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.models.Question
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.models.QuizGameDto
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
+import kotlinx.android.parcel.IgnoredOnParcel
+import kotlinx.android.parcel.Parcelize
 import java.util.*
 
-
+@Parcelize
 class QuizGameViewModel(
-    val gameId: String,
-    val opponentId: String,
-    val opponentDistanceInKm: Float,
-    var finishedAt: Long = 0
+    val quizGame: QuizGameDto
 ) : ViewModel(), Parcelable {
     enum class GameState {
         WON, LOST, DRAW, OPEN
     }
 
-    val opponentName: String
-    var gameState: GameState = GameState.OPEN // TODO set accordingly
+    @IgnoredOnParcel val opponentName: String
+    @IgnoredOnParcel val opponentDistanceInKm: String
+    @IgnoredOnParcel var gameState: GameState = GameState.OPEN
+    @IgnoredOnParcel var isOpponentsTurn: Boolean = false
     val finished: Boolean
         get() = gameState != GameState.OPEN
 
-    constructor(parcel: Parcel) : this(
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readFloat(),
-        parcel.readLong()
-    ) {
-
-    }
-
     init {
-        val faker = Faker(Random(opponentId.hashCode().toLong()))
+        val faker = Faker(Random(quizGame.opponentInfo.userId.hashCode().toLong()))
         val name = faker.name()
-        opponentName = name.firstName() + " " + name.lastName()
+        opponentName = name.firstName()
+        opponentDistanceInKm = (quizGame.opponentInfo.distanceInMeters / 1000).toString()
+
+        computeGameState()
     }
 
+    private fun computeGameState() {
+        val (opponentAnswers, myAnswers) = quizGame.answers.partition { it.userId == quizGame.opponentInfo.userId }
+        val myCorrectAnswersCount = myAnswers.count { it.isCorrect }
+        val opponentCorrectAnswersCount = opponentAnswers.count { it.isCorrect }
 
-    override fun equals(other: Any?): Boolean {
-        if (other == null || other !is QuizGameViewModel)
-            return false
-        return gameId == other.gameId
-                && opponentId == other.opponentId
-                && opponentDistanceInKm == other.opponentDistanceInKm
-                && finishedAt == other.finishedAt
+        gameState = when {
+            opponentAnswers.size != myAnswers.size || opponentAnswers.isEmpty() -> GameState.OPEN
+            myCorrectAnswersCount > opponentCorrectAnswersCount -> GameState.WON
+            myCorrectAnswersCount == opponentCorrectAnswersCount -> GameState.DRAW
+            else -> GameState.LOST
+        }
+
+        isOpponentsTurn = opponentAnswers.size < myAnswers.size
     }
 
-    override fun hashCode(): Int {
-        var result = gameId.hashCode()
-        result = 31 * result + opponentId.hashCode()
-        result = 31 * result + opponentDistanceInKm.hashCode()
-        result = 31 * result + finishedAt.hashCode()
-        result = 31 * result + opponentName.hashCode()
-        result = 31 * result + gameState.hashCode()
-        return result
+    fun opponentAnswers() = quizGame.answers.filter {it.userId == quizGame.opponentInfo.userId}
+
+    fun myAnswers() = quizGame.answers.filter {it.userId != quizGame.opponentInfo.userId}
+
+    fun getAnswer(questionIndex: Int, answeredByOpponent: Boolean = false): Answer? {
+        val answers = if (answeredByOpponent) opponentAnswers() else myAnswers()
+        return answers.firstOrNull { it.questionIndex == questionIndex }
     }
 
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(gameId)
-        parcel.writeString(opponentId)
-        parcel.writeFloat(opponentDistanceInKm)
-        parcel.writeLong(finishedAt)
+    fun getResult(questionIndex: Int): GameState {
+        val myAnswer = getAnswer(questionIndex, false)
+        val opponentAnswer = getAnswer(questionIndex, true)
+        return when {
+            myAnswer == null || opponentAnswer == null -> GameState.OPEN
+            myAnswer.answer == opponentAnswer.answer -> GameState.DRAW
+            myAnswer.isCorrect && !opponentAnswer.isCorrect -> GameState.WON
+            else -> GameState.LOST
+        }
     }
 
-    override fun describeContents(): Int {
-        return 0
+    fun getNextQuestionIndex(): Int {
+        // take the first index for which there exists no answer with that question index and my userId (!= opponentId)
+        return quizGame.questions.indices.first { i -> quizGame.answers.none { answer -> answer.questionIndex == i && answer.userId != quizGame.opponentInfo.userId} }
+    }
+
+    fun getNextQuestion(): Question {
+        return quizGame.questions[getNextQuestionIndex()]
     }
 
     companion object {
-
-        fun from(quizGame: QuizGame): QuizGameViewModel {
-            return QuizGameViewModel(quizGame.gameId, "TODO", 3f, quizGame.finishedAt)
-        }
-
         fun from(quizGame: QuizGameDto): QuizGameViewModel {
-            return QuizGameViewModel()
-        }
-
-        @Suppress("unused") // The creator is necessary to implement Parcelable
-        @JvmField
-        val CREATOR = object : Parcelable.Creator<QuizGameViewModel> {
-            override fun createFromParcel(parcel: Parcel): QuizGameViewModel {
-                return QuizGameViewModel(parcel)
-            }
-
-            override fun newArray(size: Int): Array<QuizGameViewModel?> {
-                return arrayOfNulls(size)
-            }
+            return QuizGameViewModel(quizGame)
         }
     }
 }

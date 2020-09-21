@@ -30,11 +30,11 @@ class QuizOverviewFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(QuizGameOverviewViewModel::class.java)
         db = AppDatabase.getDatabase(requireContext())
 
-        val activeGamesAdapter = QuizGameAdapter()
+        val activeGamesAdapter = QuizGameAdapter(requireContext())
         binding.activeGames.adapter = activeGamesAdapter
         viewModel.activeGames.observe(viewLifecycleOwner, Observer { activeGamesAdapter.submitList(it) })
 
-        val finishedGamesAdapter = QuizGameAdapter()
+        val finishedGamesAdapter = QuizGameAdapter(requireContext())
         binding.finishedGames.adapter = finishedGamesAdapter
         viewModel.finishedGames.observe(viewLifecycleOwner, Observer { finishedGamesAdapter.submitList(it) })
 
@@ -51,13 +51,15 @@ class QuizOverviewFragment : Fragment() {
         GlobalScope.launch {
             val activeGames = QuizClient.getGames(activeGameIds)
             activity?.let { it.runOnUiThread {
-              viewModel.activeGames.value = activeGames
+                binding.noGamesActive.visibility = if (activeGames.isEmpty()) View.VISIBLE else View.GONE
+                viewModel.activeGames.value = activeGames
             }}
         }
 
         GlobalScope.launch {
             val finishedGames = QuizClient.getFinishedGamesDummy(finishedGameIds)
             activity?.let { it.runOnUiThread {
+                binding.noGamesFinished.visibility = if (finishedGames.isEmpty()) View.VISIBLE else View.GONE
                 viewModel.finishedGames.value = finishedGames
             }}
         }
@@ -65,6 +67,6 @@ class QuizOverviewFragment : Fragment() {
     }
 
     private fun startNewGame() {
-        TODO("Start quiz game activity")
+        QuizActivity.start(requireContext(), null)
     }
 }
