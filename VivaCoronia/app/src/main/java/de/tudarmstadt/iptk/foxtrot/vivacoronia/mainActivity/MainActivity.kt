@@ -221,10 +221,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         val startFragment = intent.getIntExtra("startFragment", R.id.menu_item_location_history)
+        var product: ProductSearchQuery? = null
+        val startFragment = intent.getIntExtra("startFragment", R.id.menu_item_location_history)
         if (startFragment == R.id.search_offers) {
-            val product = intent.getParcelableExtra<ProductSearchQuery>(PRODUCT_QUERY)
-            navigateToFragment(startFragment, product)
+            product = intent.getParcelableExtra<ProductSearchQuery>(PRODUCT_QUERY)
         }
+        navigateToFragment(startFragment, product)
 
         val settings = getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
         val isAdmin = settings.getBoolean(Constants.IS_ADMIN, false)
