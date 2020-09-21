@@ -119,8 +119,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:alpha="0.2"
-                        android:src="@drawable/ic_achievement"
-                        tools:srcCompat="@drawable/moneyboybronze" />
+                        android:src="@drawable/moneyboybronze" />
 
                     <ImageView
                         android:id="@+id/imgViewMoneySilver"
@@ -128,8 +127,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:alpha="0.2"
-                        android:src="@drawable/ic_achievement"
-                        tools:srcCompat="@drawable/moneyboysilver" />
+                        android:src="@drawable/moneyboysilver"/>
 
                     <ImageView
                         android:id="@+id/imgViewMoneyGold"
@@ -137,8 +135,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:alpha="0.2"
-                        android:src="@drawable/ic_achievement"
-                        tools:srcCompat="@drawable/moneyboygold" />
+                        android:src="@drawable/moneyboygold" />
 
                 </LinearLayout>
 

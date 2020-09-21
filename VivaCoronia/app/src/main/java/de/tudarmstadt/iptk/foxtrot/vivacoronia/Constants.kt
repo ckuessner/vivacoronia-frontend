@@ -1,6 +1,19 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
 object Constants {
+    
+    const val BADGE_BRONZE = "Bronze"
+    const val BADGE_SILVER = "Silver"
+    const val BADGE_GOLD = "Gold"
+    const val BADGE_NONE = "NONE"
+
+    const val ACHIEVEMENT_ZOMBIE = "Zombie"
+    const val ACHIEVEMENT_MONEYBOY = "Money"
+    const val ACHIEVEMENT_HAMSTERBUYER = "Hamster"
+    const val ACHIEVEMENT_SUPERSPREADER = "Superspreader"
+    const val ACHIEVEMENT_ALONE = "4everalone"
+    const val ACHIEVEMENT_QUIZMASTER = "Quizmaster"
+
 
 
     // Location Upload stuff
@@ -30,6 +43,7 @@ object Constants {
     const val IS_ADMIN = "adminStatus"
     const val ENDPOINT_ACHIEVEMENT = "achievements"
     const val ENDPOINT_SCORE = "infectionScore"
+    const val INFECTION_SCORE = "INFECTION_SCORE"
 
     // infected stuff
     const val INFECTED_NOTIFICATION_CHANNEL_ID = "infected_channel"

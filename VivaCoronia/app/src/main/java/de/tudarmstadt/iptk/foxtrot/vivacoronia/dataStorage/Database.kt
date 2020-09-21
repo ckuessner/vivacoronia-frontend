@@ -1,13 +1,12 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.room.*
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.AchievementInfo
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.DBLocation
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.User
 
-@Database(entities = arrayOf(User::class, DBLocation::class), version = 1)
+@Database(entities = arrayOf(DBLocation::class, AchievementInfo::class), version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun coronaDao() : CoronaDao
 
