@@ -58,6 +58,11 @@
     <string name="product_notification_channel_title">Offer found for</string>
     <string name="product_notification_channel_text">Click to view products</string>
 
+    <!-- achievement notification -->
+    <string name="achievement_notification_channel_name">Achievement Notification Channel</string>
+    <string name="achievement_notification_channel_description">This channel informs you about new unlocked achievements.</string>
+    <string name="achievement_notification_channel_title">New Achievement.</string>
+
     <!-- bottom navigation menu -->
     <string name="menu_item_location_history">History</string>
     <string name="menu_item_infection_update">Infection Status</string>

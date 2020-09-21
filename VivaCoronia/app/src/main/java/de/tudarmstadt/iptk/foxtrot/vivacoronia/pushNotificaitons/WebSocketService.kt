@@ -95,6 +95,23 @@ class WebSocketService : Service() {
             )
         }
     }
+    
+    fun makeAchievementNotification(msg: String) {
+        with(NotificationManagerCompat.from(this)) {
+            notify(
+                SystemClock.elapsedRealtime().hashCode(), //we want a unique id so that notifications for different contacts overwrite each other
+                NotificationHelper.getAchievementNotification(
+                    applicationContext,
+                    Constants.ACHIEVEMENT_NOTIFICATION_CHANNEL_ID,
+                    R.drawable.ic_corona,
+                    getString(R.string.achievement_notification_channel_title),
+                    msg,
+                    NotificationCompat.PRIORITY_DEFAULT,
+                    Color.GREEN
+                )
+            )
+        }
+    }
 
     fun reconnect() {
         Log.i(tag, "reconnect")

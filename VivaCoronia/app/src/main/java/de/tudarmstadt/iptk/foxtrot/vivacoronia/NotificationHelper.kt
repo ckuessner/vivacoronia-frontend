@@ -65,6 +65,25 @@ object NotificationHelper{
             .build()
     }
 
+    fun getAchievementNotification(
+        context: Context,
+        channelID: String,
+        smallIcon: Int,
+        title: String,
+        text: String,
+        priority: Int,
+        color: Int
+    ) : Notification {
+        val i = Intent(context, MainActivity::class.java)
+        i.putExtra("startFragment", R.id.achievementsFragment)
+        // every intent needs his own id because otherwise the previous with this id would be reused
+        val pi = PendingIntent.getActivity(context, SystemClock.elapsedRealtime().hashCode(), i, 0)
+        return getNotification(context, channelID, smallIcon, title, text, priority, color)
+            .setContentIntent(pi)
+            .setAutoCancel(true)
+            .build()
+    }
+
     fun getProductMatchNotification(
         context: Context,
         channelID: String,

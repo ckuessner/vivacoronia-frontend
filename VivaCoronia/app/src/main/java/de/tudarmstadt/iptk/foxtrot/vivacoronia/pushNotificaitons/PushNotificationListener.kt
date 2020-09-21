@@ -37,6 +37,12 @@ class PushNotificationListener : WebSocketListener(){
             socketService.makeContactNotification()
             return
         }
+
+        if (text.startsWith("Congratulations!!! You achieved")) {
+            socketService.makeAchievementNotification(text)
+            return
+        }
+
         // we only get contact or product notifications so if we are here it can only be a product notification
         try {
             val obj = productSearchConverter.parse<ProductSearchQuery>(text)

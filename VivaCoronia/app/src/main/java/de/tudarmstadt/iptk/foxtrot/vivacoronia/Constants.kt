@@ -45,6 +45,10 @@ object Constants {
     const val ENDPOINT_SCORE = "infectionScore"
     const val INFECTION_SCORE = "INFECTION_SCORE"
 
+    // achiement stuff
+    const val ACHIEVEMENT_NOTIFICATION_ID = 21
+    const val ACHIEVEMENT_NOTIFICATION_CHANNEL_ID = "achievement_channel"
+
     // infected stuff
     const val INFECTED_NOTIFICATION_CHANNEL_ID = "infected_channel"
 

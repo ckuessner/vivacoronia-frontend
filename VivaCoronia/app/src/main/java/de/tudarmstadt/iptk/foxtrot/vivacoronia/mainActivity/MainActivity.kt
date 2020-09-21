@@ -75,6 +75,13 @@ class MainActivity : AppCompatActivity() {
                 NotificationManager.IMPORTANCE_DEFAULT,
                 Constants.PRODUCT_NOTIFICATION_CHANNEL_ID
             )
+            NotificationHelper.createNotificationChannel(
+                this,
+                getString(R.string.achievement_notification_channel_name),
+                getString(R.string.achievement_notification_channel_description),
+                NotificationManager.IMPORTANCE_DEFAULT,
+                Constants.ACHIEVEMENT_NOTIFICATION_CHANNEL_ID
+            )
         }
 
         //setup logout button logic
