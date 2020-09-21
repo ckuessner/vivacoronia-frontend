@@ -9,5 +9,5 @@ data class AchievementInfo(
     @PrimaryKey val achievement: String,
     val type: String,
     val neededForHigher : Int,
-    val currentAmount : Int
+    val percentageOfPeople : Int
 )
