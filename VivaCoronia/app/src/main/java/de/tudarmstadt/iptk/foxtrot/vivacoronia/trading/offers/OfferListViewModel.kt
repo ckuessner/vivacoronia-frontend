@@ -88,6 +88,18 @@ class OfferViewModel(var offer: Offer) : ProductViewModel(offer as BaseProduct) 
         set(value){
             offer.phoneNumber = value
         }
+
+    var supermarketName: String
+        get() = offer.supermarketName
+        set(value) {
+            offer.supermarketName = value
+        }
+
+    var supermarketId: String
+        get() = offer.supermarketId
+        set(value) {
+            offer.supermarketId = value
+        }
 }
 
 class OfferViewModelFactory(private val offer: Offer): ViewModelProvider.Factory {

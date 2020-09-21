@@ -16,6 +16,9 @@ class Offer(
     var distanceToUser: Double,
     var phoneNumber: String
 ) : BaseProduct(product, productCategory, amount, location, id), Parcelable {
+    var supermarketId: String = ""
+    var supermarketName: String = ""
+
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readInt(),

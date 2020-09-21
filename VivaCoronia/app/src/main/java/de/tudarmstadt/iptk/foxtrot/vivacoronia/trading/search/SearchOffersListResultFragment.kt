@@ -8,10 +8,16 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import com.google.android.material.button.MaterialButton
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentSearchOffersListResultBinding
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.TradingFragment
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.TradingFragmentNav
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OfferListViewModel
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.supermarketInventory.SupermarketInventoryFragment
+
 
 class SearchOffersListResultFragment(private val parent: SearchOffersFragment) : Fragment() {
     private lateinit var binding: FragmentSearchOffersListResultBinding
@@ -20,18 +26,36 @@ class SearchOffersListResultFragment(private val parent: SearchOffersFragment) :
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search_offers_list_result, container, false)
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_search_offers_list_result,
+            container,
+            false
+        )
 
         binding.offerListViewModel = ViewModelProvider(requireActivity()).get(OfferListViewModel::class.java)
-        val adapter = SearchResultAdapter(SearchResultItemListener { parent.viewModel.onOfferDetailClick(it) }, SearchResultCallListener { parent.viewModel.onCallButtonClick(it, requireActivity()) })
+        val adapter = SearchResultAdapter(
+            SearchResultItemListener { parent.viewModel.onOfferDetailClick(it) },
+            SearchResultCallListener { parent.viewModel.onCallButtonClick(it, requireActivity()) },
+            SearchResultSwitchToSupermarketListener { switchToSupermarketList(it) })
         binding.resultList.adapter = adapter
 
         parent.viewModel.searchResults.observe(viewLifecycleOwner, Observer<List<Offer>> {
             binding.offerListViewModel!!.setOffers(it ?: listOf())
         })
-        binding.offerListViewModel!!.offersList.observe(viewLifecycleOwner, Observer { it?.let { adapter.submitList(it) } })
+        binding.offerListViewModel!!.offersList.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                adapter.submitList(
+                    it
+                )
+            }
+        })
 
         return binding.root
+    }
+
+    private fun switchToSupermarketList(supermarketId: String) {
+        TODO("Not yet implemented")
     }
 
     companion object {

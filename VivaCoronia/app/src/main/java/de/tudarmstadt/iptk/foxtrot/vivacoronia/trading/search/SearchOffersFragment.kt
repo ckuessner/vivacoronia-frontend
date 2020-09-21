@@ -13,7 +13,9 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.TradingApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentSearchOffersBinding
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.TradingFragmentNav
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.supermarketInventory.SupermarketInventoryFragment
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.LocationUtility
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -101,7 +103,7 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
         binding.progressHorizontal.visibility = View.VISIBLE
         GlobalScope.launch {
             try {
-                val offers = TradingApiClient.getOffers(requireContext(), searchQuery)
+                val offers = TradingApiClient.getOffers(requireContext(), searchQuery, true)
                 activity?.runOnUiThread {
                     viewModel.searchResults.value = offers
                     binding.searchHint.visibility = if (offers.size > 0) View.INVISIBLE else View.VISIBLE

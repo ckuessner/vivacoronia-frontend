@@ -31,6 +31,10 @@ object TradingApiClient : ApiBaseClient() {
         return "${getBaseUrl()}/trading/"
     }
 
+    private fun getOffersWithSupermarketEndpoint(): String {
+        return joinPaths(getEndpoint(), "productSearch")
+    }
+
     private fun getOffersEndpoint(): String {
         return joinPaths(getEndpoint(), "offers")
     }
@@ -60,7 +64,7 @@ object TradingApiClient : ApiBaseClient() {
     fun getMyOffers(context: Context): MutableList<Offer> {
         val query = ProductSearchQuery()
         query.userId = TradingApiClient.getUserId(context)
-        return getOffers(context, query)
+        return getOffers(context, query, false)
     }
 
     private fun getMetadata(context: Context, name: String): String? {
@@ -225,21 +229,45 @@ object TradingApiClient : ApiBaseClient() {
         return JsonObjectJWT(method, url, jsonPostObject, future, future, context)
     }
 
-    fun getOffers(context: Context, query: ProductSearchQuery): MutableList<Offer> {
+    fun getOffers(context: Context, query: ProductSearchQuery, withSupermarketItems: Boolean): MutableList<Offer> {
         val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
-        val url = Uri.parse(getOffersEndpoint())
-            .buildUpon()
-            .encodedQuery(query.toString())
-            .build()
-            .toString()
+        val url = if(withSupermarketItems){
+            Uri.parse(getOffersWithSupermarketEndpoint())
+                .buildUpon()
+                .encodedQuery(query.toString())
+                .build()
+                .toString()
+        } else{
+            Uri.parse(getOffersEndpoint())
+                .buildUpon()
+                .encodedQuery(query.toString())
+                .build()
+                .toString()
+        }
 
         val future = RequestFuture.newFuture<JSONArray>()
         val request = JsonArrayJWT(Request.Method.GET, url, null, future, future, context)
         queue.add(request)
-        val futureResult = future.get().toString()
+        val futureResult = future.get()//.toString()
 
-        val result = productConverter.parseArray<Offer>(futureResult)
+        //val result = productConverter.parseArray<Offer>(futureResult)
+        val result = parseMixedOffers(futureResult)
         return result?.toMutableList() ?: mutableListOf()
+    }
+
+    private fun parseMixedOffers(arrayToParse: JSONArray): ArrayList<Offer> {
+        val resultList = arrayListOf<Offer>()
+        for(index in 0 until arrayToParse.length()){
+            val currentItem = arrayToParse[index]
+            if((currentItem as JSONObject).has("name")){
+                val offer = productConverter.parse<Offer>(currentItem.toString()) as Offer
+                offer.supermarketName = currentItem["name"] as String
+                offer.supermarketId = currentItem["supermarketId"] as String
+                resultList.add(offer)
+            }
+            else resultList.add(productConverter.parse<Offer>(currentItem.toString()) as Offer)
+        }
+        return resultList
     }
 
     fun getMyNeeds(context: Context): MutableList<Need> {

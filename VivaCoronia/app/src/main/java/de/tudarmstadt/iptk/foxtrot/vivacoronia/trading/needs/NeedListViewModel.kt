@@ -6,8 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.ProductViewModel
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Need
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.offers.OfferViewModel
 import java.lang.IllegalArgumentException
 
 class NeedListViewModel : ViewModel(){
@@ -39,7 +37,7 @@ class NeedViewModelFactory(private val need: Need): ViewModelProvider.Factory {
         if (modelClass.isAssignableFrom(NeedViewModel::class.java)) {
             return NeedViewModel(need) as T
         }
-        throw IllegalArgumentException("Unknown OfferViewModel class")
+        throw IllegalArgumentException("Unknown NeedViewModel class")
     }
 
 }
