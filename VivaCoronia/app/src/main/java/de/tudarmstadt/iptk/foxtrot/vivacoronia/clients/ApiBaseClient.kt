@@ -25,6 +25,7 @@ import com.android.volley.toolbox.*
 
 abstract class ApiBaseClient {
     private val _tag = "ApiBaseClient"
+    protected val REQUEST_QUEUE_ERR_STRING = "Unable to get request queue!"
 
     fun getBaseUrl(): String {
         return Constants.SERVER_BASE_URL

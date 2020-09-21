@@ -4,7 +4,8 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
-import com.android.volley.*
+import com.android.volley.Request
+import com.android.volley.VolleyError
 import com.android.volley.toolbox.RequestFuture
 import com.android.volley.toolbox.Volley
 import com.beust.klaxon.*
@@ -22,13 +23,13 @@ import java.lang.IllegalStateException
 
 
 object TradingApiClient : ApiBaseClient() {
-    private val productConverter : Klaxon = Klaxon()
+    private val productConverter: Klaxon = Klaxon()
 
     init {
         productConverter.converter(LatLngConverter)
     }
 
-    private fun getEndpoint(): String{
+    private fun getEndpoint(): String {
         return "${getBaseUrl()}/trading/"
     }
 
@@ -272,7 +273,6 @@ object TradingApiClient : ApiBaseClient() {
     }
 
 
-
     fun deleteOffer(id: String, sold: Boolean, context: Context): Boolean {
         val queue = getRequestQueue(context) ?: return false
         val url = joinPaths(getOffersEndpoint(), id)
@@ -310,22 +310,23 @@ object TradingApiClient : ApiBaseClient() {
         val jsonObject = JSONObject(jsonString)
         jsonObject.put("userId", getUserId(context))
         val url = joinPaths(getOffersEndpoint(), offer.id)
-        val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
+        val queue = getRequestQueue(context) ?: throw VolleyError(REQUEST_QUEUE_ERR_STRING)
         val future = RequestFuture.newFuture<JSONObject>()
 
-        val method = if (offer.id.isEmpty()) Request.Method.POST else Request.Method.PATCH // if id is not set, this is a new offer and should be posted
-        val request = JsonObjectJWT(method, url, jsonObject, future, future,context)
+        val method =
+            if (offer.id.isEmpty()) Request.Method.POST else Request.Method.PATCH // if id is not set, this is a new offer and should be posted
+        val request = JsonObjectJWT(method, url, jsonObject, future, future, context)
         queue.add(request)
         val result = future.get()
         return productConverter.parse(result.toString())
     }
 
-    fun postNeed(need: Need, context: Context): Need?{
+    fun postNeed(need: Need, context: Context): Need? {
         val jsonString = productConverter.toJsonString(need)
         val jsonObject = JSONObject(jsonString)
         jsonObject.put("userId", getUserId(context))
         val url = joinPaths(getNeedsEndpoint(), need.id)
-        val queue = getRequestQueue(context) ?: throw VolleyError("Unable to get request queue!")
+        val queue = getRequestQueue(context) ?: throw VolleyError(REQUEST_QUEUE_ERR_STRING)
         val future = RequestFuture.newFuture<JSONObject>()
 
         val method = Request.Method.POST
