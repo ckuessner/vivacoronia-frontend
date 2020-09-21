@@ -51,7 +51,9 @@ class PushNotificationListener : WebSocketListener(){
         socketService.reconnect()
     }
 
-    // onClosing method is called if server closes connection but because of periodic ping onFailure will be called to trigger reconnect
+    override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+        webSocket.close(code, reason)
+    }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         Log.e(tag, "websocket failure " + t.cause.toString())
