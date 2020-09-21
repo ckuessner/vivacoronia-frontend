@@ -1,6 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
 import android.content.Context
+import android.util.Log
 import com.android.volley.Request.Method.GET
 import com.android.volley.Request.Method.POST
 import com.android.volley.Response
@@ -17,11 +18,13 @@ import org.json.JSONObject
 object QuizGameApiClient : ApiBaseClient() {
     private const val TAG = "QuizGameClient"
 
+    private val klaxonWithQuestion: Klaxon = Klaxon()
+    private val klaxon: Klaxon = Klaxon()
+
     private fun getEndpoint(): String {
         return "${getBaseUrl()}/quiz/game/"
     }
 
-    private val klaxon: Klaxon = Klaxon()
 
     fun postQuizGameRequest(ctx: Context, location: LatLng): Pair<QuizGameDto, OpponentInfo> {
         val requestQueue = getRequestQueue(ctx) ?: throw VolleyError(REQUEST_QUEUE_ERR_STRING)
@@ -42,7 +45,7 @@ object QuizGameApiClient : ApiBaseClient() {
 
         val gameJson = responseFuture.get()
 
-        val game = klaxon.parse<QuizGameDto>(gameJson.get("game").toString())
+        val game = klaxonWithQuestion.parse<QuizGameDto>(gameJson.get("game").toString())
         val oppInfo = klaxon.parse<OpponentInfo>(gameJson.get("opponentInfo").toString())
 
         if (game == null || oppInfo == null) throw VolleyError("Unable to create new game")
@@ -64,7 +67,7 @@ object QuizGameApiClient : ApiBaseClient() {
         requestQueue.add(request)
 
         val gameJson = responseFuture.get()
-        return klaxon.parse(gameJson) ?: throw VolleyError("Could not get gameInfo")
+        return klaxonWithQuestion.parse(gameJson) ?: throw VolleyError("Could not get gameInfo")
     }
 
     fun getMultipleGames(ctx: Context, gameIds: List<String>): List<QuizGameDto> {
@@ -78,7 +81,8 @@ object QuizGameApiClient : ApiBaseClient() {
             requestQueue.add(request)
             responseFuture
         }.map {
-            klaxon.parse<QuizGameDto>(it.get()) ?: throw VolleyError("Could not get gameInfo")
+            klaxonWithQuestion.parse<QuizGameDto>(it.get())
+                ?: throw VolleyError("Could not get gameInfo")
         }.toList()
 
     }

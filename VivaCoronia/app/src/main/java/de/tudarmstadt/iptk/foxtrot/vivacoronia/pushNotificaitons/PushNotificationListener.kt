@@ -42,6 +42,17 @@ class PushNotificationListener : WebSocketListener(){
             return
         }
 
+        if (text.startsWith("QUIZ")) {
+            val splitted = text.split('|')
+            when (splitted[0]) {
+                "QUIZ_NEW" -> TODO()
+                "QUIZ_TURN" -> TODO()
+                "QUIZ_GAMEOVER_WON" -> TODO()
+                "QUIZ_GAMEOVER_LOST" -> TODO()
+                "QUIZ_GAMEOVER_DRAW" -> TODO()
+            }
+            return
+        }
         // we only get contact or product notifications so if we are here it can only be a product notification
         try {
             val obj = productSearchConverter.parse<ProductSearchQuery>(text)
