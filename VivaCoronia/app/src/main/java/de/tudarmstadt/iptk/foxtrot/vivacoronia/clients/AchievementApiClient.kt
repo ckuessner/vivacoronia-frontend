@@ -42,7 +42,7 @@ object AchievementApiClient : ApiBaseClient() {
         when(requestBadge){
             "bronce" -> return Constants.BADGE_BRONZE
             "silver" -> return Constants.BADGE_SILVER
-            "gold" -> return Constants.BADGE_SILVER
+            "gold" -> return Constants.BADGE_GOLD
             "none" -> return Constants.BADGE_NONE
             else -> return null
         }

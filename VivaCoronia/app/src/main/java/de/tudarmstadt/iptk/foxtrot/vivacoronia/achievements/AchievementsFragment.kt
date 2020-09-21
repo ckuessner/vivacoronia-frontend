@@ -2,6 +2,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.achievements
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -69,19 +70,45 @@ class AchievementsFragment : Fragment() {
     private fun setAchievementInfo(view: View?, achievement: AchievementInfo){
         if(achievement.type == Constants.BADGE_NONE)
             return
-        val idAsString = convertAchievementToID(achievement) ?: return
-        val id = view?.resources?.getIdentifier(idAsString, "id", requireActivity().applicationContext.packageName) as Int
-        val toUpdate = view.findViewById<ImageView>(id)
-        toUpdate.alpha = 1.0f
+        var amountBadgesToShow = convertBadgeTypeToAmount(achievement.type)
+        val idsAsString = arrayListOf<String>()
+        while (amountBadgesToShow != 0){
+            val badgeIDType = calculateNeededBadges(amountBadgesToShow).second
+            idsAsString.add(convertAchievementToID(achievement, badgeIDType))
+            amountBadgesToShow--
+        }
+
+        for(idString in idsAsString){
+            Log.i("achiev", idString)
+            val id = view?.resources?.getIdentifier(idString, "id", requireActivity().applicationContext.packageName) as Int
+            val toUpdate = view.findViewById<ImageView>(id)
+            toUpdate.alpha = 1.0f
+        }
     }
 
-    private fun convertAchievementToID(achievement: AchievementInfo) : String?{
+    private fun convertBadgeTypeToAmount(badgeType : String) : Int{
+        when(badgeType){
+            "Bronce" -> return 1
+            "Silver" -> return 2
+            "Gold" -> return 3
+            else -> return 0
+        }
+    }
+
+    private fun calculateNeededBadges(badgeType: Int) : Pair<Int, String> {
+        when(badgeType){
+            1 -> return Pair(1, Constants.BADGE_BRONZE)
+            2 -> return Pair(2, Constants.BADGE_SILVER)
+            3 -> return Pair(3, Constants.BADGE_GOLD)
+            0 -> return Pair(0, Constants.BADGE_NONE)
+            else -> return Pair(0, Constants.BADGE_NONE)
+        }
+    }
+
+    private fun convertAchievementToID(achievement: AchievementInfo, badgeTier: String) : String{
         val type = achievement.achievement
-        val tier = achievement.type
         val startString = "imgView"
-
-
-        return "$startString$type$tier"
+        return "$startString$type$badgeTier"
 
     }
 
