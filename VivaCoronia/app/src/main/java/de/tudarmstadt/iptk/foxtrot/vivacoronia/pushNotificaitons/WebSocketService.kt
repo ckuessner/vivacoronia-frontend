@@ -64,7 +64,7 @@ class WebSocketService : Service() {
     fun makeContactNotification(){
         with(NotificationManagerCompat.from(this)){
             notify(
-                SystemClock.elapsedRealtime().hashCode(), //we want a unique id so that notifications for different contacts dont overwrite each other
+                (SystemClock.elapsedRealtime()+1).hashCode(), //we want a unique id so that notifications for different contacts dont overwrite each other
                 NotificationHelper.getSimpleNotification(
                     applicationContext,
                     Constants.INFECTED_NOTIFICATION_CHANNEL_ID,
@@ -81,7 +81,7 @@ class WebSocketService : Service() {
     fun makeProductMatchNotification(product: ProductSearchQuery){
         with(NotificationManagerCompat.from(this)){
             notify(
-                SystemClock.elapsedRealtime().hashCode(), //we want a unique id so that notifications for different contacts overwrite each other
+                (SystemClock.elapsedRealtime()+2).hashCode(), //we want a unique id so that notifications for different contacts overwrite each other
                 NotificationHelper.getProductMatchNotification(
                     applicationContext,
                     Constants.PRODUCT_NOTIFICATION_CHANNEL_ID,
@@ -99,7 +99,7 @@ class WebSocketService : Service() {
     fun makeAchievementNotification(msg: String) {
         with(NotificationManagerCompat.from(this)) {
             notify(
-                SystemClock.elapsedRealtime().hashCode(), //we want a unique id so that notifications for different contacts overwrite each other
+                (SystemClock.elapsedRealtime()+3).hashCode(), //we want a unique id so that notifications for different contacts overwrite each other
                 NotificationHelper.getAchievementNotification(
                     applicationContext,
                     Constants.ACHIEVEMENT_NOTIFICATION_CHANNEL_ID,

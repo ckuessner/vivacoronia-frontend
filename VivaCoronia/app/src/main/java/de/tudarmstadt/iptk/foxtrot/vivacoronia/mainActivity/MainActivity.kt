@@ -220,7 +220,6 @@ class MainActivity : AppCompatActivity() {
             startService(websocketIntent)
         }
 
-        val startFragment = intent.getIntExtra("startFragment", R.id.menu_item_location_history)
         var product: ProductSearchQuery? = null
         val startFragment = intent.getIntExtra("startFragment", R.id.menu_item_location_history)
         if (startFragment == R.id.search_offers) {
