@@ -5,6 +5,8 @@ import android.util.Log
 import com.android.volley.toolbox.RequestFuture
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.AchievementInfo
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.Exception
@@ -57,43 +59,41 @@ object AchievementApiClient : ApiBaseClient() {
         }
     }
 
-    fun getAchievementInformation(ctx: Context) : ArrayList<AchievementInfo>? {
-        val requestQueue = getRequestQueue(ctx) ?: return null
+    fun getAchievementInformation(ctx: Context) : Pair<ArrayList<AchievementInfo>?, Int> {
+        val requestQueue = getRequestQueue(ctx) ?: return Pair(null, Constants.NULL_QUEUE)
         val responseFuture = RequestFuture.newFuture<JSONArray>()
         val url = getEndPoint(ctx, Constants.ENDPOINT_ACHIEVEMENT)
 
         val request = JsonArrayJWT(url, responseFuture, responseFuture, ctx)
         requestQueue.add(request)
-        return try {
+         try {
             val achievementStatusList = responseFuture.get()
-            createAchievementInfo(achievementStatusList)
+            return Pair(createAchievementInfo(achievementStatusList), 0)
         } catch(e: ExecutionException){
             val errorCode = RequestUtility.catchException(e)
-            RequestUtility.handleErrorShowing(ctx, errorCode)
-            null
+            return Pair(null, errorCode)
         }
     }
 
     /*
     get infection score of user, is -1.0 then there was an error beforehand
      */
-    fun getInfectionScore(ctx: Context) : Float {
-        val requestQueue = getRequestQueue(ctx) ?: return -1.0f
+    fun getInfectionScore(ctx: Context) : Pair<Float, Int> {
+        val requestQueue = getRequestQueue(ctx) ?: return Pair(-1.0f, Constants.NULL_QUEUE)
         val responseFuture = RequestFuture.newFuture<JSONObject>()
         val url = getEndPoint(ctx, Constants.ENDPOINT_SCORE)
 
         val request = JsonObjectJWT(url, null, responseFuture, responseFuture ,ctx)
         requestQueue.add(request)
         var scoreAsFloat = 0.0f
-        val score = responseFuture.get().opt("infectionScore")
-        if(score != 0)
-            scoreAsFloat = score as Float
-        return try {
-            scoreAsFloat
+        try {
+            val score = responseFuture.get().opt("infectionScore")
+            if(score != 0)
+                scoreAsFloat = score as Float
+            return Pair(scoreAsFloat, 0)
         } catch(e: ExecutionException){
             val errorCode = RequestUtility.catchException(e)
-            RequestUtility.handleErrorShowing(ctx, errorCode)
-            -1.0f
+            return Pair(-1.0f, errorCode)
         }
 
     }

@@ -1,7 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia
 
 object Constants {
-    
+
     const val BADGE_BRONZE = "Bronze"
     const val BADGE_SILVER = "Silver"
     const val BADGE_GOLD = "Gold"

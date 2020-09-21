@@ -11,6 +11,7 @@ import android.widget.TextView
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.AchievementApiClient
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.RequestUtility
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.AchievementInfo
 import kotlinx.coroutines.GlobalScope
@@ -39,18 +40,23 @@ class AchievementsFragment : Fragment() {
 
     private fun updateAchievementStatus(ctx: Context, view: View?, db: AppDatabase){
         GlobalScope.launch {
-            val achievementInfoNew = AchievementApiClient.getAchievementInformation(ctx)
+            val achievementInfoRequest = AchievementApiClient.getAchievementInformation(ctx)
+            val achievementInfoNew = achievementInfoRequest.first
+            val achievemenRequestSucceed = achievementInfoRequest.second
             //if above value is null, we load the old settings for achievements
-            if (achievementInfoNew == null) {
+            if (achievemenRequestSucceed != 0) {
                 val achievements = db.coronaDao().getAllAchievements()
                 for (achievement: AchievementInfo in achievements) {
                     requireActivity().runOnUiThread {
+                        RequestUtility.handleErrorShowing(ctx, achievemenRequestSucceed)
                         setAchievementInfo(view, achievement)
                     }
                 }
             } else {
+                //since we can only get in this case if we have succeeded and thus get non null list, we can safely cast
+                val achievementList = achievementInfoNew as ArrayList<AchievementInfo>
                 //else we can iterate through all achievements and load new achievement possibly
-                for (achievement: AchievementInfo in achievementInfoNew) {
+                for (achievement: AchievementInfo in achievementList) {
                     requireActivity().runOnUiThread {
                         setAchievementInfo(view, achievement)
                     }
@@ -85,15 +91,19 @@ class AchievementsFragment : Fragment() {
 
     private fun updateInfectionScore(ctx: Context, view: View?){
         GlobalScope.launch {
-            val infectionScore = AchievementApiClient.getInfectionScore(ctx)
+            val infectionRequestPair = AchievementApiClient.getInfectionScore(ctx)
+            val infectionScore = infectionRequestPair.first
+            val requestSucceed = infectionRequestPair.second
 
-            // if we get -1.0 we didn't get a new value due to any kind of error so we just load the old value
-            if (infectionScore == -1.0f) {
+            // if we get != 0, we have an error that we have to handle and we show the error and the old saved state of achievements
+            if(requestSucceed != 0){
                 val score = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
                     .getFloat(Constants.INFECTION_SCORE, 0.0f).toString()
                 requireActivity().runOnUiThread {
+                    RequestUtility.handleErrorShowing(ctx, requestSucceed)
                     view?.findViewById<TextView>(R.id.textViewInfectionScore)?.text = score
                 }
+                return@launch
             }
             // else we got a valid number that we can use to first set our new infection score and then save it in preferences
             else {
