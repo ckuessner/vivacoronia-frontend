@@ -20,6 +20,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.getDevSSLContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.net.ConnectException
+import java.util.concurrent.TimeUnit
 import javax.net.ssl.X509TrustManager
 
 class WebSocketService : Service() {
@@ -44,14 +45,16 @@ class WebSocketService : Service() {
             val (sslContext, trustManager) = getDevSSLContext(this)
             client = OkHttpClient.Builder()
                 .sslSocketFactory(sslContext.socketFactory, trustManager as X509TrustManager)
+                .pingInterval(30, TimeUnit.SECONDS)
                 .build()
         } else {
-            client = OkHttpClient()
+            client = OkHttpClient.Builder().pingInterval(30, TimeUnit.SECONDS).build()
         }
         listener = PushNotificationListener()
         listener!!.socketService = this
         val userID = getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.USER_ID, null) as String
-        val request = Request.Builder().url(Constants.SERVER_WEBSOCKET_URL).addHeader("userID", userID).build()
+        val jwt = getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).getString(Constants.JWT, null) as String
+        val request = Request.Builder().url(Constants.SERVER_WEBSOCKET_URL).addHeader("userID", userID).addHeader("jwt", jwt).build()
 
         client.newWebSocket(request, listener!!)
     }
@@ -92,7 +95,6 @@ class WebSocketService : Service() {
             )
         }
     }
-
 
     fun reconnect() {
         Log.i(tag, "reconnect")
