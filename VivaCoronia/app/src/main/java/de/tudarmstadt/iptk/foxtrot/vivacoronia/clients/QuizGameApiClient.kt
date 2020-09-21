@@ -31,9 +31,13 @@ object QuizGameApiClient : ApiBaseClient() {
             JSONArray(arrayOf(location.longitude, location.latitude))
         )
         val responseFuture = RequestFuture.newFuture<JSONObject>()
+        val handler404Error = Response.ErrorListener { error ->
+            error?.networkResponse?.statusCode == 404 && throw VolleyError("404 du Eumel")
+            throw error
+        }
 
         val request =
-            JsonObjectJWT(POST, url, locationJsonObject, responseFuture, responseFuture, ctx)
+            JsonObjectJWT(POST, url, locationJsonObject, responseFuture, handler404Error, ctx)
         requestQueue.add(request)
 
         val gameJson = responseFuture.get()
@@ -61,6 +65,22 @@ object QuizGameApiClient : ApiBaseClient() {
 
         val gameJson = responseFuture.get()
         return klaxon.parse(gameJson) ?: throw VolleyError("Could not get gameInfo")
+    }
+
+    fun getMultipleGames(ctx: Context, gameIds: List<String>): List<QuizGameDto> {
+        val requestQueue = getRequestQueue(ctx) ?: throw VolleyError(REQUEST_QUEUE_ERR_STRING)
+
+        return gameIds.map { gameId ->
+            val url = getEndpoint() + gameId
+            val responseFuture = RequestFuture.newFuture<String>()
+            val request =
+                StringRequestJWT(GET, url, responseFuture, responseFuture, ctx, null, false)
+            requestQueue.add(request)
+            responseFuture
+        }.map {
+            klaxon.parse<QuizGameDto>(it.get()) ?: throw VolleyError("Could not get gameInfo")
+        }.toList()
+
     }
 
     fun postGameAnswer(ctx: Context, gameId: String, questionIndex: Int, answer: String) {

@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.QuizClient
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.QuizGameApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentQuizOverviewBinding
 import kotlinx.coroutines.GlobalScope
@@ -49,18 +49,18 @@ class QuizOverviewFragment : Fragment() {
         val finishedGameIds = db.quizGameDao().getFinished().take(5).map { it.gameId }
 
         GlobalScope.launch {
-            val activeGames = QuizClient.getGames(activeGameIds)
+            val activeGames = QuizGameApiClient.getMultipleGames(requireActivity(), activeGameIds)
             activity?.let { it.runOnUiThread {
                 binding.noGamesActive.visibility = if (activeGames.isEmpty()) View.VISIBLE else View.GONE
-                viewModel.activeGames.value = activeGames
+                viewModel.activeGames.value = activeGames.map { QuizGameViewModel(it) }
             }}
         }
 
         GlobalScope.launch {
-            val finishedGames = QuizClient.getFinishedGamesDummy(finishedGameIds)
+            val finishedGames = QuizGameApiClient.getMultipleGames(requireActivity(), finishedGameIds)
             activity?.let { it.runOnUiThread {
                 binding.noGamesFinished.visibility = if (finishedGames.isEmpty()) View.VISIBLE else View.GONE
-                viewModel.finishedGames.value = finishedGames
+                viewModel.finishedGames.value = finishedGames.map { QuizGameViewModel(it) }
             }}
         }
 

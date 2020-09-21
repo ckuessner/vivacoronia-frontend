@@ -8,10 +8,11 @@ import android.util.Log
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.QuizClient
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.QuizGameApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.QuizGame
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.ActivityQuizBinding
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.LocationUtility
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -50,8 +51,8 @@ class QuizActivity : AppCompatActivity() {
     private fun fetchQuizGame() {
         GlobalScope.launch {
             try {
-                val game = QuizClient.getGame(viewModel.quizGame.gameId)
-                runOnUiThread { loadGameDetails(game) }
+                val game = QuizGameApiClient.getGameInfo(this@QuizActivity, viewModel.quizGame.gameId)
+                runOnUiThread { loadGameDetails(QuizGameViewModel(game)) }
             } catch (e: Exception) {
                 Log.e(tag, "Error fetching information for game ${viewModel.quizGame.gameId}: ", e)
             }
@@ -67,8 +68,15 @@ class QuizActivity : AppCompatActivity() {
 
     private fun initializeNewGame() {
         GlobalScope.launch {
+            val location = LocationUtility.getLastKnownLocation(this@QuizActivity);
+
+            if (location == null) {
+                TODO("Fallback or error")
+            }
+
             try {
-                val gameDto = QuizClient.postGame()
+                val (gameDto, oppInfo) = QuizGameApiClient.postQuizGameRequest(this@QuizActivity, location)
+                // TODO: use opponent Info
                 db.quizGameDao().insert(QuizGame(gameDto.gameId, -1))
                 val quizGame = QuizGameViewModel.from(gameDto)
                 runOnUiThread { loadGameDetails(quizGame) }
