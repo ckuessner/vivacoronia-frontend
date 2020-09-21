@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
-import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.QuizClient
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.QuizGameApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.ActivityQuizQuestionBinding
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.models.Question
 import kotlinx.coroutines.GlobalScope
@@ -44,7 +44,7 @@ class QuizQuestionActivity : AppCompatActivity() {
             return
         val answer = question.answers[answerIndex]
         GlobalScope.launch {
-            QuizClient.postAnswer(gameId, questionIndex, answer)
+            QuizGameApiClient.postGameAnswer(this@QuizQuestionActivity, gameId, questionIndex, answer)
         }
         colorAnswer(answerIndex, answer == question.correctAnswer)
         isAnswered = true
