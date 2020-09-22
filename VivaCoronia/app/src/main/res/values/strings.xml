@@ -234,4 +234,5 @@
     <string name="quiz_notification_channel_title">Corona Quiz</string>
     <string name="quiz_notification_channel_name">Corona Quiz Channel</string>
     <string name="quiz_notification_channel_description">Sends notifications if something happened in a quiz</string>
+    <string name="loading_please_wait">Loading... Please wait ...</string>
 </resources>

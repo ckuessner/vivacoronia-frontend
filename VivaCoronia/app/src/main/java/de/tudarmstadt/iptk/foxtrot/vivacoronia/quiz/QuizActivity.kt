@@ -70,6 +70,7 @@ class QuizActivity : AppCompatActivity() {
         val fragment = QuizDetailsFragment(this)
         supportFragmentManager.beginTransaction().replace(R.id.mainFragment, fragment).commit()
         binding.progressBar.visibility = View.GONE
+        binding.loadingText.visibility = View.GONE
     }
 
     private fun initializeNewGame() {
@@ -95,6 +96,7 @@ class QuizActivity : AppCompatActivity() {
     private fun onPostQuizError(error: VolleyError?) {
         if (error?.networkResponse?.statusCode == 404) {
             binding.progressBar.visibility = View.GONE
+            binding.loadingText.visibility = View.GONE
             AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setTitle("No opponent found!")
                 .setMessage("Sorry, nobody wants to play with you right now. Please try again later.")

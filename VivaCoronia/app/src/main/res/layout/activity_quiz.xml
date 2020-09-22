@@ -13,6 +13,16 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true" />
 
+        <TextView
+            android:id="@+id/loading_text"
+            android:layout_marginBottom="20dp"
+            android:layout_above="@id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/loading_please_wait"
+            android:textSize="24sp"
+            android:textAlignment="center"/>
+
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/mainFragment"
             android:layout_width="match_parent"
