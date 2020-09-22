@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -100,7 +99,6 @@ class SupermarketInventoryMapResultFragment(private val parent: SupermarketInven
             binding.progressHorizontal.isIndeterminate = false
             if(it != null && showDialog){
                 AlertDialog.Builder(requireContext(), R.style.AlertDialogTheme)
-                    //.setTitle("Create new inventory item")
                     .setCancelable(true)
                     .setMessage("Create new inventory item for the selected supermarket?")
                     .setPositiveButton("Create") { _, _ ->
@@ -184,12 +182,22 @@ class SupermarketInventoryMapResultFragment(private val parent: SupermarketInven
     private fun onInfoWindowClick(marker: Marker) {
         binding.progressHorizontal.isIndeterminate = true
         val supermarket = marker.getData<PlacesApiResult>()
-        GlobalScope.launch {
-            val response: Supermarket =
-                TradingApiClient.getSupermarketInventoryForID(requireContext(), supermarket, ::setErrorCodeViewModel)
+        if(parent.searchViewModel.errorData.value != null && parent.searchViewModel.errorData.value!!.supermarketPlaceId == supermarket.supermarketPlaceId){
+            showDialog = true
+            parent.searchViewModel.errorData.value = supermarket
+        }
+        else {
+            GlobalScope.launch {
+                val response: Supermarket =
+                    TradingApiClient.getSupermarketInventoryForID(
+                        requireContext(),
+                        supermarket,
+                        ::setErrorCodeViewModel
+                    )
 
-            requireActivity().runOnUiThread {
-                parent.inventoryViewModel.supermarketInventory.value = response
+                requireActivity().runOnUiThread {
+                    parent.inventoryViewModel.supermarketInventory.value = response
+                }
             }
         }
     }
