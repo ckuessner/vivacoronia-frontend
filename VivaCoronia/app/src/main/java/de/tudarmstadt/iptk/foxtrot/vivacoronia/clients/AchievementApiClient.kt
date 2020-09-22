@@ -91,9 +91,9 @@ object AchievementApiClient : ApiBaseClient() {
             return Pair(scoreAsFloat, 0)
         } catch(e: ExecutionException){
             val errorCode = RequestUtility.catchException(e)
-            return Pair(-1.0f, errorCode)
+            return Pair(0.0f, errorCode)
         } catch (e: ClassCastException) {
-            return Pair(-1.0f, 0)
+            return Pair(0.0f, 0)
         }
 
     }
