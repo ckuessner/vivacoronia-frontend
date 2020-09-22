@@ -74,7 +74,7 @@ class AchievementsFragment : Fragment() {
                     val percentageInfoAchievement =
                         makePercentageInfo(info.second, percentageOfPeople)
                     val resultString =
-                        "$basicInfoAchievment\n$neededInfoAchievement\n$percentageInfoAchievement"
+                        "$basicInfoAchievment$neededInfoAchievement$percentageInfoAchievement"
                     infoImage.setOnClickListener {
                         makeAlertDialog(resultString)
                     }
@@ -113,24 +113,24 @@ class AchievementsFragment : Fragment() {
         if(neededForHigher == 0)
             return ""
         when(achievement){
-            Constants.ACHIEVEMENT_ALONE -> return "You need to be $neededForHigher days alone to unlock the next badge!"
-            Constants.ACHIEVEMENT_SUPERSPREADER -> return "Infect $neededForHigher more people to unlock the next badge (please don't!)"
-            Constants.ACHIEVEMENT_QUIZMASTER -> return "Win $neededForHigher more quizzes correctly to unlock the next badge!"
-            Constants.ACHIEVEMENT_HAMSTERBUYER -> return "Buy $neededForHigher more items to unlock the next badge!"
-            Constants.ACHIEVEMENT_ZOMBIE -> return "Walk $neededForHigher more kilometres to unlock the next badge! (or be a nice person and stay at home!)"
-            Constants.ACHIEVEMENT_MONEYBOY-> return "Sell $neededForHigher more items to unlock the next badge and someday be the next Jeff Bezos!"
+            Constants.ACHIEVEMENT_ALONE -> return "You need to be $neededForHigher days alone to unlock the next badge!\n"
+            Constants.ACHIEVEMENT_SUPERSPREADER -> return "Infect $neededForHigher more people to unlock the next badge (please don't!)\n"
+            Constants.ACHIEVEMENT_QUIZMASTER -> return "Win $neededForHigher more quizzes correctly to unlock the next badge!\n"
+            Constants.ACHIEVEMENT_HAMSTERBUYER -> return "Buy $neededForHigher more items to unlock the next badge!\n"
+            Constants.ACHIEVEMENT_ZOMBIE -> return "Walk $neededForHigher more kilometres to unlock the next badge! (or be a nice person and stay at home!)\n"
+            Constants.ACHIEVEMENT_MONEYBOY-> return "Sell $neededForHigher more items to unlock the next badge and someday be the next Jeff Bezos!\n"
             else -> return ""
         }
     }
 
     private fun getInfoAboutAchievement(achievementName: String): String{
         when(achievementName){
-            Constants.ACHIEVEMENT_ALONE -> return getString(R.string.aloneInfo)
-            Constants.ACHIEVEMENT_SUPERSPREADER -> return getString(R.string.spreaderInfo)
-            Constants.ACHIEVEMENT_QUIZMASTER -> return getString(R.string.quizInfo)
-            Constants.ACHIEVEMENT_HAMSTERBUYER -> return getString(R.string.hamsterInfo)
-            Constants.ACHIEVEMENT_ZOMBIE -> return getString(R.string.zombieInfo)
-            Constants.ACHIEVEMENT_MONEYBOY-> return getString(R.string.moneyInfo)
+            Constants.ACHIEVEMENT_ALONE -> return "${getString(R.string.aloneInfo)}\n"
+            Constants.ACHIEVEMENT_SUPERSPREADER -> return "${getString(R.string.spreaderInfo)}\n"
+            Constants.ACHIEVEMENT_QUIZMASTER -> return "${getString(R.string.quizInfo)}\n"
+            Constants.ACHIEVEMENT_HAMSTERBUYER -> return "${getString(R.string.hamsterInfo)}\n"
+            Constants.ACHIEVEMENT_ZOMBIE -> return "${getString(R.string.zombieInfo)}\n"
+            Constants.ACHIEVEMENT_MONEYBOY-> return "${getString(R.string.moneyInfo)}\n"
             else -> return ""
         }
     }
