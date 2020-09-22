@@ -32,8 +32,8 @@ android {
         debug {
             applicationIdSuffix '.debug'
             debuggable true
-            buildConfigField 'String', 'API_SERVER', '"https://localhost:3443"'
-            buildConfigField 'String', 'WEBSOCKET_SERVER', '"wss://localhost:3443"'
+            buildConfigField 'String', 'API_SERVER', '"https://10.0.2.2:3443"'
+            buildConfigField 'String', 'WEBSOCKET_SERVER', '"wss://10.0.2.2:3443"'
         }
     }
 
