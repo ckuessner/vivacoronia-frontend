@@ -157,9 +157,6 @@ class MainActivity : AppCompatActivity() {
                 getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).edit().clear().apply()
                 //https://stackoverflow.com/questions/6134103/clear-applications-data-programmatically
                 (getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).clearApplicationUserData()
-                val startIntent = Intent(this, StartActivity::class.java)
-                startActivity(startIntent)
-                finish()
             }
             //need to include this or else the cancel button won't be visible
             builder.setNegativeButton(android.R.string.no){_, _ -> }
