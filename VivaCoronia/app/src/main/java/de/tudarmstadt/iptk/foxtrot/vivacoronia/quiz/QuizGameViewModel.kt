@@ -46,7 +46,7 @@ class QuizGameViewModel(
         }
 
         // game.answers.length % game.players.length !== game.players.indexOf(userId)
-        isOpponentsTurn = quizGame.answers.size % quizGame.players.size == quizGame.players.indexOf(quizGame.opponentInfo.userId)
+        isOpponentsTurn = quizGame.answers.size == 8 || quizGame.answers.size % quizGame.players.size == quizGame.players.indexOf(quizGame.opponentInfo.userId)
     }
 
     fun opponentAnswers() = quizGame.answers.filter {it.userId == quizGame.opponentInfo.userId}
