@@ -87,6 +87,10 @@ class SearchOffersFragment : Fragment(), SearchView.OnQueryTextListener, FilterO
             }
         })
 
+        if(::viewModel.isInitialized && viewModel.searchResults.value != null && viewModel.searchResults.value!!.isNotEmpty()){
+            binding.searchHint.visibility = View.INVISIBLE
+        }
+
         if (query != null) onApplyQuery(query)
 
         return binding.root
