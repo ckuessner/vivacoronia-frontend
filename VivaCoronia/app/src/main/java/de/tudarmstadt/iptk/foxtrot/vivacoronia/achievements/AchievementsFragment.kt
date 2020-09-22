@@ -37,7 +37,6 @@ class AchievementsFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_achievements, container, false)
         val database = AppDatabase.getDatabase(requireActivity())
-        setInfoListeners(view, database)
         updateAchievementStatus(requireActivity(), view, database)
         updateInfectionScore(requireActivity(), view)
         // Inflate the layout for this fragment
@@ -65,7 +64,6 @@ class AchievementsFragment : Fragment() {
             GlobalScope.launch {
                 val currAchievement = db.coronaDao().getAchievement(info.second)
                 val infoImage = info.first
-                val achievmentInfo = getInfoAboutAchievement(info.second)
                 val badgeType = db.coronaDao().getAchievement(info.second).type
                 requireActivity().runOnUiThread {
                     val basicInfoAchievment = getInfoAboutAchievement(info.second)
@@ -153,6 +151,7 @@ class AchievementsFragment : Fragment() {
                         setAchievementInfo(view, achievement)
                     }
                 }
+                requireActivity().runOnUiThread { setInfoListeners(view as View, db) }
             } else {
                 //since we can only get in this case if we have succeeded and thus get non null list, we can safely cast
                 val achievementList = achievementInfoNew as ArrayList<AchievementInfo>
@@ -163,6 +162,7 @@ class AchievementsFragment : Fragment() {
                     }
                     updateDB(achievement, db)
                 }
+                requireActivity().runOnUiThread { setInfoListeners(view as View, db) }
             }
         }
     }
