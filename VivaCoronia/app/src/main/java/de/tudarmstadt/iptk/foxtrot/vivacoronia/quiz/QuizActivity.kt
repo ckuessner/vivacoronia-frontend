@@ -54,7 +54,7 @@ class QuizActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchQuizGame() {
+    fun fetchQuizGame() {
         GlobalScope.launch {
             try {
                 val game = QuizGameApiClient.getGameInfo(this@QuizActivity, viewModel.quizGame.gameId)

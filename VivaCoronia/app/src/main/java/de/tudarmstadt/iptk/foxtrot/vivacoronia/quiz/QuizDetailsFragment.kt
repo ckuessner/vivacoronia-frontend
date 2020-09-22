@@ -25,7 +25,7 @@ class QuizDetailsFragment(private val parent: QuizActivity) : Fragment() {
         binding.play.isEnabled = !parent.viewModel.isOpponentsTurn
         binding.opponentName.text = parent.viewModel.opponentName
         initializeResults()
-
+        binding.swipeRefresh.setOnRefreshListener { parent.fetchQuizGame() }
         return binding.root
     }
 
