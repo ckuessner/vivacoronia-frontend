@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -26,6 +27,7 @@ class QuizQuestionActivity : AppCompatActivity() {
     private lateinit var question: Question
     private lateinit var binding: ActivityQuizQuestionBinding
     private var isAnswered = false
+    private val tag = "QuizQuestionActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +47,11 @@ class QuizQuestionActivity : AppCompatActivity() {
             return
         val answer = question.answers[answerIndex]
         GlobalScope.launch {
-            QuizGameApiClient.postGameAnswer(this@QuizQuestionActivity, gameId, questionIndex, answer)
+            try {
+                QuizGameApiClient.postGameAnswer(this@QuizQuestionActivity, gameId, questionIndex, answer)
+            } catch (e: Exception) {
+                Log.i(tag, "Failed to post answer:", e)
+            }
         }
         colorAnswer(answerIndex, answer == question.correctAnswer)
         isAnswered = true

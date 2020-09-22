@@ -40,30 +40,27 @@ object QuizGameApiClient : ApiBaseClient() {
             JsonObjectJWT(POST, url, locationJsonObject, responseFuture, handler404Error, ctx)
         requestQueue.add(request)
 
-        val json = JSONObject("""{"game":{"players":["5f684f45291b91002305b7d8","5f69b82454c69a0024934fe1"],"questions":[{"answers":["Hubei","Sichuan","Henan","Hebei"],"_id":"5f69b6b154c69a0024934fd0","question":"In which province is the city Wuhan?","correctAnswer":"Hubei","__v":0},{"answers":["13cm","10cm","6cm","15cm"],"_id":"5f69b6b154c69a0024934fcf","question":"How long is a piece of toilet paper on average?","correctAnswer":"13cm","__v":0},{"answers":["China","Japan","United Kingdom","Germany"],"_id":"5f69b6b154c69a0024934fd6","question":"Where was the toilet paper invented?","correctAnswer":"China","__v":0},{"answers":["Fever","Dry cough","Tiredness","Weight loss"],"_id":"5f69b6b154c69a0024934fd3","question":"What is not a common sympton of COVID?","correctAnswer":"Weight loss","__v":0}],"_id":"5f69c4aa30844900231e0746","answers":[],"opponentInfo":{"userId":"5f69b82454c69a0024934fe1","distance":9159862.662187224},"__v":0}}""")
         val gameJson = responseFuture.get()
 
-        val game = klaxonWithQuestion.parse<QuizGameDto>(gameJson.get("game").toString())
+        return klaxonWithQuestion.parse<QuizGameDto>(gameJson.get("game").toString())
             ?: throw VolleyError("Unable to create new game")
-
-        return game
     }
 
     fun getGameInfo(ctx: Context, gameId: String): QuizGameDto {
         val requestQueue = getRequestQueue(ctx) ?: throw VolleyError(REQUEST_QUEUE_ERR_STRING)
         val url = getEndpoint() + gameId
-        val responseFuture = RequestFuture.newFuture<String>()
+        val responseFuture = RequestFuture.newFuture<JSONObject>()
         val handler404Error = Response.ErrorListener { error ->
             error?.networkResponse?.statusCode == 404 && throw VolleyError("404 du Eumel")
             throw error
         }
 
-        val request = StringRequestJWT(GET, url, responseFuture, handler404Error, ctx, null, false)
+        val request = JsonObjectJWT(GET, url, JSONObject(), responseFuture, handler404Error, ctx, false)
 
         requestQueue.add(request)
 
         val gameJson = responseFuture.get()
-        return klaxonWithQuestion.parse(gameJson) ?: throw VolleyError("Could not get gameInfo")
+        return klaxonWithQuestion.parse(gameJson.toString()) ?: throw VolleyError("Could not get gameInfo")
     }
 
     fun getMultipleGames(ctx: Context, gameIds: List<String>): List<QuizGameDto> {
@@ -71,13 +68,12 @@ object QuizGameApiClient : ApiBaseClient() {
 
         return gameIds.map { gameId ->
             val url = getEndpoint() + gameId
-            val responseFuture = RequestFuture.newFuture<String>()
-            val request =
-                StringRequestJWT(GET, url, responseFuture, responseFuture, ctx, null, false)
+            val responseFuture = RequestFuture.newFuture<JSONObject>()
+            val request = JsonObjectJWT (GET, url, JSONObject(), responseFuture, responseFuture, ctx, false)
             requestQueue.add(request)
             responseFuture
         }.map {
-            klaxonWithQuestion.parse<QuizGameDto>(it.get())
+            klaxonWithQuestion.parse<QuizGameDto>(it.get().toString())
                 ?: throw VolleyError("Could not get gameInfo")
         }.toList()
 
@@ -86,17 +82,18 @@ object QuizGameApiClient : ApiBaseClient() {
     fun postGameAnswer(ctx: Context, gameId: String, questionIndex: Int, answer: String) {
         val requestQueue = getRequestQueue(ctx) ?: throw VolleyError(REQUEST_QUEUE_ERR_STRING)
         val url = getEndpoint() + gameId + "/answers/"
-        val responseFuture = RequestFuture.newFuture<String>()
-        val bodyJson = JsonObject(
+        val responseFuture = RequestFuture.newFuture<JSONObject>()
+
+        val body = JSONObject(
             mapOf(
                 "userId" to getUserId(ctx),
                 "questionIndex" to questionIndex.toString(),
                 "answer" to answer
             )
-        ).toString()
-        val request =
-            StringRequestJWT(POST, url, responseFuture, responseFuture, ctx, bodyJson, false)
+        )
+        val request = JsonObjectJWT(POST, url, body, responseFuture, responseFuture, ctx, false)
 
         requestQueue.add(request)
+        responseFuture.get()
     }
 }
