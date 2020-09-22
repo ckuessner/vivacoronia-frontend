@@ -9,7 +9,10 @@ import android.content.Intent
 import android.os.*
 import androidx.core.app.NotificationCompat
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.mainActivity.MainActivity
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.ARG_GAME_FINISHED
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.ARG_GAME_ID
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
+import org.json.JSONObject
 
 
 object NotificationHelper{
@@ -120,4 +123,26 @@ object NotificationHelper{
             .setPriority(priority).setColor(color)
     }
 
+    fun getQuizNotification(
+        context: Context,
+        channelId: String,
+        smallIcon: Int,
+        title: String,
+        text: String,
+        priority: Int,
+        color: Int,
+        content: JSONObject,
+        gameFinished: Boolean = false
+    ): Notification {
+        val intent = Intent(context, MainActivity::class.java)
+        intent.putExtra("startFragment", R.id.menu_item_quiz)
+        intent.putExtra(ARG_GAME_ID, content["gameId"] as String)
+        intent.putExtra(ARG_GAME_FINISHED, gameFinished)
+        // every intent needs his own id because otherwise the previous with this id would be reused
+        val pi = PendingIntent.getActivity(context, SystemClock.elapsedRealtime().hashCode(), intent, 0)
+        return getNotification(context, channelId, smallIcon, title, text, priority, color)
+            .setContentIntent(pi)
+            .setAutoCancel(true)
+            .build()
+    }
 }

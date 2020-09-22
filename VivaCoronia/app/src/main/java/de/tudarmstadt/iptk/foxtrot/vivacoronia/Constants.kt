@@ -67,4 +67,8 @@ object Constants {
     const val FIREWALL_ERROR = -5
 
     const val DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS"
+
+    // Quiz
+    const val QUIZ_NOTIFICATION_CHANNEL_ID = "quiz_channel"
+
 }

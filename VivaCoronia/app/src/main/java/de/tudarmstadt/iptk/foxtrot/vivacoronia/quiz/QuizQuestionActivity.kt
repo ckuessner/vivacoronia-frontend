@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 
 const val ARG_QUESTION = "question"
 const val ARG_GAME_ID = "game_id"
+const val ARG_GAME_FINISHED = "game_finished"
 const val ARG_QUESTION_INDEX = "question_index"
 
 class QuizQuestionActivity : AppCompatActivity() {

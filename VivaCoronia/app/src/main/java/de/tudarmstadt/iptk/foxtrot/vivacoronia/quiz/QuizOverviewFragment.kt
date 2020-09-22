@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.QuizGameApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.QuizGame
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.FragmentQuizOverviewBinding
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -29,6 +30,18 @@ class QuizOverviewFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_quiz_overview, container, false)
         viewModel = ViewModelProvider(this).get(QuizGameOverviewViewModel::class.java)
         db = AppDatabase.getDatabase(requireContext())
+
+        val gameId = arguments?.getString(ARG_GAME_ID)
+        if (gameId != null) {
+            val gameFinished = arguments?.getBoolean(ARG_GAME_FINISHED, false)
+            val quizDb = db.quizGameDao()
+            if (quizDb.getGame(gameId) == null) {
+                quizDb.insert(QuizGame(gameId, -1))
+            }
+            if (gameFinished == true) {
+                quizDb.update(QuizGame(gameId, System.currentTimeMillis()))
+            }
+        }
 
         val activeGamesAdapter = QuizGameAdapter(requireContext())
         binding.activeGames.adapter = activeGamesAdapter
@@ -52,7 +65,7 @@ class QuizOverviewFragment : Fragment() {
             val activeGames = QuizGameApiClient.getMultipleGames(requireActivity(), activeGameIds)
             activity?.let { it.runOnUiThread {
                 binding.noGamesActive.visibility = if (activeGames.isEmpty()) View.VISIBLE else View.GONE
-                viewModel.activeGames.value = activeGames.map { QuizGameViewModel(it) }
+                viewModel.activeGames.value = activeGames.map { game -> QuizGameViewModel(game) }
             }}
         }
 

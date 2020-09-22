@@ -31,6 +31,9 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.createBackground
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.locationTracking.requestLocationService
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.periodicLocationUpload.setupUploadAlarm
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.pushNotificaitons.WebSocketService
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.ARG_GAME_FINISHED
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.ARG_GAME_ID
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz.QuizOverviewFragment
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import kotlinx.coroutines.GlobalScope
@@ -82,6 +85,13 @@ class MainActivity : AppCompatActivity() {
                 NotificationManager.IMPORTANCE_DEFAULT,
                 Constants.ACHIEVEMENT_NOTIFICATION_CHANNEL_ID
             )
+            NotificationHelper.createNotificationChannel(
+                this,
+                getString(R.string.quiz_notification_channel_name),
+                getString(R.string.quiz_notification_channel_description),
+                NotificationManager.IMPORTANCE_DEFAULT,
+                Constants.QUIZ_NOTIFICATION_CHANNEL_ID
+            )
         }
 
         //setup logout button logic
@@ -130,7 +140,7 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun navigateToFragment(itemId: Int, query: ProductSearchQuery?) {
+    private fun navigateToFragment(itemId: Int, query: ProductSearchQuery?, gameId: String? = null, gameFinished: Boolean? = null) {
             when (itemId) {
                 R.id.menu_item_location_history -> {
                     navController.navigate(R.id.locationHistoryFragment)
@@ -147,7 +157,13 @@ class MainActivity : AppCompatActivity() {
                 R.id.menu_item_spreadmap -> {
                     navController.navigate(R.id.spreadMapFragment)
                 }
-                R.id.menu_item_quiz -> navController.navigate(R.id.quizFragment)
+                R.id.menu_item_quiz -> {
+                    val bundle = Bundle()
+                    bundle.putString(ARG_GAME_ID, gameId)
+                    if (gameFinished == true)
+                        bundle.putBoolean(ARG_GAME_FINISHED, true)
+                    navController.navigate(R.id.quizFragment, bundle)
+                }
                 R.id.menu_item_statusCheck -> {
                     navController.navigate(R.id.statusCheckFragment)
                 }
@@ -226,6 +242,10 @@ class MainActivity : AppCompatActivity() {
         val startFragment = intent.getIntExtra("startFragment", R.id.menu_item_location_history)
         if (startFragment == R.id.search_offers) {
             product = intent.getParcelableExtra<ProductSearchQuery>(PRODUCT_QUERY)
+            navigateToFragment(startFragment, product)
+        } else if (startFragment == R.id.menu_item_quiz) {
+            val gameId = intent.getStringExtra(ARG_GAME_ID)!!
+            navigateToFragment(startFragment, null, gameId)
         }
         navigateToFragment(startFragment, product)
 

@@ -26,7 +26,7 @@ object QuizGameApiClient : ApiBaseClient() {
     }
 
 
-    fun postQuizGameRequest(ctx: Context, location: LatLng): Pair<QuizGameDto, OpponentInfo> {
+    fun postQuizGameRequest(ctx: Context, location: LatLng, errorHandler: (VolleyError) -> Unit): Pair<QuizGameDto, OpponentInfo> {
         val requestQueue = getRequestQueue(ctx) ?: throw VolleyError(REQUEST_QUEUE_ERR_STRING)
         val url = getEndpoint()
         val locationJsonObject = JSONObject().put(
@@ -34,10 +34,7 @@ object QuizGameApiClient : ApiBaseClient() {
             JSONArray(arrayOf(location.longitude, location.latitude))
         )
         val responseFuture = RequestFuture.newFuture<JSONObject>()
-        val handler404Error = Response.ErrorListener { error ->
-            error?.networkResponse?.statusCode == 404 && throw VolleyError("404 du Eumel")
-            throw error
-        }
+        val handler404Error = Response.ErrorListener { errorHandler(it) }
 
         val request =
             JsonObjectJWT(POST, url, locationJsonObject, responseFuture, handler404Error, ctx)
@@ -49,7 +46,7 @@ object QuizGameApiClient : ApiBaseClient() {
         val oppInfo = klaxon.parse<OpponentInfo>(gameJson.get("opponentInfo").toString())
 
         if (game == null || oppInfo == null) throw VolleyError("Unable to create new game")
-
+        // TODO oppInfo part of game
         return Pair(game, oppInfo)
     }
 

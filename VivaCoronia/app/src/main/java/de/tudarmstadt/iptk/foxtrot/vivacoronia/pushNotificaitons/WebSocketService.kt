@@ -21,6 +21,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.net.ConnectException
 import java.util.concurrent.TimeUnit
+import org.json.JSONObject
 import javax.net.ssl.X509TrustManager
 
 class WebSocketService : Service() {
@@ -108,6 +109,34 @@ class WebSocketService : Service() {
                     msg,
                     NotificationCompat.PRIORITY_DEFAULT,
                     Color.GREEN
+                )
+            )
+        }
+    }
+
+    fun makeQuizNotification(type: String, content: JSONObject) {
+        val text = when (type) {
+            "QUIZ_NEW" -> "An opponent wants to play a quiz against you!"
+            "QUIZ_TURN" -> "It's your turn in a quiz game!"
+            "QUIZ_GAMEOVER_WON" -> "Congrats! You won a quiz game!"
+            "QUIZ_GAMEOVER_LOST" -> "You lost a quiz game."
+            "QUIZ_GAMEOVER_DRAW" -> "A quiz game resulted in a draw."
+            else -> "Do you want to play a quiz?"
+        }
+        val gameFinished = (type == "QUIZ_GAMEOVER_WON" || type == "QUIZ_GAMEOVER_LOST" || type == "QUIZ_GAMEOVER_DRAW")
+        with(NotificationManagerCompat.from(this)) {
+            notify(
+                SystemClock.elapsedRealtime().hashCode(), //we want a unique id so that notifications for different contacts overwrite each other
+                NotificationHelper.getQuizNotification(
+                    applicationContext,
+                    Constants.QUIZ_NOTIFICATION_CHANNEL_ID,
+                    R.drawable.ic_corona,
+                    getString(R.string.quiz_notification_channel_title),
+                    text,
+                    NotificationCompat.PRIORITY_DEFAULT,
+                    Color.TRANSPARENT,
+                    content,
+                    gameFinished
                 )
             )
         }

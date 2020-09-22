@@ -8,6 +8,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import org.json.JSONObject
 
 class PushNotificationListener : WebSocketListener(){
     private val tag = "PushListener"
@@ -44,13 +45,7 @@ class PushNotificationListener : WebSocketListener(){
 
         if (text.startsWith("QUIZ")) {
             val splitted = text.split('|')
-            when (splitted[0]) {
-                "QUIZ_NEW" -> TODO()
-                "QUIZ_TURN" -> TODO()
-                "QUIZ_GAMEOVER_WON" -> TODO()
-                "QUIZ_GAMEOVER_LOST" -> TODO()
-                "QUIZ_GAMEOVER_DRAW" -> TODO()
-            }
+            socketService.makeQuizNotification(splitted[0], JSONObject(splitted[1]))
             return
         }
         // we only get contact or product notifications so if we are here it can only be a product notification

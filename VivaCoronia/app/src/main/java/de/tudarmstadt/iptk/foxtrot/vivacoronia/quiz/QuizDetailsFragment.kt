@@ -53,15 +53,15 @@ class QuizDetailsFragment(private val parent: QuizActivity) : Fragment() {
         when {
             answer == null -> {
                 answerView.backgroundTintList = ColorStateList.valueOf(resources.getColor(android.R.color.darker_gray))
-                answerView.setImageResource(R.drawable.ic_more)
+                answerView.setImageResource(R.drawable.ic_questionmark_quiz)
             }
             answer.isCorrect -> {
                 answerView.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.green))
-                answerView.setImageResource(R.drawable.ic_check_circle_green_24dp)
+                answerView.setImageResource(R.drawable.ic_checkmark_quiz)
             }
             else -> {
                 answerView.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.red))
-                answerView.setImageResource(R.drawable.ic_failed_red_24dp)
+                answerView.setImageResource(R.drawable.ic_cross_quiz)
             }
         }
 

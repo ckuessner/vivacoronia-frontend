@@ -6,8 +6,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.findNavController
+import com.android.volley.VolleyError
+import com.google.android.gms.maps.model.LatLng
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.LoginActivity
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.QuizGameApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.QuizGame
@@ -68,21 +74,37 @@ class QuizActivity : AppCompatActivity() {
 
     private fun initializeNewGame() {
         GlobalScope.launch {
-            val location = LocationUtility.getLastKnownLocation(this@QuizActivity);
-
-            if (location == null) {
-                TODO("Fallback or error")
-            }
+            val location = LocationUtility.getLastKnownLocation(this@QuizActivity) ?: LatLng(49.877457, 8.654372)
 
             try {
-                val (gameDto, oppInfo) = QuizGameApiClient.postQuizGameRequest(this@QuizActivity, location)
+                val (gameDto, oppInfo) = QuizGameApiClient.postQuizGameRequest(this@QuizActivity, location, ::onPostQuizError)
                 // TODO: use opponent Info
                 db.quizGameDao().insert(QuizGame(gameDto.gameId, -1))
                 val quizGame = QuizGameViewModel.from(gameDto)
                 runOnUiThread { loadGameDetails(quizGame) }
             } catch (e: Exception) {
                 Log.e(tag, "Error trying to initialize a new game: ", e)
+                runOnUiThread {
+                    if (hasWindowFocus())
+                        Toast.makeText(this@QuizActivity, R.string.server_connection_failed, Toast.LENGTH_SHORT).show()
+                    finish()
+                }
             }
+        }
+    }
+
+    private fun onPostQuizError(error: VolleyError?) {
+        if (error?.networkResponse?.statusCode == 404) {
+            binding.progressBar.visibility = View.GONE
+            AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setTitle("No opponent found!")
+                .setMessage("Sorry, nobody wants to play with you right now. Please try again later.")
+                .setPositiveButton(android.R.string.yes) { _, _ -> finish() }
+                .show()
+        } else {
+            Log.e(tag, "Error trying to initialize a new game", error)
+            if (hasWindowFocus())
+                Toast.makeText(this, R.string.server_connection_failed, Toast.LENGTH_SHORT).show()
         }
     }
 
