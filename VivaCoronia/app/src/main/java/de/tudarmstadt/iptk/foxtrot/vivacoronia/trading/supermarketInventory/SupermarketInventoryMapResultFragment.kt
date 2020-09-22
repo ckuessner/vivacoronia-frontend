@@ -25,6 +25,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.search.CustomClusterOptio
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.LocationUtility
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlin.concurrent.thread
 
 class SupermarketInventoryMapResultFragment(private val parent: SupermarketInventoryFragment) : Fragment() {
     companion object {
@@ -187,7 +188,7 @@ class SupermarketInventoryMapResultFragment(private val parent: SupermarketInven
             parent.searchViewModel.errorData.value = supermarket
         }
         else {
-            GlobalScope.launch {
+            thread {
                 val response: Supermarket =
                     TradingApiClient.getSupermarketInventoryForID(
                         requireContext(),
