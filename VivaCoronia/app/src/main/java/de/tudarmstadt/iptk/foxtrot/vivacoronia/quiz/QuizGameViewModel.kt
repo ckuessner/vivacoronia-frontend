@@ -28,7 +28,7 @@ class QuizGameViewModel(
         val faker = Faker(Random(quizGame.opponentInfo.userId.hashCode().toLong()))
         val name = faker.name()
         opponentName = name.firstName()
-        opponentDistanceInKm = (quizGame.opponentInfo.distanceInMeters / 1000).toString()
+        opponentDistanceInKm = (quizGame.opponentInfo.distanceInMeters / 1000).toInt().toString()
 
         computeGameState()
     }
