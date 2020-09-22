@@ -77,8 +77,7 @@ class QuizActivity : AppCompatActivity() {
             val location = LocationUtility.getLastKnownLocation(this@QuizActivity) ?: LatLng(49.877457, 8.654372)
 
             try {
-                val (gameDto, oppInfo) = QuizGameApiClient.postQuizGameRequest(this@QuizActivity, location, ::onPostQuizError)
-                // TODO: use opponent Info
+                val gameDto = QuizGameApiClient.postQuizGameRequest(this@QuizActivity, location, ::onPostQuizError)
                 db.quizGameDao().insert(QuizGame(gameDto.gameId, -1))
                 val quizGame = QuizGameViewModel.from(gameDto)
                 runOnUiThread { loadGameDetails(quizGame) }
@@ -105,6 +104,7 @@ class QuizActivity : AppCompatActivity() {
             Log.e(tag, "Error trying to initialize a new game", error)
             if (hasWindowFocus())
                 Toast.makeText(this, R.string.server_connection_failed, Toast.LENGTH_SHORT).show()
+            finish()
         }
     }
 

@@ -14,7 +14,7 @@ interface QuizGameDao {
     @Delete
     fun delete(game: QuizGame)
 
-    @Query("SELECT * FROM quiz_game_table WHERE finishedAt > 0")
+    @Query("SELECT * FROM quiz_game_table WHERE finishedAt == -1")
     fun getActive(): List<QuizGame>
 
     @Query("SELECT * FROM quiz_game_table WHERE finishedAt > 0")

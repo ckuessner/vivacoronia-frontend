@@ -26,7 +26,7 @@ object QuizGameApiClient : ApiBaseClient() {
     }
 
 
-    fun postQuizGameRequest(ctx: Context, location: LatLng, errorHandler: (VolleyError) -> Unit): Pair<QuizGameDto, OpponentInfo> {
+    fun postQuizGameRequest(ctx: Context, location: LatLng, errorHandler: (VolleyError) -> Unit): QuizGameDto {
         val requestQueue = getRequestQueue(ctx) ?: throw VolleyError(REQUEST_QUEUE_ERR_STRING)
         val url = getEndpoint()
         val locationJsonObject = JSONObject().put(
@@ -40,14 +40,13 @@ object QuizGameApiClient : ApiBaseClient() {
             JsonObjectJWT(POST, url, locationJsonObject, responseFuture, handler404Error, ctx)
         requestQueue.add(request)
 
+        val json = JSONObject("""{"game":{"players":["5f684f45291b91002305b7d8","5f69b82454c69a0024934fe1"],"questions":[{"answers":["Hubei","Sichuan","Henan","Hebei"],"_id":"5f69b6b154c69a0024934fd0","question":"In which province is the city Wuhan?","correctAnswer":"Hubei","__v":0},{"answers":["13cm","10cm","6cm","15cm"],"_id":"5f69b6b154c69a0024934fcf","question":"How long is a piece of toilet paper on average?","correctAnswer":"13cm","__v":0},{"answers":["China","Japan","United Kingdom","Germany"],"_id":"5f69b6b154c69a0024934fd6","question":"Where was the toilet paper invented?","correctAnswer":"China","__v":0},{"answers":["Fever","Dry cough","Tiredness","Weight loss"],"_id":"5f69b6b154c69a0024934fd3","question":"What is not a common sympton of COVID?","correctAnswer":"Weight loss","__v":0}],"_id":"5f69c4aa30844900231e0746","answers":[],"opponentInfo":{"userId":"5f69b82454c69a0024934fe1","distance":9159862.662187224},"__v":0}}""")
         val gameJson = responseFuture.get()
 
         val game = klaxonWithQuestion.parse<QuizGameDto>(gameJson.get("game").toString())
-        val oppInfo = klaxon.parse<OpponentInfo>(gameJson.get("opponentInfo").toString())
+            ?: throw VolleyError("Unable to create new game")
 
-        if (game == null || oppInfo == null) throw VolleyError("Unable to create new game")
-        // TODO oppInfo part of game
-        return Pair(game, oppInfo)
+        return game
     }
 
     fun getGameInfo(ctx: Context, gameId: String): QuizGameDto {

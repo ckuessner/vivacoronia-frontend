@@ -51,8 +51,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/no_active_games"
                     android:layout_margin="10dp"
-                    android:textAlignment="center"
-                    android:visibility="gone" />
+                    android:textAlignment="center" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/active_games"
@@ -83,8 +82,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/no_finished_games"
                     android:layout_margin="10dp"
-                    android:textAlignment="center"
-                    android:visibility="gone" />
+                    android:textAlignment="center" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/finished_games"

@@ -29,4 +29,4 @@ data class Answer(
 ) : Parcelable
 
 @Parcelize
-data class OpponentInfo(val userId: String, val distanceInMeters: Int) : Parcelable
+data class OpponentInfo(val userId: String, @Json(name="distance") val distanceInMeters: Float) : Parcelable

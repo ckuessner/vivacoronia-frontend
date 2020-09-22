@@ -44,7 +44,6 @@ class QuizDetailsFragment(private val parent: QuizActivity) : Fragment() {
             setImage(answerView, answer)
         }
 
-        val x = game.opponentAnswers().filter {it.isCorrect}
         binding.opponentCorrect.text = resources.getString(R.string.correct).format(game.opponentAnswers().filter {it.isCorrect}.size)
         binding.myCorrect.text = resources.getString(R.string.correct).format(game.myAnswers().filter {it.isCorrect}.size)
     }

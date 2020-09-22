@@ -31,18 +31,6 @@ class QuizOverviewFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(QuizGameOverviewViewModel::class.java)
         db = AppDatabase.getDatabase(requireContext())
 
-        val gameId = arguments?.getString(ARG_GAME_ID)
-        if (gameId != null) {
-            val gameFinished = arguments?.getBoolean(ARG_GAME_FINISHED, false)
-            val quizDb = db.quizGameDao()
-            if (quizDb.getGame(gameId) == null) {
-                quizDb.insert(QuizGame(gameId, -1))
-            }
-            if (gameFinished == true) {
-                quizDb.update(QuizGame(gameId, System.currentTimeMillis()))
-            }
-        }
-
         val activeGamesAdapter = QuizGameAdapter(requireContext())
         binding.activeGames.adapter = activeGamesAdapter
         viewModel.activeGames.observe(viewLifecycleOwner, Observer { activeGamesAdapter.submitList(it) })
@@ -51,7 +39,22 @@ class QuizOverviewFragment : Fragment() {
         binding.finishedGames.adapter = finishedGamesAdapter
         viewModel.finishedGames.observe(viewLifecycleOwner, Observer { finishedGamesAdapter.submitList(it) })
 
-        GlobalScope.launch { fetchGames() }
+        val gameId = arguments?.getString(ARG_GAME_ID)
+        if (gameId != null) {
+            val gameFinished = arguments?.getBoolean(ARG_GAME_FINISHED, false)
+            GlobalScope.launch {
+                val quizDb = db.quizGameDao()
+                if (quizDb.getGame(gameId) == null) {
+                    quizDb.insert(QuizGame(gameId, -1))
+                }
+                if (gameFinished == true) {
+                    quizDb.update(QuizGame(gameId, System.currentTimeMillis()))
+                }
+                fetchGames()
+            }
+        } else {
+            GlobalScope.launch { fetchGames() }
+        }
 
         binding.startNewGame.setOnClickListener { startNewGame() }
         return binding.root
