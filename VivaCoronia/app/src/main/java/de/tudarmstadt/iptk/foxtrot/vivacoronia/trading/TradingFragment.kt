@@ -100,10 +100,10 @@ class TradingFragmentNav : Fragment(), Observer<MutableList<String>> {
             return false
 
         val fragment = when (item) {
-            R.id.search_offers -> SearchOffersFragment()
-            R.id.my_offers -> OfferOverviewFragment()
-            R.id.my_needs -> NeedOverviewFragment()
-            R.id.supermarkets -> SupermarketInventoryFragment()
+            R.id.search_offers -> SearchOffersFragment::class.java
+            R.id.my_offers -> OfferOverviewFragment::class.java
+            R.id.my_needs -> NeedOverviewFragment::class.java
+            R.id.supermarkets -> SupermarketInventoryFragment::class.java
             else -> null
         }
 

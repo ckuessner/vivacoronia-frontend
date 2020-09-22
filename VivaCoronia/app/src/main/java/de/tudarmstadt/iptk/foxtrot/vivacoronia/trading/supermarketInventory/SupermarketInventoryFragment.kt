@@ -24,8 +24,7 @@ class SupermarketInventoryFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance(
-            supermarketId: String,
-            loadSupermarket: Boolean
+            supermarketId: String
         ) = SupermarketInventoryFragment().apply {
             arguments = Bundle().apply {
                 putString(ARG_ID, supermarketId)
@@ -68,18 +67,21 @@ class SupermarketInventoryFragment : Fragment() {
         }
 
         arguments?.let {
-            val supermarketId = it.getString(ARG_ID)!!
-            GlobalScope.launch {
-                val response: Supermarket =
-                    TradingApiClient.getSupermarketInventoryForID(
-                        requireContext(),
-                        PlacesApiResult(supermarketId, "", LatLng(0.0, 0.0)),
-                        ::onRequestFailed
-                    )
-                requireActivity().runOnUiThread {
-                    inventoryViewModel.supermarketInventory.value = response
-                    binding.supermarketInventoryPager.setCurrentItem(1, false)
-                    (activity?.findViewById(R.id.bottom_nav_view) as BottomNavigationView).selectedItemId = R.id.supermarkets
+            val supermarketId = it.getString(ARG_ID)
+            if(supermarketId != null) {
+                GlobalScope.launch {
+                    val response: Supermarket =
+                        TradingApiClient.getSupermarketInventoryForID(
+                            requireContext(),
+                            PlacesApiResult(supermarketId, "", LatLng(0.0, 0.0)),
+                            ::onRequestFailed
+                        )
+                    requireActivity().runOnUiThread {
+                        inventoryViewModel.supermarketInventory.value = response
+                        binding.supermarketInventoryPager.setCurrentItem(1, false)
+                        (activity?.findViewById(R.id.bottom_nav_view) as BottomNavigationView).selectedItemId =
+                            R.id.supermarkets
+                    }
                 }
             }
         }

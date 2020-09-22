@@ -56,7 +56,7 @@ class SearchOffersListResultFragment(private val parent: SearchOffersFragment) :
     }
 
     private fun switchToSupermarketList(supermarketId: String) {
-        val frag = SupermarketInventoryFragment.newInstance(supermarketId, true)
+        val frag = SupermarketInventoryFragment.newInstance(supermarketId)
         parent.parentFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, frag).commit()
     }
 
