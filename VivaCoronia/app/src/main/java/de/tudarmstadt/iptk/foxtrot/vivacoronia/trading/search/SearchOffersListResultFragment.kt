@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.replace
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -55,7 +56,8 @@ class SearchOffersListResultFragment(private val parent: SearchOffersFragment) :
     }
 
     private fun switchToSupermarketList(supermarketId: String) {
-        TODO("Not yet implemented")
+        val frag = SupermarketInventoryFragment.newInstance(supermarketId, true)
+        parent.parentFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, frag).commit()
     }
 
     companion object {

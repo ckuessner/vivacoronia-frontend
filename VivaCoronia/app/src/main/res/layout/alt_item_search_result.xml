@@ -107,6 +107,26 @@
                         android:textSize="14sp" />
                 </TableRow>
 
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@string/availability_level"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@{offer.availabilityLevel}"
+                        android:textAlignment="viewEnd"
+                        android:textSize="14sp" />
+                </TableRow>
+
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -172,7 +192,8 @@
                 android:layout_weight="0.4"
                 android:gravity="center"
                 android:onClick="@{() -> goToSupermarketListener.onSwitchToSupermarketButtonClick(offer)}"
-                android:text="go to Supermarket"
+                android:text="@string/go_to"
+                android:layoutDirection="rtl"
                 android:textColor="#FFFFFF"
                 app:icon="@drawable/ic_supermarket"
                 app:iconSize="20dp"

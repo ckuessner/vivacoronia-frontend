@@ -184,4 +184,5 @@
     <string name="supermarketLongPressInstruction">Please select a supermarket first by long pressing on the map</string>
     <string name="itemForSupermarket">Item for %s</string>
     <string name="supermarket_offer">Supermarket Offer</string>
+    <string name="go_to">go to</string>
 </resources>

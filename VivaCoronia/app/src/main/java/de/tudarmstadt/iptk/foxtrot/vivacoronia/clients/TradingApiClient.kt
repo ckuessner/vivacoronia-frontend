@@ -18,6 +18,7 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.supermarketInventory.Plac
 import org.json.JSONArray
 import org.json.JSONObject
 import org.threeten.bp.OffsetDateTime
+import java.lang.IllegalStateException
 
 
 object TradingApiClient : ApiBaseClient() {
@@ -248,26 +249,9 @@ object TradingApiClient : ApiBaseClient() {
         val future = RequestFuture.newFuture<JSONArray>()
         val request = JsonArrayJWT(Request.Method.GET, url, null, future, future, context)
         queue.add(request)
-        val futureResult = future.get()//.toString()
-
-        //val result = productConverter.parseArray<Offer>(futureResult)
-        val result = parseMixedOffers(futureResult)
+        val futureResult = future.get().toString()
+        val result = productConverter.parseArray<Offer>(futureResult)
         return result?.toMutableList() ?: mutableListOf()
-    }
-
-    private fun parseMixedOffers(arrayToParse: JSONArray): ArrayList<Offer> {
-        val resultList = arrayListOf<Offer>()
-        for(index in 0 until arrayToParse.length()){
-            val currentItem = arrayToParse[index]
-            if((currentItem as JSONObject).has("name")){
-                val offer = productConverter.parse<Offer>(currentItem.toString()) as Offer
-                offer.supermarketName = currentItem["name"] as String
-                offer.supermarketId = currentItem["supermarketId"] as String
-                resultList.add(offer)
-            }
-            else resultList.add(productConverter.parse<Offer>(currentItem.toString()) as Offer)
-        }
-        return resultList
     }
 
     fun getMyNeeds(context: Context): MutableList<Need> {

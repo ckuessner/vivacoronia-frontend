@@ -21,9 +21,9 @@ class SupermarketInventoryItemViewModel(var inventoryItem: InventoryItem) : View
         }
 
     var availabilityLevel: String
-        get() = availabilityLevelToText(inventoryItem.availability)
+        get() = AvailabilityUtil().availabilityLevelToText(inventoryItem.availability)
         set(value) {
-            inventoryItem.availability = availabilityTextToLevel(value)
+            inventoryItem.availability = AvailabilityUtil().availabilityTextToLevel(value)
         }
 
     var productCategory: String
@@ -37,8 +37,19 @@ class SupermarketInventoryItemViewModel(var inventoryItem: InventoryItem) : View
         set(value) {
             inventoryItem.supermarket = value
         }
+}
 
-    private fun availabilityLevelToText(availabilityLevel: Int): String {
+class InventoryItemViewModelFactory(private val inventoryItem: InventoryItem): ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if(modelClass.isAssignableFrom(SupermarketInventoryItemViewModel::class.java)){
+            return SupermarketInventoryItemViewModel(inventoryItem) as T
+        }
+        throw IllegalArgumentException("Unknown SupermarketInventoryItemViewModel class")
+    }
+}
+
+class AvailabilityUtil {
+    fun availabilityLevelToText(availabilityLevel: Int): String {
         return when(availabilityLevel){
             0 -> "Unavailable"
             1 -> "Small amount"
@@ -48,7 +59,7 @@ class SupermarketInventoryItemViewModel(var inventoryItem: InventoryItem) : View
         }
     }
 
-    private fun availabilityTextToLevel(availabilityText: String): Int {
+    fun availabilityTextToLevel(availabilityText: String): Int {
         return when(availabilityText){
             "Unavailable" -> 0
             "Small amount" -> 1
@@ -56,14 +67,5 @@ class SupermarketInventoryItemViewModel(var inventoryItem: InventoryItem) : View
             "Large amount" -> 3
             else -> throw IllegalStateException()
         }
-    }
-}
-
-class InventoryItemViewModelFactory(private val inventoryItem: InventoryItem): ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if(modelClass.isAssignableFrom(SupermarketInventoryItemViewModel::class.java)){
-            return SupermarketInventoryItemViewModel(inventoryItem) as T
-        }
-        throw IllegalArgumentException("Unknown SupermarketInventoryItemViewModel class")
     }
 }

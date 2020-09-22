@@ -6,7 +6,10 @@ import androidx.lifecycle.ViewModelProvider
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.ProductViewModel
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.BaseProduct
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Offer
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.supermarketInventory.AvailabilityUtil
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.supermarketInventory.SupermarketInventoryItemViewModel
 import java.lang.IllegalArgumentException
+import java.lang.IllegalStateException
 import java.text.NumberFormat
 import java.util.*
 
@@ -99,6 +102,12 @@ class OfferViewModel(var offer: Offer) : ProductViewModel(offer as BaseProduct) 
         get() = offer.supermarketId
         set(value) {
             offer.supermarketId = value
+        }
+
+    var availabilityLevel: String
+        get() = AvailabilityUtil().availabilityLevelToText(offer.availabilityLevel)
+        set(value) {
+            offer.availabilityLevel = AvailabilityUtil().availabilityTextToLevel(value)
         }
 }
 

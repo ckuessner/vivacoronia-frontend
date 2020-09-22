@@ -2,6 +2,7 @@ package de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.beust.klaxon.Json
 import com.google.android.gms.maps.model.LatLng
 import java.util.*
 
@@ -16,8 +17,9 @@ class Offer(
     var distanceToUser: Double,
     var phoneNumber: String
 ) : BaseProduct(product, productCategory, amount, location, id), Parcelable {
+    var availabilityLevel: Int = 0
     var supermarketId: String = ""
-    var supermarketName: String = ""
+    @Json(name="name") var supermarketName: String = ""
 
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,

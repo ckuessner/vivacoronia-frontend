@@ -8,11 +8,32 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.android.volley.VolleyError
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.TradingApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.databinding.SupermarketInventoryFragmentBinding
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.Supermarket
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+
+private const val ARG_ID = "id"
+private const val ARG_SEARCH = "search"
 
 class SupermarketInventoryFragment : Fragment() {
     companion object {
+        @JvmStatic
+        fun newInstance(
+            supermarketId: String,
+            loadSupermarket: Boolean
+        ) = SupermarketInventoryFragment().apply {
+            arguments = Bundle().apply {
+                putString(ARG_ID, supermarketId)
+                putBoolean(ARG_SEARCH, loadSupermarket)
+            }
+        }
+
         private const val TAG = "SupermarketInventoryFragment"
     }
 
@@ -47,7 +68,29 @@ class SupermarketInventoryFragment : Fragment() {
         binding.supermarketInventoryDisplay.setOnClickListener {
             binding.supermarketInventoryPager.setCurrentItem(1, true)
         }
+
+        arguments?.let {
+            val supermarketId = it.getString(ARG_ID)!!
+            GlobalScope.launch {
+                val response: Supermarket =
+                    TradingApiClient.getSupermarketInventoryForID(
+                        requireContext(),
+                        PlacesApiResult(supermarketId, "", LatLng(0.0, 0.0)),
+                        ::onRequestFailed
+                    )
+                requireActivity().runOnUiThread {
+                    inventoryViewModel.supermarketInventory.value = response
+                    binding.supermarketInventoryPager.setCurrentItem(1, true)
+                    val test = activity?.findViewById(R.id.bottom_nav_view) as BottomNavigationView
+                    test.selectedItemId = R.id.supermarkets
+                }
+            }
+        }
         return binding.root
+    }
+
+    private fun onRequestFailed(error: VolleyError, supermarket: PlacesApiResult){
+        error.printStackTrace()
     }
 
     private inner class ScreenSlidePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
