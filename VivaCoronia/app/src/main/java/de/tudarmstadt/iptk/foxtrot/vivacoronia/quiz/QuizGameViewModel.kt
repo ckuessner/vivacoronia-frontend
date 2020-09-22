@@ -47,7 +47,8 @@ class QuizGameViewModel(
             else -> GameState.LOST
         }
 
-        isOpponentsTurn = opponentAnswers.size < myAnswers.size
+        // game.answers.length % game.players.length !== game.players.indexOf(userId)
+        isOpponentsTurn = quizGame.answers.size % quizGame.players.size == quizGame.players.indexOf(quizGame.opponentInfo.userId)
     }
 
     fun opponentAnswers() = quizGame.answers.filter {it.userId == quizGame.opponentInfo.userId}

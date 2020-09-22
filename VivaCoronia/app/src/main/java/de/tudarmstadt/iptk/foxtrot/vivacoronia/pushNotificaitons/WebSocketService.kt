@@ -126,7 +126,7 @@ class WebSocketService : Service() {
         val gameFinished = (type == "QUIZ_GAMEOVER_WON" || type == "QUIZ_GAMEOVER_LOST" || type == "QUIZ_GAMEOVER_DRAW")
         with(NotificationManagerCompat.from(this)) {
             notify(
-                SystemClock.elapsedRealtime().hashCode(), //we want a unique id so that notifications for different contacts overwrite each other
+                content["gameId"].hashCode(), // one notification per game
                 NotificationHelper.getQuizNotification(
                     applicationContext,
                     Constants.QUIZ_NOTIFICATION_CHANNEL_ID,

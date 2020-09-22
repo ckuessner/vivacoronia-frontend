@@ -9,7 +9,8 @@ data class QuizGameDto(
     @Json(name = "_id") val gameId: String,
     val questions: List<Question>,
     val answers: List<Answer>,
-    val opponentInfo: OpponentInfo
+    val opponentInfo: OpponentInfo,
+    val players: List<String>
 ) : Parcelable
 
 @Parcelize
