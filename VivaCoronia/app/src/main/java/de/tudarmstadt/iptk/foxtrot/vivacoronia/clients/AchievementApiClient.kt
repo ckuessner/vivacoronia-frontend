@@ -1,14 +1,12 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.clients
 
 import android.content.Context
-import android.util.Log
 import com.android.volley.toolbox.RequestFuture
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.AchievementInfo
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.ClassCastException
 import java.lang.Exception
 import java.util.concurrent.ExecutionException
 
@@ -87,13 +85,15 @@ object AchievementApiClient : ApiBaseClient() {
         requestQueue.add(request)
         var scoreAsFloat = 0.0f
         try {
-            val score = responseFuture.get().opt("infectionScore")
-            if(score != 0)
-                scoreAsFloat = score as Float
+            val score = responseFuture.get().opt("infectionScore") as Double
+            if(score != 0.0)
+                scoreAsFloat = score.toFloat()
             return Pair(scoreAsFloat, 0)
         } catch(e: ExecutionException){
             val errorCode = RequestUtility.catchException(e)
             return Pair(-1.0f, errorCode)
+        } catch (e: ClassCastException) {
+            return Pair(-1.0f, 0)
         }
 
     }
