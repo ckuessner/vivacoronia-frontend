@@ -142,7 +142,7 @@ class AchievementsFragment : Fragment() {
             val achievementInfoRequest = AchievementApiClient.getAchievementInformation(ctx)
             val achievementInfoNew = achievementInfoRequest.first
             val achievemenRequestSucceed = achievementInfoRequest.second
-            //if above value is null, we load the old settings for achievements
+            //if above value is not 0, we load the old settings for achievements
             if (achievemenRequestSucceed != 0) {
                 val achievements = db.coronaDao().getAllAchievements()
                 for (achievement: AchievementInfo in achievements) {
@@ -185,7 +185,7 @@ class AchievementsFragment : Fragment() {
 
     private fun convertBadgeTypeToAmount(badgeType : String) : Int{
         when(badgeType){
-            "Bronce" -> return 1
+            "Bronze" -> return 1
             "Silver" -> return 2
             "Gold" -> return 3
             else -> return 0
