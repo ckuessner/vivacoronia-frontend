@@ -189,7 +189,7 @@ object TradingApiClient : ApiBaseClient() {
         jsonInventoryArray.put(jsonInventoryItemObject)
         val jsonLocationObject = JSONObject()
         val location = item.supermarket!!.supermarketLocation
-        val coordinatesJSONArray = JSONArray().put(location.latitude).put(location.longitude)
+        val coordinatesJSONArray = JSONArray().put(location.longitude).put(location.latitude)
         jsonLocationObject
             .put("type", "Point")
             .put("coordinates", coordinatesJSONArray)
