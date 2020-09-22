@@ -44,8 +44,6 @@ private const val PRODUCT_QUERY = "product"
 
 class MainActivity : AppCompatActivity() {
     private val tag = "MainActivity"
-    // TODO check wheter google play services has the right version
-    // TODO add licencing for location api
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 

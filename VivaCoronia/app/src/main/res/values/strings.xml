@@ -184,7 +184,7 @@
     <string name="adminRevoked">"You don't have the permission to use admin features anymore"</string>
 
     <!-- Error Showing -->
-    <string name="noInternet">"No internet, check your connection and try again"</string>
+    <string name="noInternet">"Couldn't connect, check your connection"</string>
     <string name="wrongPassword">"Password was wrong, try again"</string>
     <string name="wrongPwOrID">"Password or UserID was wrong, try again"</string>
     <string name="serverError">"Something went wrong with the server, oops"</string>
