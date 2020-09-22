@@ -47,8 +47,10 @@ class SupermarketInventoryListResultFragment(private val parent: SupermarketInve
             it?.let {
                 binding.supermarketName.text = it.supermarketName
                 binding.listSupermarketDetails.isVisible = true
-                binding.viewOnMap.isVisible = true
                 binding.supermarketInventoryEditButton.isVisible = true
+                if(supermarketForIdDrawn(it.supermarketId)) {
+                    binding.viewOnMap.isVisible = true
+                }
                 adapter.submitList(it.inventoryViewModel)
             }
             binding.progressHorizontal.isIndeterminate = false
@@ -110,26 +112,40 @@ class SupermarketInventoryListResultFragment(private val parent: SupermarketInve
 
     private fun switchToMap(supermarketId: String?) {
         if(supermarketId!=null){
-            parent.searchViewModel.selectedMarker.value = supermarketId
-            parent.switchFragments(0)
+            if(supermarketForIdDrawn(supermarketId)) {
+                parent.searchViewModel.selectedMarker.value = supermarketId
+                parent.switchFragments(0)
+            }
+            else{
+                Toast.makeText(requireContext(), "Can't show supermarket, because it isn't loaded yet. Long press on the map to load supermarkets in the vicinity.", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
+    private fun supermarketForIdDrawn(supermarketId: String): Boolean {
+        val supermarket = parent.searchViewModel.supermarkets.value?.firstOrNull { it.supermarketPlaceId == supermarketId }
+        return supermarket != null
+    }
+
     private fun reloadCurrentSupermarket() {
-        binding.progressHorizontal.isIndeterminate = true
-        if (parent.inventoryViewModel.supermarketInventory.value != null) {
-            GlobalScope.launch {
-                val id = parent.inventoryViewModel.supermarketInventory.value!!.supermarketId
-                val name = parent.inventoryViewModel.supermarketInventory.value!!.supermarketName
-                val location = parent.inventoryViewModel.supermarketInventory.value!!.supermarketLocation
-                val response: Supermarket =
-                    TradingApiClient.getSupermarketInventoryForID(
-                        requireContext(),
-                        PlacesApiResult(id, name, location),
-                        ::onRequestFailed
-                    )
-                requireActivity().runOnUiThread {
-                    parent.inventoryViewModel.supermarketInventory.value = response
+        if(isAdded) {
+            binding.progressHorizontal.isIndeterminate = true
+            if (parent.inventoryViewModel.supermarketInventory.value != null) {
+                GlobalScope.launch {
+                    val id = parent.inventoryViewModel.supermarketInventory.value!!.supermarketId
+                    val name =
+                        parent.inventoryViewModel.supermarketInventory.value!!.supermarketName
+                    val location =
+                        parent.inventoryViewModel.supermarketInventory.value!!.supermarketLocation
+                    val response: Supermarket =
+                        TradingApiClient.getSupermarketInventoryForID(
+                            requireContext(),
+                            PlacesApiResult(id, name, location),
+                            ::onRequestFailed
+                        )
+                    requireActivity().runOnUiThread {
+                        parent.inventoryViewModel.supermarketInventory.value = response
+                    }
                 }
             }
         }

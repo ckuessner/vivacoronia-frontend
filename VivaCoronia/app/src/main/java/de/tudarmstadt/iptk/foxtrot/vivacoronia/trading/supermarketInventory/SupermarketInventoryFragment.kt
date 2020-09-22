@@ -19,7 +19,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 private const val ARG_ID = "id"
-private const val ARG_SEARCH = "search"
 
 class SupermarketInventoryFragment : Fragment() {
     companion object {
@@ -30,7 +29,6 @@ class SupermarketInventoryFragment : Fragment() {
         ) = SupermarketInventoryFragment().apply {
             arguments = Bundle().apply {
                 putString(ARG_ID, supermarketId)
-                putBoolean(ARG_SEARCH, loadSupermarket)
             }
         }
 
