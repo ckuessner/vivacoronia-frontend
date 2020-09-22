@@ -72,7 +72,7 @@ class StatusCheckFragment : Fragment() {
             requireActivity().runOnUiThread {
                 Toast.makeText(
                     ctx,
-                    "Your userID is: $userID, it was also copied to your clipboard",
+                    "Your UserID is: $userID, it was also copied to your clipboard",
                     Toast.LENGTH_LONG
                 ).show()
             }

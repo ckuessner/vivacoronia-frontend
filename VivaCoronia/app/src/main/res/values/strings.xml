@@ -172,7 +172,7 @@
     <string name="current_status">"Feature permissions: User"</string>
     <string name="admin_button">"Reload status"</string>
     <string name="check_status">Check Status</string>
-    <string name="userID_info">Show User ID</string>
+    <string name="userID_info">Show UserID</string>
     <string name="feature_permissions_user">Feature permissions: User</string>
     <string name="feature_permission_admin">Feature permissions: Admin</string>
     <string name="admin_login_prompt">Login to use admin features</string>
