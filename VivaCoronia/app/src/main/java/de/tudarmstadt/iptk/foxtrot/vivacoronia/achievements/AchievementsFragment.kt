@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.AchievementApiClient
@@ -33,11 +34,95 @@ class AchievementsFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_achievements, container, false)
         val database = AppDatabase.getDatabase(requireActivity())
+        setInfoListeners(view, database)
         updateAchievementStatus(requireActivity(), view, database)
         updateInfectionScore(requireActivity(), view)
         // Inflate the layout for this fragment
         return view
     }
+
+    private fun setInfoListeners(view : View, db : AppDatabase){
+        val infectionInfo = view.findViewById<ImageView>(R.id.infoInfectionscore)
+        val achievementInfos = ArrayList<Pair<ImageView, String>>()
+        achievementInfos.add(Pair(view.findViewById<ImageView>(R.id.infoZombie), Constants.ACHIEVEMENT_ZOMBIE))
+        achievementInfos.add(Pair(view.findViewById<ImageView>(R.id.infoSuperspreader), Constants.ACHIEVEMENT_SUPERSPREADER))
+        achievementInfos.add(Pair(view.findViewById<ImageView>(R.id.infoMoneyboy), Constants.ACHIEVEMENT_MONEYBOY))
+        achievementInfos.add(Pair(view.findViewById<ImageView>(R.id.infoHamsterbuyer), Constants.ACHIEVEMENT_HAMSTERBUYER))
+        achievementInfos.add(Pair(view.findViewById<ImageView>(R.id.infoQuiz), Constants.ACHIEVEMENT_QUIZMASTER))
+        achievementInfos.add(Pair(view.findViewById<ImageView>(R.id.infoForeveralone), Constants.ACHIEVEMENT_ALONE))
+
+
+        infectionInfo.setOnClickListener {
+            requireActivity().runOnUiThread {
+                Toast.makeText(requireActivity(), getString(R.string.infectionScoreInfo), Toast.LENGTH_LONG).show()
+            }
+        }
+
+        for(info: Pair<ImageView, String> in achievementInfos){
+            GlobalScope.launch {
+                val currAchievement = db.coronaDao().getAchievement(info.second)
+                val infoImage = info.first
+                val achievmentInfo = getInfoAboutAchievement(info.second)
+                requireActivity().runOnUiThread {
+                    val basicInfoAchievment = getInfoAboutAchievement(info.second)
+                    val neededForHigher = currAchievement.neededForHigher
+                    val neededInfoAchievement = makeNeededInfo(info.second, neededForHigher)
+                    val percentageOfPeople = currAchievement.percentageOfPeople
+                    val percentageInfoAchievement =
+                        makePercentageInfo(info.second, percentageOfPeople)
+                    val resultString =
+                        "$basicInfoAchievment\n$neededInfoAchievement\n$percentageInfoAchievement"
+                    infoImage.setOnClickListener {
+                        Toast.makeText(requireActivity(), resultString, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun makePercentageInfo(achievement: String, percentage : Int) : String{
+        //if percentage is 0, we dont need to show that 0% percent of people achieved this badge
+        if(percentage == 0)
+            return ""
+        var achievName = ""
+        when(achievement){
+            Constants.ACHIEVEMENT_ALONE -> achievName =  "Forever Alone"
+            Constants.ACHIEVEMENT_SUPERSPREADER -> achievName = "Superspreader"
+            Constants.ACHIEVEMENT_QUIZMASTER -> achievName = "Quizmaster"
+            Constants.ACHIEVEMENT_HAMSTERBUYER -> achievName = "Hamsterbuyer"
+            Constants.ACHIEVEMENT_ZOMBIE -> achievName = "Zombie"
+            Constants.ACHIEVEMENT_MONEYBOY-> achievName = "Moneyboy"
+        }
+        return "$percentage% of people unlocked the current badge of the achievement \"$achievName\" "
+    }
+
+    private fun makeNeededInfo(achievement : String, neededForHigher : Int) : String{
+        if(neededForHigher == 0)
+            return ""
+        when(achievement){
+            Constants.ACHIEVEMENT_ALONE -> return "You need to be $neededForHigher days alone, to unlock the next badge!"
+            Constants.ACHIEVEMENT_SUPERSPREADER -> return "Infect $neededForHigher more people, to unlock the next badge (please don't!)"
+            Constants.ACHIEVEMENT_QUIZMASTER -> return "Answer $neededForHigher more questions correctly to unlock the next badge!"
+            Constants.ACHIEVEMENT_HAMSTERBUYER -> return "Buy $neededForHigher more items to unlock the next badge!"
+            Constants.ACHIEVEMENT_ZOMBIE -> return "Walk $neededForHigher more kilometres to unlock the next badge! (or be a nice person and stay at home!"
+            Constants.ACHIEVEMENT_MONEYBOY-> return "Sell $neededForHigher more items to unlock the next badge and someday be the next Jeff Bezos!"
+            else -> return ""
+        }
+    }
+
+    private fun getInfoAboutAchievement(achievementName: String): String{
+        when(achievementName){
+            Constants.ACHIEVEMENT_ALONE -> return getString(R.string.aloneInfo)
+            Constants.ACHIEVEMENT_SUPERSPREADER -> return getString(R.string.spreaderInfo)
+            Constants.ACHIEVEMENT_QUIZMASTER -> return getString(R.string.quizInfo)
+            Constants.ACHIEVEMENT_HAMSTERBUYER -> return getString(R.string.hamsterInfo)
+            Constants.ACHIEVEMENT_ZOMBIE -> return getString(R.string.zombieInfo)
+            Constants.ACHIEVEMENT_MONEYBOY-> return getString(R.string.moneyInfo)
+            else -> return ""
+        }
+    }
+
+
 
     private fun updateAchievementStatus(ctx: Context, view: View?, db: AppDatabase){
         GlobalScope.launch {
@@ -79,7 +164,6 @@ class AchievementsFragment : Fragment() {
         }
 
         for(idString in idsAsString){
-            Log.i("achiev", idString)
             val id = view?.resources?.getIdentifier(idString, "id", requireActivity().applicationContext.packageName) as Int
             val toUpdate = view.findViewById<ImageView>(id)
             toUpdate.alpha = 1.0f

@@ -22,7 +22,8 @@ interface CoronaDao {
     @Update
     fun updateAchievement(AchievementInfo: AchievementInfo)
 
-
+    @Query("SELECT * from achievementinfo where achievement == :name")
+    fun getAchievement(name: String) : AchievementInfo
 
     // Data Update; if the data update is so fast that the time (which is the primary key) is the same, the new location can be taken directly because nobody can run so fast
     @Insert(onConflict = OnConflictStrategy.REPLACE)
