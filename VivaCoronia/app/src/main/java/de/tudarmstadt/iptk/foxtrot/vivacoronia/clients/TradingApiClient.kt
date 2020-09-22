@@ -5,6 +5,8 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.RequestFuture
 import com.android.volley.toolbox.Volley
@@ -19,7 +21,6 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.supermarketInventory.Plac
 import org.json.JSONArray
 import org.json.JSONObject
 import org.threeten.bp.OffsetDateTime
-import java.lang.IllegalStateException
 
 
 object TradingApiClient : ApiBaseClient() {
