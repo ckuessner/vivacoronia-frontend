@@ -1,6 +1,8 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.achievements
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.authentication.LoginActivity
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.AchievementApiClient
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.clients.RequestUtility
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
@@ -54,7 +57,7 @@ class AchievementsFragment : Fragment() {
 
         infectionInfo.setOnClickListener {
             requireActivity().runOnUiThread {
-                Toast.makeText(requireActivity(), getString(R.string.infectionScoreInfo), Toast.LENGTH_LONG).show()
+                makeAlertDialog(getString(R.string.infectionScoreInfo))
             }
         }
 
@@ -73,11 +76,21 @@ class AchievementsFragment : Fragment() {
                     val resultString =
                         "$basicInfoAchievment\n$neededInfoAchievement\n$percentageInfoAchievement"
                     infoImage.setOnClickListener {
-                        Toast.makeText(requireActivity(), resultString, Toast.LENGTH_LONG).show()
+                        makeAlertDialog(resultString)
                     }
                 }
             }
         }
+    }
+
+    private fun makeAlertDialog(toShow: String){
+        val builder = AlertDialog.Builder(requireActivity(), R.style.AlertDialogTheme)
+        builder.setTitle(getString(R.string.generalInfo))
+        builder.setMessage(toShow)
+        // needs empty positive button to work
+        builder.setPositiveButton(android.R.string.yes){ _, _ ->
+        }
+        builder.show()
     }
 
     private fun makePercentageInfo(achievement: String, percentage : Int) : String{
@@ -100,11 +113,11 @@ class AchievementsFragment : Fragment() {
         if(neededForHigher == 0)
             return ""
         when(achievement){
-            Constants.ACHIEVEMENT_ALONE -> return "You need to be $neededForHigher days alone, to unlock the next badge!"
-            Constants.ACHIEVEMENT_SUPERSPREADER -> return "Infect $neededForHigher more people, to unlock the next badge (please don't!)"
-            Constants.ACHIEVEMENT_QUIZMASTER -> return "Answer $neededForHigher more questions correctly to unlock the next badge!"
+            Constants.ACHIEVEMENT_ALONE -> return "You need to be $neededForHigher days alone to unlock the next badge!"
+            Constants.ACHIEVEMENT_SUPERSPREADER -> return "Infect $neededForHigher more people to unlock the next badge (please don't!)"
+            Constants.ACHIEVEMENT_QUIZMASTER -> return "Win $neededForHigher more quizzes correctly to unlock the next badge!"
             Constants.ACHIEVEMENT_HAMSTERBUYER -> return "Buy $neededForHigher more items to unlock the next badge!"
-            Constants.ACHIEVEMENT_ZOMBIE -> return "Walk $neededForHigher more kilometres to unlock the next badge! (or be a nice person and stay at home!"
+            Constants.ACHIEVEMENT_ZOMBIE -> return "Walk $neededForHigher more kilometres to unlock the next badge! (or be a nice person and stay at home!)"
             Constants.ACHIEVEMENT_MONEYBOY-> return "Sell $neededForHigher more items to unlock the next badge and someday be the next Jeff Bezos!"
             else -> return ""
         }

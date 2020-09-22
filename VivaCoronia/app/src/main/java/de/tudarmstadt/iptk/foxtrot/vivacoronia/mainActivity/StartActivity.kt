@@ -62,7 +62,7 @@ class StartActivity : AppCompatActivity() {
         db.coronaDao().initAchievement(AchievementInfo(Constants.ACHIEVEMENT_SUPERSPREADER, Constants.BADGE_NONE, 5, 0))
         db.coronaDao().initAchievement(AchievementInfo(Constants.ACHIEVEMENT_HAMSTERBUYER, Constants.BADGE_NONE, 10, 0))
         db.coronaDao().initAchievement(AchievementInfo(Constants.ACHIEVEMENT_MONEYBOY, Constants.BADGE_NONE, 20, 0))
-        db.coronaDao().initAchievement(AchievementInfo(Constants.ACHIEVEMENT_ALONE, Constants.BADGE_NONE, 100, 0))
-        db.coronaDao().initAchievement(AchievementInfo(Constants.ACHIEVEMENT_ZOMBIE, Constants.BADGE_NONE, 2, 0))
+        db.coronaDao().initAchievement(AchievementInfo(Constants.ACHIEVEMENT_ALONE, Constants.BADGE_NONE, 2, 0))
+        db.coronaDao().initAchievement(AchievementInfo(Constants.ACHIEVEMENT_ZOMBIE, Constants.BADGE_NONE, 50, 0))
     }
 }
