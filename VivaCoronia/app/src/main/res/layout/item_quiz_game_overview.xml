@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="5dp"
         android:background="@drawable/border_round"
-        android:backgroundTint="#20000000"
+        android:elevation="5dp"
         android:duplicateParentState="true"
         android:onClick="@{() -> onClickListener.onClick()}"
         android:padding="15dp">

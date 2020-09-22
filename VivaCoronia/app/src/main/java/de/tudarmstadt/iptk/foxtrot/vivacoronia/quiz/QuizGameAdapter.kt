@@ -40,8 +40,7 @@ class QuizGameOverviewViewHolder(private val view: QuizGameOverviewItem, private
 
     fun bind(item: QuizGameViewModel) {
         view.binding.quizGame = item
-        if (item.finished)
-            view.gameState = item.gameState
+        view.gameState = item.gameState
         view.binding.onClickListener = OnQuizGameItemClickListener(item, context)
         view.binding.executePendingBindings()
         view.colorResultBars()

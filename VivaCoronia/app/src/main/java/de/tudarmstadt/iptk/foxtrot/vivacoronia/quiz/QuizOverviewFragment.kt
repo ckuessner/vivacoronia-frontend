@@ -1,6 +1,7 @@
 package de.tudarmstadt.iptk.foxtrot.vivacoronia.quiz
 
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -55,47 +56,67 @@ class QuizOverviewFragment : Fragment() {
                 fetchGames()
             }
         } else {
-            GlobalScope.launch { fetchGames() }
+            fetchGames()
         }
 
         binding.startNewGame.setOnClickListener { startNewGame() }
+        binding.refreshLayout.setOnRefreshListener { fetchGames() }
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (binding.finishedGamesLoading.visibility != View.VISIBLE)
+            fetchGames()
+    }
+
     private fun fetchGames() {
+        binding.activeGamesLoading.visibility = View.VISIBLE
+        binding.finishedGamesLoading.visibility = View.VISIBLE
+        GlobalScope.launch {
+            fetchActiveGamesInfos()
+            fetchFinishedGamesInfos() // important to run after each other because fetchActiveGames might produce new finished games
+            activity?.runOnUiThread { binding.refreshLayout.isRefreshing = false }
+        }
+    }
+
+    private fun fetchActiveGamesInfos() {
         val activeGameIds = db.quizGameDao().getActive().map { it.gameId }
+        try {
+            val (finishedGames, activeGames) = QuizGameApiClient.getMultipleGames(requireActivity(), activeGameIds).partition { it.answers.size == 8 }
+            if (finishedGames.isNotEmpty()) {
+                val gameIds = finishedGames.map { it.gameId }
+                val quizGameDao = db.quizGameDao()
+                gameIds.forEach { quizGameDao.update(QuizGame(it, System.currentTimeMillis())) }
+            }
+            activity?.let { it.runOnUiThread {
+                binding.noGamesActive.visibility = if (activeGames.isEmpty()) View.VISIBLE else View.GONE
+                binding.activeGamesLoading.visibility = View.GONE
+                viewModel.activeGames.value = activeGames.map { game -> QuizGameViewModel(game) }
+            }}
+        } catch (e: Exception) {
+            Log.d(tag, "Error fetching multiple Games: ", e)
+            activity?.let{ it.runOnUiThread {
+                Toast.makeText(it, R.string.server_connection_failed, Toast.LENGTH_SHORT).show()
+            }}
+        }
+    }
+
+    private fun fetchFinishedGamesInfos() {
         val finishedGameIds = db.quizGameDao().getFinished().take(5).map { it.gameId }
-
-        GlobalScope.launch {
-            try {
-                val activeGames = QuizGameApiClient.getMultipleGames(requireActivity(), activeGameIds)
-                activity?.let { it.runOnUiThread {
-                    binding.noGamesActive.visibility = if (activeGames.isEmpty()) View.VISIBLE else View.GONE
-                    viewModel.activeGames.value = activeGames.map { game -> QuizGameViewModel(game) }
-                }}
-            } catch (e: Exception) {
-                Log.d(tag, "Error fetching multiple Games: ", e)
-                activity?.let{ it.runOnUiThread {
-                    Toast.makeText(it, R.string.server_connection_failed, Toast.LENGTH_SHORT).show()
-                }}
-            }
+        try {
+            val finishedGames = QuizGameApiClient.getMultipleGames(requireActivity(), finishedGameIds)
+            activity?.let { it.runOnUiThread {
+                binding.noGamesFinished.visibility = if (finishedGames.isEmpty()) View.VISIBLE else View.GONE
+                binding.finishedGamesLoading.visibility = View.GONE
+                viewModel.finishedGames.value = finishedGames.map { game -> QuizGameViewModel(game) }
+            }}
+        } catch (e: Exception) {
+            Log.d(tag, "Error fetching multiple Games: ", e)
+            activity?.let{ it.runOnUiThread {
+                Toast.makeText(it, R.string.server_connection_failed, Toast.LENGTH_SHORT).show()
+            }}
         }
-
-        GlobalScope.launch {
-            try {
-                val finishedGames = QuizGameApiClient.getMultipleGames(requireActivity(), finishedGameIds)
-                activity?.let { it.runOnUiThread {
-                    binding.noGamesFinished.visibility = if (finishedGames.isEmpty()) View.VISIBLE else View.GONE
-                    viewModel.finishedGames.value = finishedGames.map { game -> QuizGameViewModel(game) }
-                }}
-            } catch (e: Exception) {
-                Log.d(tag, "Error fetching multiple Games: ", e)
-                activity?.let{ it.runOnUiThread {
-                    Toast.makeText(it, R.string.server_connection_failed, Toast.LENGTH_SHORT).show()
-                }}
-            }
-        }
-
     }
 
     private fun startNewGame() {

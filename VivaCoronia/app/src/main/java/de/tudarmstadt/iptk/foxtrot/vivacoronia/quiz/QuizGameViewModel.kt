@@ -23,8 +23,6 @@ class QuizGameViewModel(
     @IgnoredOnParcel val opponentDistanceInKm: String
     @IgnoredOnParcel var gameState: GameState = GameState.OPEN
     @IgnoredOnParcel var isOpponentsTurn: Boolean = false
-    val finished: Boolean
-        get() = gameState != GameState.OPEN
 
     init {
         val faker = Faker(Random(quizGame.opponentInfo.userId.hashCode().toLong()))
@@ -41,7 +39,7 @@ class QuizGameViewModel(
         val opponentCorrectAnswersCount = opponentAnswers.count { it.isCorrect }
 
         gameState = when {
-            opponentAnswers.size != myAnswers.size || opponentAnswers.isEmpty() -> GameState.OPEN
+            myAnswers.isEmpty() || opponentAnswers.isEmpty() -> GameState.OPEN
             myCorrectAnswersCount > opponentCorrectAnswersCount -> GameState.WON
             myCorrectAnswersCount == opponentCorrectAnswersCount -> GameState.DRAW
             else -> GameState.LOST
@@ -65,9 +63,9 @@ class QuizGameViewModel(
         val opponentAnswer = getAnswer(questionIndex, true)
         return when {
             myAnswer == null || opponentAnswer == null -> GameState.OPEN
-            myAnswer.answer == opponentAnswer.answer -> GameState.DRAW
+            !myAnswer.isCorrect && opponentAnswer.isCorrect -> GameState.LOST
             myAnswer.isCorrect && !opponentAnswer.isCorrect -> GameState.WON
-            else -> GameState.LOST
+            else -> GameState.DRAW
         }
     }
 

@@ -122,6 +122,7 @@ class MainActivity : AppCompatActivity() {
 
         // setup nav view
         navView = findViewById(R.id.nav_view)
+        navView.itemIconTintList = null
         navView.setupWithNavController(navController)
 
         // add actions for drawer menu item here

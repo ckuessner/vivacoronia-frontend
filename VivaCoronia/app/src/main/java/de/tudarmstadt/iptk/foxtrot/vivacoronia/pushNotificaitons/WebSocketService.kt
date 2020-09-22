@@ -15,6 +15,8 @@ import de.tudarmstadt.iptk.foxtrot.vivacoronia.BuildConfig
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.Constants
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.NotificationHelper
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.R
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.AppDatabase
+import de.tudarmstadt.iptk.foxtrot.vivacoronia.dataStorage.entities.QuizGame
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.trading.models.ProductSearchQuery
 import de.tudarmstadt.iptk.foxtrot.vivacoronia.utils.getDevSSLContext
 import okhttp3.OkHttpClient
@@ -123,6 +125,8 @@ class WebSocketService : Service() {
             "QUIZ_GAMEOVER_DRAW" -> "A quiz game resulted in a draw."
             else -> "Do you want to play a quiz?"
         }
+        if (type == "QUIZ_NEW")
+            AppDatabase.getDatabase(applicationContext).quizGameDao().insert(QuizGame(content["gameId"] as String, -1))
         val gameFinished = (type == "QUIZ_GAMEOVER_WON" || type == "QUIZ_GAMEOVER_LOST" || type == "QUIZ_GAMEOVER_DRAW")
         with(NotificationManagerCompat.from(this)) {
             notify(
@@ -134,7 +138,7 @@ class WebSocketService : Service() {
                     getString(R.string.quiz_notification_channel_title),
                     text,
                     NotificationCompat.PRIORITY_DEFAULT,
-                    Color.TRANSPARENT,
+                    Color.RED,
                     content,
                     gameFinished
                 )
