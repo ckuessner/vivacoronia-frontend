@@ -80,9 +80,8 @@ class SupermarketInventoryFragment : Fragment() {
                     )
                 requireActivity().runOnUiThread {
                     inventoryViewModel.supermarketInventory.value = response
-                    binding.supermarketInventoryPager.setCurrentItem(1, true)
-                    val test = activity?.findViewById(R.id.bottom_nav_view) as BottomNavigationView
-                    test.selectedItemId = R.id.supermarkets
+                    binding.supermarketInventoryPager.setCurrentItem(1, false)
+                    (activity?.findViewById(R.id.bottom_nav_view) as BottomNavigationView).selectedItemId = R.id.supermarkets
                 }
             }
         }
