@@ -66,13 +66,14 @@ class AchievementsFragment : Fragment() {
                 val currAchievement = db.coronaDao().getAchievement(info.second)
                 val infoImage = info.first
                 val achievmentInfo = getInfoAboutAchievement(info.second)
+                val badgeType = db.coronaDao().getAchievement(info.second).type
                 requireActivity().runOnUiThread {
                     val basicInfoAchievment = getInfoAboutAchievement(info.second)
                     val neededForHigher = currAchievement.neededForHigher
                     val neededInfoAchievement = makeNeededInfo(info.second, neededForHigher)
                     val percentageOfPeople = currAchievement.percentageOfPeople
                     val percentageInfoAchievement =
-                        makePercentageInfo(info.second, percentageOfPeople)
+                        makePercentageInfo(info.second, percentageOfPeople, badgeType)
                     val resultString =
                         "$basicInfoAchievment$neededInfoAchievement$percentageInfoAchievement"
                     infoImage.setOnClickListener {
@@ -93,9 +94,10 @@ class AchievementsFragment : Fragment() {
         builder.show()
     }
 
-    private fun makePercentageInfo(achievement: String, percentage : Int) : String{
+    private fun makePercentageInfo(achievement: String, percentage : Int, badgeType : String) : String{
+        val badgeIsNone = badgeType == Constants.BADGE_NONE
         //if percentage is 0, we dont need to show that 0% percent of people achieved this badge
-        if(percentage == 0)
+        if(percentage == 0 || badgeIsNone)
             return ""
         var achievName = ""
         when(achievement){
