@@ -39,7 +39,7 @@
     <string name="hamsterInfo">A real Hamsterbuyer buys a lot of items of the same kind, show your amazing buying skills by unlocking gold! </string>
     <string name="zombieInfo">Being infected and suddenly thinking you need to walk long distances? Yep that\'s a real Zombie!</string>
     <string name="moneyInfo">Be a real Moneyboy and sell all kinds of goods in our amazing Trading section! Only you\'ll have the swag.</string>
-    <string name="infectionScoreInfo">Infection Score shows you how much contact you had with infected people. If your score is near 1 we really suggest testing for corona. If near 0, everything probably is fine!</string>
+    <string name="infectionScoreInfo">Infection Score shows you how much contact you had with infected people. If your score is near 100 we really suggest testing for corona. If near 0, everything probably is fine!</string>
 
 
     <!-- infection status -->

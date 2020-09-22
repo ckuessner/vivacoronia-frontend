@@ -222,7 +222,7 @@ class AchievementsFragment : Fragment() {
             // if we get != 0, we have an error that we have to handle and we show the error and the old saved state of achievements
             if(requestSucceed != 0){
                 val score = ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE)
-                    .getFloat(Constants.INFECTION_SCORE, 0.0f).toString()
+                    .getInt(Constants.INFECTION_SCORE, 0).toString()
                 requireActivity().runOnUiThread {
                     RequestUtility.handleErrorShowing(ctx, requestSucceed)
                     view?.findViewById<TextView>(R.id.textViewInfectionScore)?.text = score
@@ -236,7 +236,7 @@ class AchievementsFragment : Fragment() {
                         infectionScore.toString()
                 }
                 ctx.getSharedPreferences(Constants.CLIENT, Context.MODE_PRIVATE).edit()
-                    .putFloat(Constants.INFECTION_SCORE, infectionScore).apply()
+                    .putInt(Constants.INFECTION_SCORE, infectionScore).apply()
             }
         }
     }

@@ -76,25 +76,22 @@ object AchievementApiClient : ApiBaseClient() {
     /*
     get infection score of user, is -1.0 then there was an error beforehand
      */
-    fun getInfectionScore(ctx: Context) : Pair<Float, Int> {
-        val requestQueue = getRequestQueue(ctx) ?: return Pair(-1.0f, Constants.NULL_QUEUE)
+    fun getInfectionScore(ctx: Context) : Pair<Int, Int> {
+        val requestQueue = getRequestQueue(ctx) ?: return Pair(-1, Constants.NULL_QUEUE)
         val responseFuture = RequestFuture.newFuture<JSONObject>()
         val url = getEndPoint(ctx, Constants.ENDPOINT_SCORE)
 
         val request = JsonObjectJWT(url, null, responseFuture, responseFuture ,ctx)
         requestQueue.add(request)
-        var scoreAsFloat = 0.0f
+        var scoreResult = 0
         try {
-            val score = responseFuture.get().opt("infectionScore") as Double
-            if(score != 0.0)
-                scoreAsFloat = score.toFloat()
-            return Pair(scoreAsFloat, 0)
+            val score = responseFuture.get().opt("infectionScore") as Int
+            if(score != 0)
+                scoreResult = score
+            return Pair(scoreResult, 0)
         } catch(e: ExecutionException){
             val errorCode = RequestUtility.catchException(e)
-            return Pair(0.0f, errorCode)
-        } catch (e: ClassCastException) {
-            return Pair(0.0f, 0)
+            return Pair(-1, errorCode)
         }
-
     }
 }
